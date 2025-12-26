@@ -1,0 +1,5 @@
+# VS Code workspace
+*.code-workspace
+
+# GitHub instructions (internal)
+.github/
