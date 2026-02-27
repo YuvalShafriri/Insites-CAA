@@ -1,0 +1,11 @@
+# Excluded from repo
+OLD/
+promptsEngineering/
+sakem-li/
+InSites Budget.md
+.vscode/
+*.code-workspace
+
+# Temp files
+~$*
+.tmp.driveupload/
