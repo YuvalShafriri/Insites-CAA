@@ -1,0 +1,13 @@
+# Non-development content — workshop logistics, archives, binaries
+management/
+content-dev/
+promptsEngineering/
+sakem-li/
+OLD/
+
+# Binary files (not useful for code context)
+*.docx
+*.pdf
+*.png
+*.webp
+*.zip

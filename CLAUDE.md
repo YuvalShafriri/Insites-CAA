@@ -11,20 +11,20 @@ The project is an output of the **InSites Knowledge Lab**, which develops comput
 ## Repository Structure
 
 ```
-InSites-Brain/         # Core AI system artifacts
+InSites-Brain/         # Core AI system artifacts — DEVELOPMENT FOCUS
   Claude/              # Claude-specific prompts and skills
     Bot-Brain-en.md    # Master system prompt (English)
     Bot-Brain-he.md    # Master system prompt (Hebrew)
     KG-Skill-en/SKILL.md  # Knowledge Graph skill specification
     KG-artifacts/      # Frontend: kg.js, knowledge-graph.css, test HTML files
-  agent-for-agents/    # "The Architect" — meta-agent for Ethics in Practice session (cross-platform)
   Gemini/              # Google Gemini prompts and configurations
   GPTs/                # OpenAI Custom GPT system prompt and knowledge files
+    CAA-GTPs (Claude.ai-Spilts)/  # GPT installation package for Claude.ai Projects
+  agent-for-agents/    # "The Architect" — meta-agent for Ethics in Practice session
+  design/              # Cross-platform design specs (LIM, creativity control, etc.)
   sites-data/          # Heritage site data and assessments
   MANIFEST.md          # Artifact deployment guide
-management/            # Workshop documentation (PDFs, DOCX)
-promptsEngineering/    # Educational resources and AI prompting guides
-sakem-li/              # Strategic/advisory documents on Agentic AI
+management/            # Workshop logistics (excluded from Claude Code via .claudeignore)
 .github/instructions/  # Snyk security rules (always-on)
 ```
 
