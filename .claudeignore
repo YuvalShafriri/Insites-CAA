@@ -5,6 +5,12 @@ promptsEngineering/
 sakem-li/
 OLD/
 
+# Old/archived iterations (not active development)
+InSites-Brain/GPTs/OLD/
+InSites-Brain/Claude/OLD/
+InSites-Brain/Gemini/OLD/
+InSites-Brain/agent-for-agents/OLD/
+
 # Binary files (not useful for code context)
 *.docx
 *.pdf

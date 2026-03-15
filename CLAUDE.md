@@ -40,8 +40,8 @@ Upload to `/atar.bot/canvas/`:
 - `InSites-Brain/Claude/KG-artifacts/knowledge-graph.css`
 
 ### OpenAI Custom GPT
-1. Paste `InSites-Brain/GPTs/atarbot-system-en.md` → GPT Instructions field
-2. Upload `InSites-Brain/GPTs/atarbot-master-en.md` → GPT Knowledge file
+1. Paste `InSites-Brain/GPTs/CAA-GTPs (Claude.ai-Spilts)/instructions.md` → GPT Instructions field
+2. Upload knowledge files from same directory: `cbsa-method.md` (or `cbsa-method-lim.md`), `kg-spec.md`, `dashboard-spec.md`, `dashboard-reference-shape.md`
 
 ### Claude Bot (Claude.ai Projects)
 - Set `InSites-Brain/Claude/Bot-Brain-en.md` (or `-he.md`) as the Project prompt
