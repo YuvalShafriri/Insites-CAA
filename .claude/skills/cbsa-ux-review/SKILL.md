@@ -1,3 +1,9 @@
+---
+name: cbsa-ux-review
+description: Review CBSA bot prompts or artifacts for UX quality, HITL effectiveness, cognitive load, flow, insight density, and visual coherence. Use when modifying InSites-CAA prompts, reviewing generated artifacts (KG, Dashboard, Timeline), or auditing workshop readiness.
+user-invocable: true
+---
+
 # CBSA UX & HITL Review
 
 Review a CBSA bot prompt (like InSites-CAA-mono.md) or a generated artifact (KG, Dashboard, Timeline) through the lens of user experience, HITL effectiveness, and insight generation. The goal is to ensure the system produces outputs that create genuine understanding — not just structural completeness.
