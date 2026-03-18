@@ -207,28 +207,112 @@ Also derive from Collection Reading and analyses (if available):
 - **Chart.js stability.** For doughnut/pie charts, do NOT set `maintainAspectRatio:false` — let them maintain their natural aspect ratio. Add `canvas{max-height:280px}` CSS to chart containers. Only use `maintainAspectRatio:false` for bar charts in constrained-height containers.
 - **Inline data.** All site data must be embedded inline in the HTML file as a JS array/object. Do NOT use `fetch()` to load external JSON — the dashboard must work when opened directly via `file://` protocol without a server. Offer a separate JSON export via Step 4, but the dashboard itself is self-contained.
 
-### 5. Visual Language
+### 5. Visual Language — Design Tokens
 
-Shared with single-assessment dashboard [CA-DB]:
-- **Palette**: stone-50 through stone-900 for backgrounds/text/borders; amber accents for highlights, active states, insights. Define as CSS custom properties (`--stone-50` through `--stone-900`, `--amber-*`).
-- **Fonts**: Inter (400/500/600/700) for text, JetBrains Mono (500) for data/counts — both from Google Fonts CDN.
-- **Theme**: Light throughout (no dark mode — collection dashboards have no KG tab).
-- **Libraries**: Leaflet 1.9.4 via `cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/`, Chart.js 4.4.1 via `cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/`. Do NOT use unpkg.com or jsdelivr.net. Add `typeof` guard before map initialization (`if(typeof L==='undefined')` → show error instead of crashing).
+Shared with single-assessment dashboard [CA-DB]. The tokens below are the **source of truth** — use them verbatim in generated dashboards. Prose descriptions follow for context; when they conflict with the CSS, the CSS wins.
 
-**Layout & structure:**
-- **Layout wrapper**: Content area uses a `max-width: 1320px` centered container. Page background is `stone-100`.
-- **Header**: A rounded card (`border-radius: 12px`) inside the container with `stone-800` background, `padding: 24px 28px`. NOT a full-width bar.
-- **Tab style**: Pill/card tabs — rounded top corners (`border-radius: 8px 8px 0 0`), `background: stone-200` inactive, `background: white` + `box-shadow` for active. NOT underline-style tabs.
-- **Tab content container**: Each tab's content is wrapped in a white card (`background: white; border-radius: 0 12px 12px 12px; padding: 24px; box-shadow`). Content does NOT float on the gray background.
-- **Spacing**: 28px page padding, consistent card margins. Responsive: 2-column grids collapse to 1-column below 768px.
+**Libraries** (load in `<head>`):
+- Leaflet 1.9.4 via `cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/`
+- Chart.js 4.4.1 via `cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/`
+- Do NOT use unpkg.com or jsdelivr.net. Add `typeof` guard before map init.
 
-**Component styles:**
-- **Guide boxes**: Left-border accent style (`border-left: 3px solid amber-500; background: amber-100; padding: 12px 16px`), compact single paragraph with emoji icon. Collapsible. NOT multi-zone structure.
-- **Site tags**: Per-site colored tags — each site gets a unique pastel background + dark text color pair (e.g., blue for one, green for another, pink for a third). This creates visual identity per site across tabs. NOT uniform amber for all sites.
-- **KPI values**: Use `stone-800` (dark) for KPI numbers, `font-weight: 700`, monospace. Background uses `stone-50` with `1px border stone-200`. NOT amber-colored numbers.
-- **Chart cards**: Use `stone-50` background with `1px border stone-200`, NOT white with heavy box-shadow.
-- **Overview charts**: Show Heritage Character, Argument Strength, Evidence Basis, and Ownership Count — these are the most analytically useful dimensions.
-- **Chart.js canvas**: Add `canvas{max-height:280px}` to chart card styles. Do NOT set `maintainAspectRatio:false` on doughnut/pie charts.
+#### 5a. CSS Design Tokens
+
+Copy this `:root` block and structural CSS into every generated dashboard:
+
+```css
+:root {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --stone-50:#fafaf9;--stone-100:#f5f5f4;--stone-200:#e7e5e4;--stone-300:#d6d3d1;
+  --stone-400:#a8a29e;--stone-500:#78716c;--stone-600:#57534e;--stone-700:#44403c;
+  --stone-800:#292524;--stone-900:#1c1917;
+  --amber-100:#fef3c7;--amber-200:#fde68a;--amber-300:#fcd34d;--amber-400:#fbbf24;
+  --amber-500:#f59e0b;--amber-600:#d97706;--amber-700:#b45309;
+  --radius:12px;--shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+}
+body{font-family:var(--font-sans);background:var(--stone-100);color:var(--stone-900);font-size:13px;}
+.page-wrap{max-width:1320px;margin:0 auto;padding:24px 20px 40px;}
+
+/* Header — rounded card, NOT full-width bar */
+.header{background:var(--stone-800);color:var(--stone-50);padding:24px 28px;border-radius:var(--radius);margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;}
+.header h1{font-size:22px;font-weight:700;}
+
+/* Tabs — pill/card, NOT underline */
+.tab-btn{padding:9px 20px;font-size:12.5px;font-weight:500;border:none;background:var(--stone-200);cursor:pointer;color:var(--stone-600);border-radius:8px 8px 0 0;transition:all .15s;}
+.tab-btn.active{color:var(--stone-900);background:white;font-weight:600;box-shadow:0 -2px 6px rgba(0,0,0,.06);}
+
+/* Tab content — white card container, NOT floating on gray */
+.tab-content{background:white;border-radius:0 var(--radius) var(--radius) var(--radius);padding:24px;box-shadow:var(--shadow);}
+
+/* Guide boxes — left-border accent, compact, collapsible */
+.guide-box{background:var(--amber-100);border-left:3px solid var(--amber-500);padding:12px 16px;border-radius:0 8px 8px 0;margin-bottom:20px;cursor:pointer;}
+
+/* KPI — stone-800 numbers, NOT amber */
+.kpi{background:var(--stone-50);border:1px solid var(--stone-200);border-radius:var(--radius);padding:16px;text-align:center;}
+.kpi-val{font-size:26px;font-weight:700;color:var(--stone-800);font-family:var(--font-mono);}
+
+/* Chart cards */
+.chart-card{background:var(--stone-50);border:1px solid var(--stone-200);border-radius:var(--radius);padding:16px;}
+canvas{max-height:280px;}
+
+/* Site tags — per-site pastel colors, pill shape */
+.site-tag{display:inline-block;padding:4px 10px;border-radius:16px;font-size:11px;font-weight:500;cursor:pointer;transition:all .12s;}
+.site-tag:hover{transform:scale(1.05);}
+/* Generate a unique tag-[id] class per site with pastel bg + dark text */
+
+/* Value dots */
+.dot-e{color:var(--amber-600);}.dot-i{color:var(--stone-400);}.dot-a{color:var(--stone-300);}
+
+/* Responsive */
+@media(max-width:900px){.chart-grid,.cluster-grid{grid-template-columns:1fr;}}
+```
+
+#### 5b. HTML Skeleton
+
+Use this page structure. Adapt tab names and content to the collection:
+
+```html
+<div class="page-wrap">
+  <div class="header">
+    <div>
+      <h1>[Collection Name] — Heritage Collection Dashboard</h1>
+      <div class="header-meta">
+        <span>📚 [N] sites</span>
+        <span>🌍 [Region]</span>
+        <span>📊 Depth: <span class="badge">[Rich/Medium/Thin]</span></span>
+        <span>📅 [Date]</span>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--stone-400);text-align:right">
+      Source: [source]<br>Method: MA-RC Read-Collection
+    </div>
+  </div>
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="overview">Overview</button>
+    <button class="tab-btn" data-tab="map">Map</button>
+    <!-- ... 7 tabs total -->
+  </div>
+  <div class="tab-content">
+    <div class="tab-panel active" id="tab-overview">
+      <div class="guide-box" onclick="this.classList.toggle('collapsed')">
+        <div class="guide-title">📊 How to read this tab</div>
+        <div class="guide-body">Single compact paragraph.</div>
+      </div>
+      <!-- tab content -->
+    </div>
+  </div>
+</div>
+```
+
+#### 5c. Design Rules (context for the tokens)
+
+- **Theme**: Light only — no dark mode.
+- **Overview charts**: Heritage Character, Argument Strength, Evidence Basis, Ownership — analytically useful dimensions, not raw type/period.
+- **Site tag colors**: Assign a unique pastel palette per site (blue, green, pink, purple, orange, etc.) — NOT uniform amber. Consistent across all tabs.
+- **Cross-tab navigation**: All site tags get `onclick="selectSiteOnMap('[id]')"`. Implement `selectSiteOnMap()`, `goBack()`, `history.pushState()` for back-button support.
+- **Guide boxes**: One per tab. Emoji title + single paragraph. Collapsible via `.collapsed` class toggle. NOT multi-zone (no "What you see / How to interact" sections).
+- **Chart.js**: Do NOT set `maintainAspectRatio:false` on doughnut/pie. The `canvas{max-height:280px}` rule prevents scroll expansion.
 
 ### 6. Checklist
 
