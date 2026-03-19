@@ -36,6 +36,7 @@ These are identical across GPT, Claude, and Gemini:
 | `[CA-DB]` | Dashboard spec | dashboard-spec |
 | `[MA-RC]` | Read-Collection workflow | cbsa-method |
 | `[MA-RA]` | Read-Assessment workflow | design/MA-RA-spec-v2.md (not yet in bot prompts) |
+| `[CA-IP]` | Session Report protocol (research) | cbsa-method (InSites-CAA-mono.md) |
 
 Do not rename or remove these tags — they are cross-referenced between files and used by GPT's RAG retrieval.
 
@@ -79,8 +80,9 @@ When changing a **platform constraint** or adding a **platform-specific feature*
 ```
 InSites-Brain/
   Claude/            # Claude.ai bot
-    InSites-CAA.md   # Core system prompt (~870 lines, always loaded)
-    skills/          # Project Skills (loaded on demand)
+    InSites-CAA-mono.md  # Monolithic bot prompt (current working version — edit this first)
+    InSites-CAA.md       # Skills-split version (core ~870 lines + 4 skills on demand)
+    skills/              # Project Skills (loaded on demand)
       KG-skill.md                  # Knowledge Graph [CA-KG] — merged SKILL.md + CA-KG
       Dashboard-skill-generate.md  # Assessment Dashboard [CA-DB]
       MA-RA-skill.md               # Read-Assessment [MA-RA]
