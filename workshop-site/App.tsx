@@ -316,37 +316,37 @@ const App: React.FC = () => {
     "step-0": () => {
       setSelectedAgentId(0);
       setShowResearchAids(false);
-      if (window.innerWidth < 768) setMobileView("STEP_DETAIL");
+      setMobileView(window.innerWidth < 768 ? "STEP_DETAIL" : "HOME");
     },
     "step-1": () => {
       setSelectedAgentId(1);
       setShowResearchAids(false);
-      if (window.innerWidth < 768) setMobileView("STEP_DETAIL");
+      setMobileView(window.innerWidth < 768 ? "STEP_DETAIL" : "HOME");
     },
     "step-2": () => {
       setSelectedAgentId(2);
       setShowResearchAids(false);
-      if (window.innerWidth < 768) setMobileView("STEP_DETAIL");
+      setMobileView(window.innerWidth < 768 ? "STEP_DETAIL" : "HOME");
     },
     "step-3": () => {
       setSelectedAgentId(3);
       setShowResearchAids(false);
-      if (window.innerWidth < 768) setMobileView("STEP_DETAIL");
+      setMobileView(window.innerWidth < 768 ? "STEP_DETAIL" : "HOME");
     },
     "step-4": () => {
       setSelectedAgentId(4);
       setShowResearchAids(false);
-      if (window.innerWidth < 768) setMobileView("STEP_DETAIL");
+      setMobileView(window.innerWidth < 768 ? "STEP_DETAIL" : "HOME");
     },
     "step-5": () => {
       setSelectedAgentId(5);
       setShowResearchAids(false);
-      if (window.innerWidth < 768) setMobileView("STEP_DETAIL");
+      setMobileView(window.innerWidth < 768 ? "STEP_DETAIL" : "HOME");
     },
     "step-6": () => {
       setSelectedAgentId(6);
       setShowResearchAids(false);
-      if (window.innerWidth < 768) setMobileView("STEP_DETAIL");
+      setMobileView(window.innerWidth < 768 ? "STEP_DETAIL" : "HOME");
     },
     home: () => {
       setSelectedAgentId(null);
