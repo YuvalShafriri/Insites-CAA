@@ -84,6 +84,7 @@ import {
   ResearchQuerySelection,
 } from "./constants";
 import { callGemini } from "./services/geminiService";
+import { PREBUILT_GRAPHS } from "./config/prebuiltGraphs";
 import { copyToClipboard } from "./utils";
 import { Network } from "vis-network";
 import { DataSet } from "vis-data";
@@ -251,6 +252,7 @@ const App: React.FC = () => {
 
   // Custom KG input
   const [kgInputText, setKgInputText] = useState<string>(ZAIRA_TEXT);
+  const [kgSelectedSample, setKgSelectedSample] = useState<string | null>("zaira");
 
   // Modals states
   const [isGraphModalOpen, setIsGraphModalOpen] = useState(false);
@@ -479,11 +481,22 @@ const App: React.FC = () => {
     }
   };
 
-  const generateKnowledgeGraph = async () => {
+  const generateKnowledgeGraph = async (forceApi?: boolean) => {
     window.location.hash = "graph-view";
     setIsGraphModalOpen(true);
-    setIsGraphLoading(true);
     setSelectedNodeDetails(null);
+
+    // Use pre-built data for known samples (unless AI Live mode is on)
+    if (!forceApi && kgSelectedSample && PREBUILT_GRAPHS[kgSelectedSample]) {
+      setIsGraphLoading(true);
+      await new Promise(resolve => setTimeout(resolve, 3500));
+      setGraphData(PREBUILT_GRAPHS[kgSelectedSample]);
+      setIsGraphLoading(false);
+      return;
+    }
+
+    // Custom text — call Gemini API
+    setIsGraphLoading(true);
     const prompt = GRAPH_PROMPT(kgInputText, "Methodology learning session.");
     try {
       const response = await callGemini(prompt);
@@ -1436,7 +1449,8 @@ const App: React.FC = () => {
           window.location.hash = "";
         }}
         inputText={kgInputText}
-        onInputTextChange={setKgInputText}
+        onInputTextChange={(text: string) => { setKgInputText(text); setKgSelectedSample(null); }}
+        onSampleSelect={(text: string, sampleKey: string) => { setKgInputText(text); setKgSelectedSample(sampleKey); }}
         onGenerate={generateKnowledgeGraph}
       />
 

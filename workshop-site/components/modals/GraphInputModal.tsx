@@ -1,5 +1,5 @@
-import React from 'react';
-import { FileText, BookOpen, Zap, Landmark } from 'lucide-react';
+import React, { useState } from 'react';
+import { FileText, BookOpen, Zap, Landmark, Sparkles } from 'lucide-react';
 import { Modal } from '../common';
 import { DEMO_DATA, ZAIRA_TEXT } from '../../constants';
 import { AYELET_WT_TEXT } from '../../sampleTexts';
@@ -9,7 +9,8 @@ export interface GraphInputModalProps {
   onClose: () => void;
   inputText: string;
   onInputTextChange: (value: string) => void;
-  onGenerate: () => void;
+  onSampleSelect?: (text: string, sampleKey: string) => void;
+  onGenerate: (forceApi?: boolean) => void;
 }
 
 export const GraphInputModal: React.FC<GraphInputModalProps> = ({
@@ -17,8 +18,19 @@ export const GraphInputModal: React.FC<GraphInputModalProps> = ({
   onClose,
   inputText,
   onInputTextChange,
+  onSampleSelect,
   onGenerate,
 }) => {
+  const [useApi, setUseApi] = useState(false);
+
+  const selectSample = (text: string, key: string) => {
+    if (onSampleSelect) {
+      onSampleSelect(text, key);
+    } else {
+      onInputTextChange(text);
+    }
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Create Knowledge Graph" maxWidth="max-w-2xl">
       <div className="space-y-6">
@@ -31,22 +43,20 @@ export const GraphInputModal: React.FC<GraphInputModalProps> = ({
         <div className="space-y-3">
           <label className="text-sm font-bold text-slate-700">Text for analysis:</label>
           <div className="flex flex-wrap gap-2 mb-2">
-            {/* Hidden for now - keeping the data in constants.tsx
             <button
-              onClick={() => onInputTextChange(DEMO_DATA)}
+              onClick={() => selectSample(DEMO_DATA, "demo")}
               className="flex-1 min-w-[120px] py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2"
             >
               <FileText size={14} /> תחנת הקמח
             </button>
-            */}
             <button
-              onClick={() => onInputTextChange(ZAIRA_TEXT)}
+              onClick={() => selectSample(ZAIRA_TEXT, "zaira")}
               className="flex-1 min-w-[120px] py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 hover:text-indigo-900 border border-indigo-200 hover:border-indigo-300 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2"
             >
               <BookOpen size={14} /> Zaira City (Hebrew)
             </button>
             <button
-              onClick={() => onInputTextChange(AYELET_WT_TEXT)}
+              onClick={() => selectSample(AYELET_WT_TEXT, "ayelet")}
               className="flex-1 min-w-[120px] py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2"
             >
               <Landmark size={14} /> Ayelet HaShachar Water Tower (Hebrew)
@@ -60,11 +70,23 @@ export const GraphInputModal: React.FC<GraphInputModalProps> = ({
           />
         </div>
 
-        <div className="flex justify-end pt-4 border-t border-slate-100">
+        <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+          <label className="flex items-center gap-2 cursor-pointer select-none">
+            <div
+              onClick={() => setUseApi(!useApi)}
+              className={`relative w-10 h-5 rounded-full transition-colors ${useApi ? 'bg-amber-500' : 'bg-slate-300'}`}
+            >
+              <div className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${useApi ? 'translate-x-5' : ''}`} />
+            </div>
+            <span className="text-xs font-medium text-slate-600 flex items-center gap-1">
+              <Sparkles size={12} className={useApi ? 'text-amber-500' : 'text-slate-400'} />
+              {useApi ? 'AI Live (Gemini Flash)' : 'Demo Mode'}
+            </span>
+          </label>
           <button
             onClick={() => {
               onClose();
-              onGenerate();
+              onGenerate(useApi);
             }}
             disabled={!inputText.trim()}
             className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white rounded-xl font-bold flex items-center gap-2 shadow-lg hover:shadow-emerald-200 transition-all active:scale-95"

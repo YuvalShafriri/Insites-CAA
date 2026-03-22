@@ -10,6 +10,10 @@ InSites Budget.md
 ~$*
 .tmp.driveupload/
 
+# Environment / API keys
+.env*
+!.env.example
+
 # Dependencies & build output
 node_modules/
 workshop-site/dist/
