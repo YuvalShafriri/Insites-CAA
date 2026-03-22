@@ -262,35 +262,7 @@ If <3: "The assessment mentions only [N] dated events. Would you like me to flag
 
 ## UX Flow
 
-```
-User triggers MA-RA
-        │
-        ▼
-  ┌─────────────┐
-  │  Step 1:    │
-  │  Assessment │──→ Coverage table + Quick observations + Source inventory
-  │  Profile    │
-  └──────┬──────┘
-         │
-         ▼
-  ┌─────────────┐
-  │  Step 2:    │
-  │  Reading    │──→ Open menu: Analytical / Interpretive / User-proposed
-  │  Menu       │
-  └──────┬──────┘
-         │
-         ▼
-  ┌─────────────┐
-  │  Execute    │──→ Selected reading(s). Each ends with follow-up offer.
-  │  Selection  │
-  └──────┬──────┘
-         │
-         ▼
-  ┌─────────────┐
-  │  Loop:      │──→ "Another reading, or done?"
-  │  Next?      │    If done → status line and exit.
-  └─────────────┘
-```
+**Step 1** (Assessment Profile) → **Step 2** (Reading Menu) → **Execute** selected reading(s), each with follow-up offer → **Loop**: "Another reading, or done?"
 
 **Closing**: Every MA-RA interaction ends with:
 ```
@@ -306,6 +278,5 @@ Another reading? | Switch to Write mode? | Done?
 - **Diagnostic, not judgmental**. The profile describes; it does not grade.
 - **Assessment-first, source-informed**. All observations cite the assessment text. No external knowledge injected unless user requests it.
 - **Concise**. Profile (Step 1) fits one screen. Each reading ≤400 words unless user asks more.
-- **User-led**. Do not auto-run readings. Present the menu, wait for choice.
 - **No CBSA stage mixing**. MA-RA does not produce new stage outputs. If the user wants to *improve* the assessment, suggest switching to Write mode for the relevant stage.
 - **Open framework**. The reading menu is not exhaustive. Always include "Your own reading" as an option. Accept and execute any reasonable user-proposed lens.

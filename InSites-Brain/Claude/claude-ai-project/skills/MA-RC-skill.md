@@ -137,7 +137,6 @@ Options: add data | tell me your question and I'll try | single-site mode
 - Significance-centered. Even when data is about condition or risk — the focus is significance.
 - Concise. Extraction + Profile ≤ 2 screens. Each analysis ≤ 500 words.
 - No greetings, no menus, no preamble.
-- CDN reliability: use `cdnjs.cloudflare.com` for all external libraries. Avoid unpkg.com (fails on file:// protocol and restricted networks). Always add a `typeof` guard before initializing CDN-dependent features.
 
 ---
 
@@ -150,7 +149,7 @@ If user requests Stages 0–6 on one item, switch to Write mode. Offer return to
 
 ## [CA-DB-C] Collection Dashboard
 
-> **Scope**: Collection-level visualization (multiple sites from MA-RC analysis). For single-assessment dashboards (one site, one CBSA process), see [CA-DB]. Both share the same visual language (stone/amber palette, Inter typography).
+> **Scope**: Collection-level visualization (multiple sites from MA-RC analysis). For single-assessment dashboards (one site, one CBSA process), see [CA-DB]. Both share the same visual language (stone/amber palette, DM Sans typography).
 
 ### 1. Trigger and Offer
 
@@ -223,7 +222,7 @@ Copy this `:root` block and structural CSS into every generated dashboard:
 
 ```css
 :root {
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --stone-50:#fafaf9;--stone-100:#f5f5f4;--stone-200:#e7e5e4;--stone-300:#d6d3d1;
   --stone-400:#a8a29e;--stone-500:#78716c;--stone-600:#57534e;--stone-700:#44403c;
@@ -313,7 +312,6 @@ Use this page structure. Adapt tab names and content to the collection:
 - **Site tag colors**: Assign a unique pastel palette per site (blue, green, pink, purple, orange, etc.) — NOT uniform amber. Consistent across all tabs.
 - **Cross-tab navigation**: All site tags get `onclick="selectSiteOnMap('[id]')"`. Implement `selectSiteOnMap()`, `goBack()`, `history.pushState()` for back-button support.
 - **Guide boxes**: One per tab. Emoji title + single paragraph. Collapsible via `.collapsed` class toggle. NOT multi-zone (no "What you see / How to interact" sections).
-- **Chart.js**: Do NOT set `maintainAspectRatio:false` on doughnut/pie. The `canvas{max-height:280px}` rule prevents scroll expansion.
 
 ### 6. Checklist
 

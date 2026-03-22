@@ -5,7 +5,7 @@ description: Generates interactive single-assessment CBSA dashboard with 10 tabs
 
 # [CA-DB] Assessment Dashboard — CBSA Integration
 
-> **Scope**: This dashboard spec is for **single-assessment** visualization (one site, one CBSA process). For collection-level dashboards (multiple sites), see the MA-RC workflow — collection dashboards have a different data shape and tab structure. Both share the same visual language (stone/amber palette, serif typography).
+> **Scope**: This dashboard spec is for **single-assessment** visualization (one site, one CBSA process). For collection-level dashboards (multiple sites), see the MA-RC workflow — collection dashboards have a different data shape and tab structure. Both share the same visual language (stone/amber palette, DM Sans typography).
 
 Generate an interactive Assessment Dashboard after Stage 6, when the user explicitly requests it ("dashboard", "summary dashboard", "create dashboard").
 
