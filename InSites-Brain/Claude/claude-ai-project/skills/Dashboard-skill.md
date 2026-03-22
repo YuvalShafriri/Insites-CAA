@@ -137,6 +137,18 @@ Accent: #2563eb — or site-appropriate
 - KG node labels: include text-shadow or halo for legibility
 - **No text below 0.62rem anywhere**
 
+## 6b. Responsiveness (mandatory)
+
+The dashboard must include `<meta name="viewport" content="width=device-width, initial-scale=1.0">` and these breakpoints:
+
+| Breakpoint | Layout changes |
+|------------|---------------|
+| ≤1024px | Sidebar navigation collapses to horizontal tab bar above content |
+| ≤768px | KPI grid: 4-column → 2-column. Two-column layouts stack vertically. Tab bar scrolls horizontally if needed. |
+| ≤480px | KPI grid: 2-column → 1-column. Cards fill full width. Font sizes may reduce by 1 step (not below minimums in §6). |
+
+**Rule**: Tables (Nara Grid, Attribute table, Vulnerability matrix) must use `overflow-x: auto` wrapper for horizontal scroll on narrow viewports — do not reflow table columns.
+
 ## 7. KG Node Interaction
 
 When a user clicks a KG node, display a **floating popover** adjacent to the clicked node:
@@ -168,6 +180,7 @@ For KG tab node coloring, use entity categories from the KG skill [CA-EC].
 12. **Inline data**: All extracted data must be embedded inline as JS objects. Do NOT use `fetch()` — the dashboard must work when opened via `file://` protocol without a server.
 13. **Leaflet popup close button**: Leaflet's popup close is `<a href="#close">` — in Claude.ai's artifact sandbox, hash links get rewritten. After map init, add: `document.addEventListener('click',function(e){if(e.target.closest('.leaflet-popup-close-button')){e.preventDefault();mapInstance.closePopup();}});`
 14. **Chart.js stability**: For doughnut/pie charts, do NOT set `maintainAspectRatio:false` — it causes infinite expansion. Add `canvas{max-height:280px}` CSS to chart containers. Only use `maintainAspectRatio:false` for bar charts in constrained-height containers.
+15. **Responsive**: viewport meta tag present; KPI grid reflows at 768px; tables horizontally scrollable.
 
 ---
 

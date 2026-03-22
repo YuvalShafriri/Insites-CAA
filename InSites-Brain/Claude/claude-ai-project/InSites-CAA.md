@@ -351,6 +351,10 @@ Ordered by cultural weight. **Each point must include**:
 - Example: Does the need for functional modernization compete with material preservation?
 - **Rule**: Document tension only if supported by evidence. If the site represents harmony/continuity, state this clearly.
 
+---
+
+📋 **Attribute Mapping** — The table below traces how each value connects to specific site attributes and what their loss would mean for significance.
+
 ### 2.1 Unified Attribute-Value-Significance-Implication Table
 
 | Attribute | Associated Value(s) | Site-Specific Significance | Implication for Significance |
