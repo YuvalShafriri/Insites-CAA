@@ -55,6 +55,27 @@ InSites-Brain/
 .claude/skills/cbsa-ux-review/SKILL.md         # /cbsa-ux-review
 ```
 
+### 📝 ACTIVE WRITING — Heritage 4.0 Paper (Florence)
+
+```
+InSites-Brain/Heritage4.0/
+  PROJECT-INSTRUCTIONS.md                      # Claude.ai Project instructions (paste-ready)
+  writing/                                     # Direct writing task
+    Heritage4_0-Draft-v1.md                    # Paper draft (extended abstract, 6p Springer CCIS)
+    Heritage4_0-Draft-v1.docx                  # Same in Springer CCIS template
+    Heritage4_0-Adapted-Structure-2303.md      # Section-by-section writing scaffold
+    Writing-Plan.md                            # Full plan, methodology, page budget, checklist
+    splnproc2510.docm                          # Springer CCIS Word template
+    instructions for Authors heritage 4.0.pdf  # Venue submission guidelines
+  evidence/                                    # Session-generated analysis (Claude Code output)
+    Heritage4_0-Case-Evidence-2303.md          # Source-traced demonstrations + performance profile
+    Manual-vs-Bot-Comparison-2303.md           # Manual SA vs AI-assisted SA comparison
+    Claim-Level-Count-2303.md                  # 45-claim epistemic analysis (quantitative backbone)
+    Tuba-Run-Analysis-2303.md                  # Bot session analysis
+    InSites_Observation_Guide.docx             # Expert observation rubric
+  source-materials/                            # Case study source PDFs (A, B, C)
+```
+
 ### 📐 REFERENCE — Read-only specs, don't modify unless asked
 
 ```
