@@ -305,6 +305,7 @@ export const STEP_DETAILS: Record<number, {
   whatHappens: string[];
   cognitiveLink: string;
   promptSummary: string;
+  featureSpotlight?: { title: string; description: string };
   extensions?: { name: string; url: string; description: string }[];
 }> = {
   0: {
@@ -327,7 +328,11 @@ export const STEP_DETAILS: Record<number, {
       "Apply 'Context Effect' principle — how context frames meaning and vice versa"
     ],
     cognitiveLink: "Builds on Stage 0: uses scanned materials, flags gaps identified in the timeline.",
-    promptSummary: "Describe the asset, build a timeline, analyze bidirectional contexts and define site-specific relationships."
+    promptSummary: "Describe the asset, build a timeline, analyze bidirectional contexts and define site-specific relationships.",
+    featureSpotlight: {
+      title: "↔ Context Effect — Bidirectional Analysis",
+      description: "How context frames the asset AND how the asset reframes the context. Planning implications flagged with 🧭 and collected in Stage 6."
+    }
   },
   2: {
     whyImportant: "The core of significance assessment — translates contexts and physical attributes into defined cultural meanings.",
@@ -338,7 +343,11 @@ export const STEP_DETAILS: Record<number, {
       "Identify value dynamics: cohesion or tension?"
     ],
     cognitiveLink: "Contexts from Stage 1 become 'lenses' through which values are identified. The timeline feeds historical values.",
-    promptSummary: "Identify heritage values, build an attribute-value table, and analyze dynamics between different values."
+    promptSummary: "Identify heritage values, build an attribute-value table, and analyze dynamics between different values.",
+    featureSpotlight: {
+      title: "Evidence Strength Marking",
+      description: "Values marked by evidence tier: explicit (sourced), inferred°, uncertain💭. The attribute table shows what's at stake if each attribute is compromised."
+    }
   },
   3: {
     whyImportant: "Examines the state of evidence on the ground — integrity and authenticity (proximity to the original). Do the attributes still exist and can they express the values?",
@@ -349,7 +358,11 @@ export const STEP_DETAILS: Record<number, {
       "Identify what is preserved, what changed, what was lost"
     ],
     cognitiveLink: "Asks: Do the physical evidences still allow expressing the values from Stage 2? The timeline from Stage 1 explains when changes occurred.",
-    promptSummary: "Build a Nara Grid, grade authenticity for each aspect, and link back to identified values."
+    promptSummary: "Build a Nara Grid, grade authenticity for each aspect, and link back to identified values.",
+    featureSpotlight: {
+      title: "Vulnerability Matrix",
+      description: "Cross-tabulates values × Nara aspects → impact levels. Available in the assessment dashboard for interactive exploration."
+    }
   },
   4: {
     whyImportant: "Calibrates significance — is the asset unique or representative? At what scale: local, regional, national?",
@@ -390,7 +403,11 @@ export const STEP_DETAILS: Record<number, {
       "Professional practice note"
     ],
     cognitiveLink: "Checks: Is the synthesis from Stage 5 supported? Were we rigorous throughout all stages? Do we need to go back?",
-    promptSummary: "Audit the process, identify strengths and weaknesses, and suggest next steps."
+    promptSummary: "Audit the process, identify strengths and weaknesses, and suggest next steps.",
+    featureSpotlight: {
+      title: "Session Debrief & Trust Profile",
+      description: "After quality check: 3 reflection questions + interaction map create a research-grade record of your collaboration with the bot."
+    }
   }
 };
 

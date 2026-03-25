@@ -97,6 +97,14 @@ export const StepDetailView: React.FC<StepDetailViewProps> = ({
                     </div>
                 </div>
 
+                {/* Feature Spotlight */}
+                {selectedStepDetails?.featureSpotlight && (
+                    <div className="border-l-4 border-indigo-300 bg-indigo-50/50 rounded-r-xl p-3.5">
+                        <h4 className="font-bold text-indigo-800 text-sm mb-1">{selectedStepDetails.featureSpotlight.title}</h4>
+                        <p className="text-indigo-900/70 text-sm leading-relaxed">{selectedStepDetails.featureSpotlight.description}</p>
+                    </div>
+                )}
+
                 {/* What Happens */}
                 <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
                     <div className="flex items-center gap-2 mb-3">

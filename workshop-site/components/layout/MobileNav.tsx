@@ -1,14 +1,15 @@
 import React, { useMemo } from 'react';
-import { Home, Info, ListOrdered, Zap } from 'lucide-react';
+import { Home, Info, ListOrdered, Zap, Eye } from 'lucide-react';
 import { AgentConfig } from '../../types';
 
 export interface MobileNavProps {
-  currentView: 'HOME' | 'TOOLS' | 'STEPS' | 'ABOUT' | 'STEP_DETAIL' | 'PROGRAM';
+  currentView: 'HOME' | 'TOOLS' | 'STEPS' | 'ABOUT' | 'STEP_DETAIL' | 'PROGRAM' | 'DESIGN';
   selectedAgentId: number | null;
   agents: AgentConfig[];
   onHomeClick: () => void;
   onAboutClick: () => void;
   onResearchAidsClick: () => void;
+  onDesignClick: () => void;
   onStepsClick: () => void;
   onAgentSelect: (agentId: number) => void;
   getMobileStageTheme: (colorName: string, isSelected: boolean) => { pill: string; badge: string };
@@ -22,6 +23,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
   onHomeClick,
   onAboutClick,
   onResearchAidsClick,
+  onDesignClick,
   onStepsClick,
 }) => {
 
@@ -29,6 +31,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
     if (currentView === 'TOOLS') return 'More Tools';
     if (currentView === 'STEPS') return 'Assessment Process';
     if (currentView === 'ABOUT') return 'About';
+    if (currentView === 'DESIGN') return 'Design';
     if (selectedAgentId === null) return 'Home';
     const agent = agents.find((a) => a.id === selectedAgentId);
     return agent ? agent.name.replace(/^\d+ - /, '') : 'Stage';
@@ -42,7 +45,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
         dir="ltr"
         aria-label="Mobile navigation"
       >
-        <div className="grid grid-cols-4 px-1 py-1.5">
+        <div className="grid grid-cols-5 px-1 py-1.5">
           <button
             onClick={onHomeClick}
             className={`flex flex-col items-center justify-center gap-0.5 py-2 rounded-lg ${currentView === 'HOME' && selectedAgentId === null ? 'text-indigo-600' : 'text-slate-600'}`}
@@ -59,6 +62,15 @@ export const MobileNav: React.FC<MobileNavProps> = ({
           >
             <ListOrdered size={18} />
             <span className="text-[10px] font-bold">Stages</span>
+          </button>
+
+          <button
+            onClick={onDesignClick}
+            className={`flex flex-col items-center justify-center gap-0.5 py-2 rounded-lg ${currentView === 'DESIGN' ? 'text-rose-600' : 'text-slate-600'}`}
+            aria-label="Design"
+          >
+            <Eye size={18} />
+            <span className="text-[10px] font-bold">Design</span>
           </button>
 
           <button

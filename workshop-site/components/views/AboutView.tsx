@@ -1,5 +1,5 @@
 import React from 'react';
-import { Cpu, CheckCircle2, Zap, BookOpen, ExternalLink } from 'lucide-react';
+import { Cpu, CheckCircle2, Zap, BookOpen, ExternalLink, Eye } from 'lucide-react';
 
 export interface AboutViewProps {
     onNavigate?: (route: string) => void;
@@ -76,6 +76,21 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigate, hideHeader = f
                             <div>
                                 <h4 className="font-bold text-base text-slate-800 mb-1">Process Extensions</h4>
                                 <p className="text-sm text-slate-500 leading-snug">Knowledge graph, visual analysis, collection analysis and extension query prompts for the bot.</p>
+                            </div>
+                        </button>
+
+                        <button
+                            onClick={() => handleNavigate('design')}
+                            className="w-full flex items-start gap-4 p-4 bg-slate-50 hover:bg-rose-50 rounded-2xl border border-slate-100 hover:border-rose-200 transition-all group cursor-pointer text-left"
+                        >
+                            <div className="p-2 bg-rose-100 text-rose-600 rounded-xl shrink-0 group-hover:scale-110 transition-transform">
+                                <Eye size={20} />
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-base text-slate-800 mb-1">Design Principles</h4>
+                                <p className="text-sm text-slate-500 leading-snug">
+                                    Epistemic notation, governance framework, and session debrief — how transparency and control work in Atar.Bot.
+                                </p>
                             </div>
                         </button>
 

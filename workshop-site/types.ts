@@ -28,6 +28,10 @@ export interface StepDetails {
   whyImportant: string;
   cognitiveLink: string;
   whatHappens: string[];
+  featureSpotlight?: {
+    title: string;
+    description: string;
+  };
   extensions?: {
     name: string;
     description: string;

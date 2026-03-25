@@ -68,6 +68,11 @@ import {
   GraphInputModal,
   ResearchQueryModal,
   GraphModal,
+  EpistemicNotationModal,
+  GovernanceModal,
+  SessionReportModal,
+  DashboardPreviewModal,
+  ReadAssessmentModal,
 } from "./components/modals";
 import {
   CORE_AGENTS,
@@ -228,7 +233,7 @@ const App: React.FC = () => {
 
   // Mobile View State
   const [mobileView, setMobileView] = useState<
-    "HOME" | "TOOLS" | "STEPS" | "ABOUT" | "STEP_DETAIL" | "PROGRAM"
+    "HOME" | "TOOLS" | "STEPS" | "ABOUT" | "STEP_DETAIL" | "PROGRAM" | "DESIGN"
   >("HOME");
 
   // Welcome/About overlay state
@@ -261,14 +266,31 @@ const App: React.FC = () => {
   const [isPrinciplesModalOpen, setIsPrinciplesModalOpen] = useState(false);
   const [isInventoryModalOpen, setIsInventoryModalOpen] = useState(false);
   const [isGraphInputModalOpen, setIsGraphInputModalOpen] = useState(false);
+  const [isEpistemicModalOpen, setIsEpistemicModalOpen] = useState(false);
+  const [isGovernanceModalOpen, setIsGovernanceModalOpen] = useState(false);
+  const [isSessionReportModalOpen, setIsSessionReportModalOpen] = useState(false);
+  const [isDashboardPreviewModalOpen, setIsDashboardPreviewModalOpen] = useState(false);
+  const [isReadAssessmentModalOpen, setIsReadAssessmentModalOpen] = useState(false);
+  const [readAssessmentInitialRoute, setReadAssessmentInitialRoute] = useState<string | null>(null);
   const [inventoryModalLang, setInventoryModalLang] = useState<"he" | "en">(
     "en"
   );
   const [selectedQuery, setSelectedQuery] =
     useState<ResearchQuerySelection | null>(null);
 
+  // Design view state
+  const [showDesignView, setShowDesignView] = useState<boolean>(false);
+
   const openResearchTools = useCallback(() => {
     setShowResearchAids(true);
+    setShowDesignView(false);
+    setSelectedAgentId(null);
+    setSelectedQuery(null);
+  }, []);
+
+  const openDesignView = useCallback(() => {
+    setShowDesignView(true);
+    setShowResearchAids(false);
     setSelectedAgentId(null);
     setSelectedQuery(null);
   }, []);
@@ -308,51 +330,69 @@ const App: React.FC = () => {
     prompts: () => setIsPromptModalOpen(true),
     principles: () => setIsPrinciplesModalOpen(true),
     inventory: () => setIsInventoryModalOpen(true),
-    "q-narratives": () => openResearchQueryByRoute("q-narratives"),
-    "q-sentiment": () => openResearchQueryByRoute("q-sentiment"),
-    "q-education": () => openResearchQueryByRoute("q-education"),
-    "q-semiotics": () => openResearchQueryByRoute("q-semiotics"),
-    "q-jester-chorus": () => openResearchQueryByRoute("q-jester-chorus"),
-    "q-jester": () => openResearchQueryByRoute("q-jester"),
-    "q-chorus": () => openResearchQueryByRoute("q-chorus"),
+    notation: () => setIsEpistemicModalOpen(true),
+    governance: () => setIsGovernanceModalOpen(true),
+    "session-report": () => setIsSessionReportModalOpen(true),
+    "dashboard-preview": () => setIsDashboardPreviewModalOpen(true),
+    "read-assessment": () => { setReadAssessmentInitialRoute(null); setIsReadAssessmentModalOpen(true); },
+    design: () => {
+      openDesignView();
+      setMobileView(window.innerWidth < 768 ? "DESIGN" : "HOME");
+    },
+    // Legacy routes — redirect to MA-RA modal with the relevant reading pre-selected
+    "q-narratives": () => { setReadAssessmentInitialRoute("q-narratives"); setIsReadAssessmentModalOpen(true); },
+    "q-sentiment": () => { setReadAssessmentInitialRoute("q-sentiment"); setIsReadAssessmentModalOpen(true); },
+    "q-education": () => { setReadAssessmentInitialRoute("q-education"); setIsReadAssessmentModalOpen(true); },
+    "q-semiotics": () => { setReadAssessmentInitialRoute("q-semiotics"); setIsReadAssessmentModalOpen(true); },
+    "q-jester-chorus": () => { setReadAssessmentInitialRoute("q-jester"); setIsReadAssessmentModalOpen(true); },
+    "q-jester": () => { setReadAssessmentInitialRoute("q-jester"); setIsReadAssessmentModalOpen(true); },
+    "q-chorus": () => { setReadAssessmentInitialRoute("q-chorus"); setIsReadAssessmentModalOpen(true); },
     "step-0": () => {
       setSelectedAgentId(0);
       setShowResearchAids(false);
+      setShowDesignView(false);
       setMobileView(window.innerWidth < 768 ? "STEP_DETAIL" : "HOME");
     },
     "step-1": () => {
       setSelectedAgentId(1);
       setShowResearchAids(false);
+      setShowDesignView(false);
       setMobileView(window.innerWidth < 768 ? "STEP_DETAIL" : "HOME");
     },
     "step-2": () => {
       setSelectedAgentId(2);
       setShowResearchAids(false);
+      setShowDesignView(false);
       setMobileView(window.innerWidth < 768 ? "STEP_DETAIL" : "HOME");
     },
     "step-3": () => {
       setSelectedAgentId(3);
       setShowResearchAids(false);
+      setShowDesignView(false);
       setMobileView(window.innerWidth < 768 ? "STEP_DETAIL" : "HOME");
     },
     "step-4": () => {
       setSelectedAgentId(4);
       setShowResearchAids(false);
+      setShowDesignView(false);
       setMobileView(window.innerWidth < 768 ? "STEP_DETAIL" : "HOME");
     },
     "step-5": () => {
       setSelectedAgentId(5);
       setShowResearchAids(false);
+      setShowDesignView(false);
       setMobileView(window.innerWidth < 768 ? "STEP_DETAIL" : "HOME");
     },
     "step-6": () => {
       setSelectedAgentId(6);
       setShowResearchAids(false);
+      setShowDesignView(false);
       setMobileView(window.innerWidth < 768 ? "STEP_DETAIL" : "HOME");
     },
     home: () => {
       setSelectedAgentId(null);
       setShowResearchAids(false);
+      setShowDesignView(false);
       setMobileView("HOME");
     },
     tools: () => {
@@ -363,6 +403,7 @@ const App: React.FC = () => {
       setMobileView("STEPS");
       setSelectedAgentId(null);
       setShowResearchAids(false);
+      setShowDesignView(false);
     },
     welcome: () => {
       if (window.innerWidth < 768) {
@@ -392,6 +433,11 @@ const App: React.FC = () => {
     setIsPromptModalOpen(false);
     setIsPrinciplesModalOpen(false);
     setIsInventoryModalOpen(false);
+    setIsEpistemicModalOpen(false);
+    setIsGovernanceModalOpen(false);
+    setIsSessionReportModalOpen(false);
+    setIsDashboardPreviewModalOpen(false);
+    setIsReadAssessmentModalOpen(false);
   }, []);
 
   // Handle hash change
@@ -599,6 +645,8 @@ const App: React.FC = () => {
       ? "program"
       : mobileView === "STEP_DETAIL" && currentAgent
       ? `step-detail-${selectedAgentId}`
+      : showDesignView
+      ? "design"
       : showResearchAids || mobileView === "TOOLS"
       ? "tools"
       : "home";
@@ -631,6 +679,9 @@ const App: React.FC = () => {
         onResearchAidsClick={() => {
           navigateTo("tools");
         }}
+        onDesignClick={() => {
+          navigateTo("design");
+        }}
         onStepsClick={() => {
           navigateTo("steps");
         }}
@@ -648,6 +699,7 @@ const App: React.FC = () => {
           onStartResize={startResizing}
           selectedAgentId={selectedAgentId}
           showResearchAids={showResearchAids}
+          showDesignView={showDesignView}
           agents={CORE_AGENTS}
           onAgentSelect={(agentId) => {
             navigateTo(`step-${agentId}`);
@@ -655,6 +707,10 @@ const App: React.FC = () => {
           }}
           onResearchAidsClick={() => {
             navigateTo("tools");
+            handleCloseWelcome();
+          }}
+          onDesignClick={() => {
+            navigateTo("design");
             handleCloseWelcome();
           }}
           getAgentTheme={getAgentTheme}
@@ -995,6 +1051,73 @@ const App: React.FC = () => {
                   </div>
                 </>
               ) : null
+            ) : showDesignView ? (
+              /* DESIGN PRINCIPLES VIEW */
+              <div className="flex-1 flex flex-col overflow-y-auto bg-slate-50/30 custom-scrollbar pb-[140px] sm:pb-[90px] md:pb-16">
+                <div className="max-w-4xl mx-auto w-full px-6 py-6 space-y-6">
+                  {/* Breadcrumb */}
+                  <div className="flex items-center gap-2 text-sm">
+                    <button
+                      onClick={() => navigateTo("home")}
+                      className="text-indigo-600 hover:text-indigo-700 hover:underline flex items-center gap-1 transition-colors font-medium"
+                    >
+                      <BookOpen size={16} />
+                      <span>Home</span>
+                    </button>
+                    <ChevronLeft size={16} className="text-slate-400 rotate-180" />
+                    <span className="text-slate-600 font-medium">Design Principles</span>
+                  </div>
+
+                  <div>
+                    <h3 className="text-2xl font-black text-slate-500 mb-2">Design Principles</h3>
+                    <p className="text-slate-500">How transparency, control, and evidence governance work in Atar.Bot</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {/* Epistemic Notation */}
+                    <button
+                      onClick={() => navigateTo("notation")}
+                      className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-rose-200 hover:bg-rose-50/30 transition-all group cursor-pointer"
+                    >
+                      <div className="w-9 h-9 bg-rose-100 text-rose-600 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                        <Eye size={18} />
+                      </div>
+                      <div className="text-left">
+                        <h4 className="font-bold text-slate-800 text-sm">Epistemic Notation</h4>
+                        <p className="text-[11px] text-slate-500 line-clamp-2">Three-tier evidence marking: explicit, inferred°, uncertain💭</p>
+                      </div>
+                    </button>
+
+                    {/* Governance */}
+                    <button
+                      onClick={() => navigateTo("governance")}
+                      className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-emerald-200 hover:bg-emerald-50/30 transition-all group cursor-pointer"
+                    >
+                      <div className="w-9 h-9 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                        <ShieldCheck size={18} />
+                      </div>
+                      <div className="text-left">
+                        <h4 className="font-bold text-slate-800 text-sm">Governance & Control</h4>
+                        <p className="text-[11px] text-slate-500 line-clamp-2">HITL protocol, evidence mandate, revision control, status tracking</p>
+                      </div>
+                    </button>
+
+                    {/* Trust & Reflection */}
+                    <button
+                      onClick={() => navigateTo("session-report")}
+                      className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-purple-200 hover:bg-purple-50/30 transition-all group cursor-pointer"
+                    >
+                      <div className="w-9 h-9 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                        <Activity size={18} />
+                      </div>
+                      <div className="text-left">
+                        <h4 className="font-bold text-slate-800 text-sm">Session Debrief & Trust Profile</h4>
+                        <p className="text-[11px] text-slate-500 line-clamp-2">Research instrumentation: interaction map, trust measurement</p>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
             ) : showResearchAids || mobileView === "TOOLS" ? (
               /* EXTENSIONS TOOLBOX VIEW (The "Tools") */
               <div className="flex-1 flex flex-col overflow-y-auto bg-slate-50/30 custom-scrollbar pb-[140px] sm:pb-[90px] md:pb-16">
@@ -1029,6 +1152,24 @@ const App: React.FC = () => {
                       Tools integrated in Atar.Bot
                     </h4>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      {/* Assessment Dashboard */}
+                      <button
+                        onClick={() => navigateTo("dashboard-preview")}
+                        className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-blue-200 hover:bg-blue-50/30 transition-all group cursor-pointer"
+                      >
+                        <div className="w-9 h-9 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                          <LayoutDashboard size={18} />
+                        </div>
+                        <div className="text-left">
+                          <h4 className="font-bold text-slate-800 text-sm">
+                            Assessment Dashboard
+                          </h4>
+                          <p className="text-[11px] text-slate-500 line-clamp-2">
+                            10-tab interactive visualization of a complete assessment
+                          </p>
+                        </div>
+                      </button>
+
                       {/* Knowledge Graph */}
                       <button
                         onClick={() => navigateTo("graph")}
@@ -1078,47 +1219,28 @@ const App: React.FC = () => {
                             Collection Analysis
                           </h4>
                           <p className="text-[11px] text-slate-500 line-clamp-2">
-                            Protocol for cross-sectional analysis of assessment collections
+                            Cross-sectional analysis of assessment collections (MA-RC)
                           </p>
                         </div>
                       </button>
-                    </div>
-                  </div>
 
-                  {/* Research Queries Section */}
-                  <div className="space-y-3">
-                    <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
-                      Extension Queries
-                    </h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {RESEARCH_QUERIES.map((query, idx) => (
-                        <button
-                          key={query.route || idx}
-                          onClick={() =>
-                            query.route ? navigateTo(query.route) : null
-                          }
-                          className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-blue-200 hover:bg-blue-50/30 transition-all group cursor-pointer"
-                        >
-                          <div className="w-9 h-9 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                            {React.isValidElement(query.icon) ? (
-                              React.cloneElement(
-                                query.icon as React.ReactElement,
-                                { size: 18 }
-                              )
-                            ) : (
-                              <SearchCheck size={18} />
-                            )}
-                          </div>
-                          <div className="text-left">
-                            <h4 className="font-bold text-slate-800 text-sm">
-                              {query.title}
-                            </h4>
-                            <p className="text-[11px] text-slate-500 line-clamp-2">
-                              {query.description}
-                            </p>
-                          </div>
-                        </button>
-                      ))}
+                      {/* Read Assessment (MA-RA) */}
+                      <button
+                        onClick={() => navigateTo("read-assessment")}
+                        className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-purple-200 hover:bg-purple-50/30 transition-all group cursor-pointer"
+                      >
+                        <div className="w-9 h-9 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                          <Scroll size={18} />
+                        </div>
+                        <div className="text-left">
+                          <h4 className="font-bold text-slate-800 text-sm">
+                            Read Assessment
+                          </h4>
+                          <p className="text-[11px] text-slate-500 line-clamp-2">
+                            Structured readings: analytical, interpretive, and generative lenses
+                          </p>
+                        </div>
+                      </button>
                     </div>
                   </div>
 
@@ -1313,7 +1435,7 @@ const App: React.FC = () => {
 
                         <div className="hidden sm:block">
                           <ResourceLink
-                            href="https://gemini.google.com/share/673fdae83a26"
+                            onClick={() => navigateTo("dashboard-preview")}
                             icon={<LayoutDashboard size={16} />}
                             label="Cultural Assessment Dashboard — Demo"
                             noBorder
@@ -1452,6 +1574,33 @@ const App: React.FC = () => {
         onInputTextChange={(text: string) => { setKgInputText(text); setKgSelectedSample(null); }}
         onSampleSelect={(text: string, sampleKey: string) => { setKgInputText(text); setKgSelectedSample(sampleKey); }}
         onGenerate={generateKnowledgeGraph}
+      />
+
+      <EpistemicNotationModal
+        isOpen={isEpistemicModalOpen}
+        onClose={() => { setIsEpistemicModalOpen(false); window.location.hash = ""; }}
+      />
+
+      <GovernanceModal
+        isOpen={isGovernanceModalOpen}
+        onClose={() => { setIsGovernanceModalOpen(false); window.location.hash = ""; }}
+      />
+
+      <SessionReportModal
+        isOpen={isSessionReportModalOpen}
+        onClose={() => { setIsSessionReportModalOpen(false); window.location.hash = ""; }}
+      />
+
+      <DashboardPreviewModal
+        isOpen={isDashboardPreviewModalOpen}
+        onClose={() => { setIsDashboardPreviewModalOpen(false); window.location.hash = ""; }}
+      />
+
+      <ReadAssessmentModal
+        isOpen={isReadAssessmentModalOpen}
+        onClose={() => { setIsReadAssessmentModalOpen(false); setReadAssessmentInitialRoute(null); window.location.hash = ""; }}
+        initialReadingRoute={readAssessmentInitialRoute}
+        onOpenGraph={() => navigateTo("graph")}
       />
 
       <style
