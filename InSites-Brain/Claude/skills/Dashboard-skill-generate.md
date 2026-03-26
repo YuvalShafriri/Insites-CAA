@@ -120,19 +120,13 @@ Implementation: a top-level `highlight` variable (`{ type: 'value'|'context', id
 
 ## 6. Theme and Readability (mandatory)
 
-**Hybrid theme**: Light background for all text-heavy tabs (Overview through Process). Dark canvas only for the KG tab.
+**Light theme throughout**: All tabs — including KG — use the same light palette. This ensures visual coherence between the Dashboard and the standalone KG artifact.
 
-**Light mode palette** (text tabs):
+**Light palette** (all tabs):
 ```
 Background: #f8fafc → cards: #ffffff → borders: #e2e8f0
 Text: #1e293b → dim: #64748b → muted: #94a3b8
 Accent: #2563eb — or site-appropriate
-```
-
-**Dark mode palette** (KG tab only):
-```
-Background: #0a1120 → cards: #1e293b → borders: #334155
-Text: #e2e8f0 → dim: #b0bfd0
 ```
 
 **Minimum readability requirements**:
@@ -140,7 +134,7 @@ Text: #e2e8f0 → dim: #b0bfd0
 - Section labels / uppercase micro-labels: ≥ 0.72rem
 - Pills and badges: ≥ 0.66rem
 - KG edge labels: ≥ 10px, contrast ratio ≥ 3:1
-- KG node labels: include text-shadow or halo for legibility
+- KG node labels: include text-shadow or halo for legibility against light background
 - **No text below 0.62rem anywhere**
 
 ## 7. KG Node Interaction
@@ -200,4 +194,4 @@ After generating the Dashboard, always offer:
 
 ## Reference Implementation (if available)
 
-The Ayelet HaShachar water tower assessment dashboard (`Single-Dashboard-example.html`) implements this spec fully: hybrid light/dark theme, all 10 tabs, cross-referencing with shared highlight state, structured Nara Grid, per-comparator cards, vulnerability matrix, proportional timeline with change types, and floating KG popover. Use it as a working example — not as a locked template.
+The Ayelet HaShachar water tower assessment dashboard (`Single-Dashboard-example.html`) implements this spec fully: light theme throughout, all 10 tabs, cross-referencing with shared highlight state, structured Nara Grid, per-comparator cards, vulnerability matrix, proportional timeline with change types, and floating KG popover. Use it as a working example — not as a locked template.

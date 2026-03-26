@@ -137,6 +137,7 @@ Options: add data | tell me your question and I'll try | single-site mode
 - Significance-centered. Even when data is about condition or risk — the focus is significance.
 - Concise. Extraction + Profile ≤ 2 screens. Each analysis ≤ 500 words.
 - No greetings, no menus, no preamble.
+- CDN reliability: use `cdnjs.cloudflare.com` for all external libraries. Avoid unpkg.com (fails on file:// protocol and restricted networks). Always add a `typeof` guard before initializing CDN-dependent features.
 
 ---
 
@@ -149,7 +150,7 @@ If user requests Stages 0–6 on one item, switch to Write mode. Offer return to
 
 ## [CA-DB-C] Collection Dashboard
 
-> **Scope**: Collection-level visualization (multiple sites from MA-RC analysis). For single-assessment dashboards (one site, one CBSA process), see [CA-DB]. Both share the same visual language (stone/amber palette, DM Sans typography).
+> **Scope**: Collection-level visualization (multiple sites from MA-RC analysis). For single-assessment dashboards (one site, one CBSA process), see [CA-DB]. Both share the same visual language (stone/amber palette, Inter typography).
 
 ### 1. Trigger and Offer
 
@@ -222,7 +223,7 @@ Copy this `:root` block and structural CSS into every generated dashboard:
 
 ```css
 :root {
-  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --stone-50:#fafaf9;--stone-100:#f5f5f4;--stone-200:#e7e5e4;--stone-300:#d6d3d1;
   --stone-400:#a8a29e;--stone-500:#78716c;--stone-600:#57534e;--stone-700:#44403c;
@@ -278,10 +279,10 @@ Use this page structure. Adapt tab names and content to the collection:
     <div>
       <h1>[Collection Name] — Heritage Collection Dashboard</h1>
       <div class="header-meta">
-        <span>[N] sites</span>
-        <span>[Region]</span>
-        <span>Depth: <span class="badge">[Rich/Medium/Thin]</span></span>
-        <span>[Date]</span>
+        <span>📚 [N] sites</span>
+        <span>🌍 [Region]</span>
+        <span>📊 Depth: <span class="badge">[Rich/Medium/Thin]</span></span>
+        <span>📅 [Date]</span>
       </div>
     </div>
     <div style="font-size:11px;color:var(--stone-400);text-align:right">
@@ -296,7 +297,7 @@ Use this page structure. Adapt tab names and content to the collection:
   <div class="tab-content">
     <div class="tab-panel active" id="tab-overview">
       <div class="guide-box" onclick="this.classList.toggle('collapsed')">
-        <div class="guide-title">How to read this tab</div>
+        <div class="guide-title">📊 How to read this tab</div>
         <div class="guide-body">Single compact paragraph.</div>
       </div>
       <!-- tab content -->
@@ -312,19 +313,20 @@ Use this page structure. Adapt tab names and content to the collection:
 - **Site tag colors**: Assign a unique pastel palette per site (blue, green, pink, purple, orange, etc.) — NOT uniform amber. Consistent across all tabs.
 - **Cross-tab navigation**: All site tags get `onclick="selectSiteOnMap('[id]')"`. Implement `selectSiteOnMap()`, `goBack()`, `history.pushState()` for back-button support.
 - **Guide boxes**: One per tab. Emoji title + single paragraph. Collapsible via `.collapsed` class toggle. NOT multi-zone (no "What you see / How to interact" sections).
+- **Chart.js**: Do NOT set `maintainAspectRatio:false` on doughnut/pie. The `canvas{max-height:280px}` rule prevents scroll expansion.
 
 ### 6. Checklist
 
 Before delivering the artifact, verify:
 
-1. Only data extracted from uploaded materials — nothing fabricated
-2. Overview tab is first (tab index 0)
-3. All site names are interactive (link to Map or Values)
-4. Value indicators (●/◐/○) consistent across Values, Map popups, and Clusters
-5. Charts show all data categories — no `.slice()` truncation
-6. Guide box present on every tab
-7. Collection metadata (source, depth, N items) shown in header
-8. Responsive: 2-column grids collapse to 1-column below 768px
+1. ☐ Only data extracted from uploaded materials — nothing fabricated
+2. ☐ Overview tab is first (tab index 0)
+3. ☐ All site names are interactive (link to Map or Values)
+4. ☐ Value indicators (●/◐/○) consistent across Values, Map popups, and Clusters
+5. ☐ Charts show all data categories — no `.slice()` truncation
+6. ☐ Guide box present on every tab
+7. ☐ Collection metadata (source, depth, N items) shown in header
+8. ☐ Responsive: 2-column grids collapse to 1-column below 768px
 
 ### 7. Reference Implementation
 

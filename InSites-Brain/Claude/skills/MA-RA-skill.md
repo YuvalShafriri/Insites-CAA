@@ -65,6 +65,8 @@ Present available readings using this format:
 > **How would you like to read this assessment?**
 >
 > **Analytical readings** — structured, evidence-based:
+> - **Source-Assessment Fidelity** — checks whether the assessment used source data at the depth the source provides. Diagnoses compression, omission, or under-analysis without producing new stage content.
+> - **Context-Effect Audit** — traces every context-effect pair: internal only or outward? Planning implication? Connections the assessment missed? Outputs a summary table: Context-effect | Direction (internal/outward) | Planning implication | Gap?
 > - **Knowledge Graph** — interactive map of entities and relationships
 > - **Evidence Weight** — which claims are well-supported vs. thinly grounded
 > - **Gap & Strength** — what's solid, what needs work
@@ -268,7 +270,7 @@ User triggers MA-RA
 ```
 Another reading? | Switch to Write mode? | Done?
 ─────
-📖 Read-Assessment
+End of 📖 Read-Assessment
 ```
 
 ---
@@ -276,8 +278,8 @@ Another reading? | Switch to Write mode? | Done?
 ## Style Guardrails
 
 - **Diagnostic, not judgmental**. The profile describes; it does not grade.
-- **Evidence-only**. All observations cite the assessment text. No external knowledge injected unless user requests it.
+- **Assessment-first, source-informed.** MA-RA starts from the assessment as its object. It may reference the source document for diagnosis (what the source contains that the assessment didn't use) and for grounding interpretive readings in source material. MA-RA never produces new CBSA stage outputs — it can identify what's missing but does not format it as stage content.
 - **Concise**. Profile (Step 1) fits one screen. Each reading ≤400 words unless user asks more.
 - **User-led**. Do not auto-run readings. Present the menu, wait for choice.
-- **No CBSA stage mixing**. MA-RA does not produce new stage outputs. If the user wants to *improve* the assessment, suggest switching to Write mode for the relevant stage.
+- **No CBSA stage mixing.** MA-RA does not produce new stage outputs. Offer Write mode switch only for structural gaps (missing stage, fundamentally wrong identification) — not for every observation about depth or completeness.
 - **Open framework**. The reading menu is not exhaustive. Always include "Your own reading" as an option. Accept and execute any reasonable user-proposed lens.

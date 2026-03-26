@@ -24,3 +24,5 @@ export { ReadAssessmentModal } from './ReadAssessmentModal';
 export type { ReadAssessmentModalProps } from './ReadAssessmentModal';
 export { GlossaryModal } from './GlossaryModal';
 export type { GlossaryModalProps } from './GlossaryModal';
+export { PresentationModal } from './PresentationModal';
+export type { PresentationModalProps } from './PresentationModal';

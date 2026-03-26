@@ -45,6 +45,7 @@ import {
   Mail,
   ChevronDown,
   BookText,
+  Maximize2,
 } from "lucide-react";
 import MarkdownRenderer from "./components/MarkdownRenderer";
 import {
@@ -79,6 +80,7 @@ import {
   DashboardPreviewModal,
   ReadAssessmentModal,
   GlossaryModal,
+  PresentationModal,
 } from "./components/modals";
 import {
   CORE_AGENTS,
@@ -282,6 +284,7 @@ const App: React.FC = () => {
   const [isDashboardPreviewModalOpen, setIsDashboardPreviewModalOpen] = useState(false);
   const [isReadAssessmentModalOpen, setIsReadAssessmentModalOpen] = useState(false);
   const [isGlossaryModalOpen, setIsGlossaryModalOpen] = useState(false);
+  const [isPresentationModalOpen, setIsPresentationModalOpen] = useState(false);
   const [readAssessmentInitialRoute, setReadAssessmentInitialRoute] = useState<string | null>(null);
   const [inventoryModalLang, setInventoryModalLang] = useState<"he" | "en">(
     "en"
@@ -347,6 +350,7 @@ const App: React.FC = () => {
     "dashboard-preview": () => setIsDashboardPreviewModalOpen(true),
     "read-assessment": () => { setReadAssessmentInitialRoute(null); setIsReadAssessmentModalOpen(true); },
     glossary: () => setIsGlossaryModalOpen(true),
+    presentation: () => setIsPresentationModalOpen(true),
     design: () => {
       openDesignView();
       setMobileView(window.innerWidth < 768 ? "DESIGN" : "HOME");
@@ -451,6 +455,7 @@ const App: React.FC = () => {
     setIsDashboardPreviewModalOpen(false);
     setIsReadAssessmentModalOpen(false);
     setIsGlossaryModalOpen(false);
+    // Note: presentation modal is NOT closed here — it persists across hash navigation
   }, []);
 
   // Handle hash change
@@ -778,9 +783,19 @@ const App: React.FC = () => {
                 <AboutView onNavigate={navigateTo} />
               </div>
             ) : mobileView === "PROGRAM" ? (
-              USE_OPENING_VIEW
-                ? <WorkshopOpeningViewV3 onNavigate={navigateTo} />
-                : <WorkshopProgramView onNavigate={navigateTo} />
+              <div className="relative h-full">
+                <button
+                  onClick={() => navigateTo("presentation")}
+                  className="absolute top-2 right-2 z-10 p-1.5 rounded-lg bg-white/80 hover:bg-white text-slate-500 hover:text-slate-700 shadow-sm border border-slate-200 transition-all"
+                  aria-label="Fullscreen presentation"
+                  title="Fullscreen presentation"
+                >
+                  <Maximize2 size={16} />
+                </button>
+                {USE_OPENING_VIEW
+                  ? <WorkshopOpeningViewV3 onNavigate={navigateTo} />
+                  : <WorkshopProgramView onNavigate={navigateTo} />}
+              </div>
             ) : mobileView === "STEP_DETAIL" ||
               (selectedAgentId !== null && currentAgent) ? (
               // Unified Step Detail View logic
@@ -1708,6 +1723,12 @@ const App: React.FC = () => {
       <GlossaryModal
         isOpen={isGlossaryModalOpen}
         onClose={() => { setIsGlossaryModalOpen(false); window.location.hash = ""; }}
+        onNavigate={navigateTo}
+      />
+
+      <PresentationModal
+        isOpen={isPresentationModalOpen}
+        onClose={() => { setIsPresentationModalOpen(false); window.location.hash = ""; }}
         onNavigate={navigateTo}
       />
 

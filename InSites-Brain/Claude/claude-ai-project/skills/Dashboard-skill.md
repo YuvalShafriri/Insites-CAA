@@ -1,11 +1,11 @@
 ---
 name: cbsa-assessment-dashboard
-description: Generates interactive single-assessment CBSA dashboard with 10 tabs after Stage 6 completion. Trigger on "dashboard", "summary dashboard", "create dashboard". Produces self-contained HTML with D3, cross-referencing, and light theme.
+description: Generates interactive single-assessment CBSA dashboard with 10 tabs after Stage 6 completion. Trigger on "dashboard", "summary dashboard", "create dashboard". Produces self-contained HTML with D3, cross-referencing, and hybrid light/dark theme.
 ---
 
 # [CA-DB] Assessment Dashboard — CBSA Integration
 
-> **Scope**: This dashboard spec is for **single-assessment** visualization (one site, one CBSA process). For collection-level dashboards (multiple sites), see the MA-RC workflow — collection dashboards have a different data shape and tab structure. Both share the same visual language (stone/amber palette, DM Sans typography).
+> **Scope**: This dashboard spec is for **single-assessment** visualization (one site, one CBSA process). For collection-level dashboards (multiple sites), see the MA-RC workflow — collection dashboards have a different data shape and tab structure. Both share the same visual language (stone/amber palette, serif typography).
 
 Generate an interactive Assessment Dashboard after Stage 6, when the user explicitly requests it ("dashboard", "summary dashboard", "create dashboard").
 
@@ -120,9 +120,9 @@ Implementation: a top-level `highlight` variable (`{ type: 'value'|'context', id
 
 ## 6. Theme and Readability (mandatory)
 
-**Light theme throughout**. All tabs use the light palette. The KG tab uses the same light chrome palette as the standalone KG [CA-KG] for visual coherence.
+**Light theme throughout**: All tabs — including KG — use the same light palette. This ensures visual coherence between the Dashboard and the standalone KG artifact.
 
-**Light mode palette**:
+**Light palette** (all tabs):
 ```
 Background: #f8fafc → cards: #ffffff → borders: #e2e8f0
 Text: #1e293b → dim: #64748b → muted: #94a3b8
@@ -134,20 +134,8 @@ Accent: #2563eb — or site-appropriate
 - Section labels / uppercase micro-labels: ≥ 0.72rem
 - Pills and badges: ≥ 0.66rem
 - KG edge labels: ≥ 10px, contrast ratio ≥ 3:1
-- KG node labels: include text-shadow or halo for legibility
+- KG node labels: include text-shadow or halo for legibility against light background
 - **No text below 0.62rem anywhere**
-
-## 6b. Responsiveness (mandatory)
-
-The dashboard must include `<meta name="viewport" content="width=device-width, initial-scale=1.0">` and these breakpoints:
-
-| Breakpoint | Layout changes |
-|------------|---------------|
-| ≤1024px | Sidebar navigation collapses to horizontal tab bar above content |
-| ≤768px | KPI grid: 4-column → 2-column. Two-column layouts stack vertically. Tab bar scrolls horizontally if needed. |
-| ≤480px | KPI grid: 2-column → 1-column. Cards fill full width. Font sizes may reduce by 1 step (not below minimums in §6). |
-
-**Rule**: Tables (Nara Grid, Attribute table, Vulnerability matrix) must use `overflow-x: auto` wrapper for horizontal scroll on narrow viewports — do not reflow table columns.
 
 ## 7. KG Node Interaction
 
@@ -160,9 +148,26 @@ When a user clicks a KG node, display a **floating popover** adjacent to the cli
 - Dismiss on: close button, background click, or clicking another node.
 - **Never require scrolling** to read node info — all content visible within the graph viewport.
 
-## 8. Entity Categories
+## 8. Entity Categories [CA-EC]
 
-For KG tab node coloring, use entity categories from the KG skill [CA-EC].
+Use these categories for KG node coloring within the dashboard:
+
+| Category | Description |
+| --- | --- |
+| Place | A geographic location, area, or region relevant to the heritage asset |
+| Structure / Building | A constructed edifice or architectural ensemble |
+| Architectural Element | A specific component of a structure (column, arch, frieze, etc.) |
+| Person | An individual historically or culturally linked to the asset |
+| Event | A discrete historical occurrence tied to the asset's timeline |
+| Story / Narrative | An oral tradition, legend, or documented account |
+| Cultural Value | An abstract value category from the CBSA assessment |
+| Natural Phenomenon | A geological, ecological, or climatic feature |
+| Artwork / Artefact | A movable object, inscription, or decorative element |
+| Tradition / Custom | A recurring cultural practice associated with the asset |
+| Social Group | A community, guild, congregation, or population segment |
+| Historical Period | A defined chronological era relevant to the assessment |
+| Religion / Belief | A faith system, cosmology, or spiritual practice |
+| Collective Memory | A shared remembrance, commemoration, or cultural narrative |
 
 ## 9. Final Checklist
 
@@ -180,7 +185,6 @@ For KG tab node coloring, use entity categories from the KG skill [CA-EC].
 12. **Inline data**: All extracted data must be embedded inline as JS objects. Do NOT use `fetch()` — the dashboard must work when opened via `file://` protocol without a server.
 13. **Leaflet popup close button**: Leaflet's popup close is `<a href="#close">` — in Claude.ai's artifact sandbox, hash links get rewritten. After map init, add: `document.addEventListener('click',function(e){if(e.target.closest('.leaflet-popup-close-button')){e.preventDefault();mapInstance.closePopup();}});`
 14. **Chart.js stability**: For doughnut/pie charts, do NOT set `maintainAspectRatio:false` — it causes infinite expansion. Add `canvas{max-height:280px}` CSS to chart containers. Only use `maintainAspectRatio:false` for bar charts in constrained-height containers.
-15. **Responsive**: viewport meta tag present; KPI grid reflows at 768px; tables horizontally scrollable.
 
 ---
 
@@ -190,4 +194,4 @@ After generating the Dashboard, always offer:
 
 ## Reference Implementation (if available)
 
-The Ayelet HaShachar water tower assessment dashboard (`Single-Dashboard-example.html`) implements this spec fully: light theme, all 10 tabs, cross-referencing with shared highlight state, structured Nara Grid, per-comparator cards, vulnerability matrix, proportional timeline with change types, and floating KG popover. Use it as a working example — not as a locked template.
+The Ayelet HaShachar water tower assessment dashboard (`Single-Dashboard-example.html`) implements this spec fully: light theme throughout, all 10 tabs, cross-referencing with shared highlight state, structured Nara Grid, per-comparator cards, vulnerability matrix, proportional timeline with change types, and floating KG popover. Use it as a working example — not as a locked template.

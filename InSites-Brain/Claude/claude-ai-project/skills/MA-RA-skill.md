@@ -65,11 +65,11 @@ Present available readings using this format:
 > **How would you like to read this assessment?**
 >
 > **Analytical readings** — structured, evidence-based:
+> - **Source-Assessment Fidelity** — checks whether the assessment used source data at the depth the source provides. Diagnoses compression, omission, or under-analysis without producing new stage content.
+> - **Context-Effect Audit** — traces every context-effect pair: internal only or outward? Planning implication? Connections the assessment missed? Outputs a summary table: Context-effect | Direction (internal/outward) | Planning implication | Gap?
 > - **Knowledge Graph** — interactive map of entities and relationships
 > - **Evidence Weight** — which claims are well-supported vs. thinly grounded
 > - **Gap & Strength** — what's solid, what needs work
-> - **Source-Assessment Fidelity** — how faithfully the assessment represents its source material
-> - **Context-Effect Audit** — trace bidirectional context↔value influences through the assessment
 > - **Timeline** — if dated events exist
 >
 > **Interpretive readings** — perspective-driven:
@@ -208,32 +208,6 @@ Execute the KG skill as specified. Data extracted from the uploaded/pasted asses
 
 ---
 
-### Source-Assessment Fidelity
-
-**Purpose**: Examine how faithfully the assessment represents its source material — where claims track the sources closely vs. where interpretation has drifted or data has been over-extrapolated.
-
-**Process**:
-1. Compare assessment claims against cited source passages
-2. Classify each significant claim: **faithful** (directly supported), **interpreted** (reasonable inference), **stretched** (claim goes beyond what sources say)
-3. Note any source material that the assessment ignores or underuses
-
-**Output**: Table of key claims with fidelity rating and source reference. 3–5 sentence summary of overall fidelity pattern.
-
----
-
-### Context-Effect Audit
-
-**Purpose**: Trace the bidirectional context↔value influences through the assessment to see if context effects are explicitly articulated or left implicit.
-
-**Process**:
-1. For each identified context, trace: which values does it generate or shape?
-2. For each identified value, trace: how does it reflect back on or transform its contexts?
-3. Identify context-effect pairs that are well-articulated vs. assumed
-
-**Output**: Context-effect map (table or diagram) showing the bidirectional flows. Flag pairs where only one direction is articulated. 3–5 sentence summary.
-
----
-
 ### Gap & Strength Analysis
 
 **Output structure**:
@@ -262,13 +236,41 @@ If <3: "The assessment mentions only [N] dated events. Would you like me to flag
 
 ## UX Flow
 
-**Step 1** (Assessment Profile) → **Step 2** (Reading Menu) → **Execute** selected reading(s), each with follow-up offer → **Loop**: "Another reading, or done?"
+```
+User triggers MA-RA
+        │
+        ▼
+  ┌─────────────┐
+  │  Step 1:    │
+  │  Assessment │──→ Coverage table + Quick observations + Source inventory
+  │  Profile    │
+  └──────┬──────┘
+         │
+         ▼
+  ┌─────────────┐
+  │  Step 2:    │
+  │  Reading    │──→ Open menu: Analytical / Interpretive / User-proposed
+  │  Menu       │
+  └──────┬──────┘
+         │
+         ▼
+  ┌─────────────┐
+  │  Execute    │──→ Selected reading(s). Each ends with follow-up offer.
+  │  Selection  │
+  └──────┬──────┘
+         │
+         ▼
+  ┌─────────────┐
+  │  Loop:      │──→ "Another reading, or done?"
+  │  Next?      │    If done → status line and exit.
+  └─────────────┘
+```
 
 **Closing**: Every MA-RA interaction ends with:
 ```
 Another reading? | Switch to Write mode? | Done?
 ─────
-📖 Read-Assessment
+End of 📖 Read-Assessment
 ```
 
 ---
@@ -276,7 +278,8 @@ Another reading? | Switch to Write mode? | Done?
 ## Style Guardrails
 
 - **Diagnostic, not judgmental**. The profile describes; it does not grade.
-- **Assessment-first, source-informed**. All observations cite the assessment text. No external knowledge injected unless user requests it.
+- **Assessment-first, source-informed.** MA-RA starts from the assessment as its object. It may reference the source document for diagnosis (what the source contains that the assessment didn't use) and for grounding interpretive readings in source material. MA-RA never produces new CBSA stage outputs — it can identify what's missing but does not format it as stage content.
 - **Concise**. Profile (Step 1) fits one screen. Each reading ≤400 words unless user asks more.
-- **No CBSA stage mixing**. MA-RA does not produce new stage outputs. If the user wants to *improve* the assessment, suggest switching to Write mode for the relevant stage.
+- **User-led**. Do not auto-run readings. Present the menu, wait for choice.
+- **No CBSA stage mixing.** MA-RA does not produce new stage outputs. Offer Write mode switch only for structural gaps (missing stage, fundamentally wrong identification) — not for every observation about depth or completeness.
 - **Open framework**. The reading menu is not exhaustive. Always include "Your own reading" as an option. Accept and execute any reasonable user-proposed lens.
