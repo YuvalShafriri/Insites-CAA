@@ -88,10 +88,10 @@ Re-read all stage outputs from the conversation and extract:
 Each CBSA stage must have its own tab. Do not merge stages.
 
 ```
-Overview → Timeline → Contexts → Values → Integrity → Comparative → Significance → [Vulnerability] → Process → [KG]
+Overview → Timeline → Contexts → Values → Integrity → Comparative → Significance → [Vulnerability] → Process → [Report] → [Debrief] → [Session Analysis] → [KG]
 ```
 
-Brackets = conditional (Vulnerability only if data exists; KG only if generated during session).
+Brackets = conditional. Vulnerability: only if data exists. Report: always generate (see `report-tab-spec.md` [CA-RPT]); becomes required once DOCX exists. Debrief + Session Analysis: only if user opts in after [CA-IP] — process documentation, not heritage evidence. KG: only if generated during session.
 
 | Tab | Content | Key features |
 | --- | --- | --- |
@@ -104,6 +104,9 @@ Brackets = conditional (Vulnerability only if data exists; KG only if generated 
 | **Significance** | Statement of cultural significance | Styled as a featured block. |
 | **Vulnerability** | Heat matrix: values × Nara aspects | Rows = value categories, columns = Nara aspects. Column headers show current integrity rating. Cells colored by impact (red/amber/neutral). 2–3 sentence interpretive callout. |
 | **Process** | KPIs, next steps, quick boosts, sources | Three-column KPI (strengths/gaps/boosts). Two-column layout: next steps + quick boosts. Sources list. |
+| **Report** | One-page printable assessment summary | Always generate. Export controls. Full spec in `report-tab-spec.md` [CA-RPT]. |
+| **Debrief** | Session debrief Q&A | Three reflection questions + user responses. Conversation-card layout. Muted process styling. Only if user opts in post-[CA-IP]. |
+| **Session Analysis** | Session Report [CA-IP] | Interaction Map table, Self-Reflection quotes, Session Signature. Same muted process styling. Only if user opts in post-[CA-IP]. |
 | **KG** | Embedded MiniKG with floating popover | If a KG was generated earlier in the session, reuse its graph data JSON (nodes + edges) — do not re-extract. Otherwise extract from stage outputs. D3 force-directed graph. See §7 for interaction. |
 
 ## 5. Cross-Referencing (mandatory)
@@ -243,14 +246,35 @@ The AI Query tab implements the generic AI Query contract from `artifact-ux-cont
 12. **Inline data**: All extracted data must be embedded inline as JS objects. Do NOT use `fetch()` — the dashboard must work when opened via `file://` protocol without a server.
 13. **Leaflet popup close button**: Leaflet's popup close is `<a href="#close">` — in sandbox environments, hash links get rewritten. After map init, add: `document.addEventListener('click',function(e){if(e.target.closest('.leaflet-popup-close-button')){e.preventDefault();mapInstance.closePopup();}});`
 14. **Chart.js stability**: For doughnut/pie charts, do NOT set `maintainAspectRatio:false` — it causes infinite expansion. Add `canvas{max-height:280px}` CSS to chart containers. Only use `maintainAspectRatio:false` for bar charts in constrained-height containers.
+15. **Report tab required** once DOCX export exists.
+16. **Debrief / Session Analysis tabs** use muted process styling, visually distinct from heritage tabs. Only present if user opted in.
 
 ## 11. Post-Dashboard Offers (mandatory)
 
-After generating the Dashboard, always offer:
+After generating the Dashboard, offer the next steps in the workflow chain [CA-WF]:
 
-> "Would you like me to export this assessment as a formatted Word document?"
+> "Would you like me to:
+> 1. **Export** as a formatted Word document?
+> 2. **Read-Assessment** — analyze from different angles (evidence weight, stakeholder lens, context-effect audit)?
+>
+> You can do both, one, or neither. After that → Session Debrief."
 
-Use **Code Interpreter** for the export — generate a styled `.docx` file with all dashboard content formatted for print.
+Use **Code Interpreter** for DOCX export. Do not stop at file delivery if a logical next step exists.
+
+## 11a. Workflow & Augmentation Rules [CA-WF]
+
+**Model B+**: Dashboard and DOCX export are part of one visible workflow. If a DOCX report exists, the dashboard must include a Report tab [CA-RPT].
+
+**Post-session augmentation**: After Debrief and [CA-IP] Session Report are generated, offer to append them as optional Dashboard tabs and/or DOCX appendix sections. The dashboard may be updated after the main session is otherwise complete.
+
+**Evidence separation rule (mandatory)**: Debrief and Session Analysis content must be visually and semantically separated from site assessment evidence. These are process-layer additions, not heritage-source evidence. Use muted styling (lighter background, different border color, "Process" label).
+
+**Acceptance criteria**:
+- If DOCX exists → Report tab must exist
+- If user opts in → Debrief tab must exist
+- If user opts in → Session Analysis tab must exist
+- Dashboard may be updated after session closure
+- DOCX may be regenerated with Debrief / Session Analysis appendices
 
 ---
 
@@ -379,6 +403,10 @@ Impact levels: 3 = loss severely damages this value, 2 = moderate damage, 1 = mi
 `kg` is either `null` (no KG generated) or the full `{ nodes, edges }` object from the KG spec.
 
 **Rendering**: If present, render a MiniKG tab with D3 force-directed graph (light theme), floating popover on node click, and a banner: "The standalone Knowledge Graph has richer features including analytics and AI queries." If KG included AI capability, include the Gemini chat panel here too.
+
+### Report [CA-RPT]
+
+Always generate. One-page printable assessment summary with export controls. Full spec in `report-tab-spec.md`. Position: after Process, before KG.
 
 ### Stages Completed
 

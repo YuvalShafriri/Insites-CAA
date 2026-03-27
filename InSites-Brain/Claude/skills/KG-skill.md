@@ -197,6 +197,7 @@ Three tabs — **Info**, **Analytics**, **AI Query**:
 - Suggested starter prompts when the message list is empty.
 - **Claude deployment**: use Anthropic API endpoint per `[CA-AIQ]`.
 - **Gemini deployment**: swap API call to Gemini endpoint per `[CA-AIQ]`. Activate canvas mode before generating.
+- **CRITICAL**: Do NOT use `AbortController` or `AbortSignal` — they cannot be cloned through the artifact sandbox `postMessage` proxy (`DataCloneError`). Use `Promise.race` with `setTimeout` for timeout.
 
 #### Legend Placement (recommended)
 

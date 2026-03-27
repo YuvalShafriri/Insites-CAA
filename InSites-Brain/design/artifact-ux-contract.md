@@ -86,7 +86,16 @@ All artifacts that include an AI Query tab follow this contract. Three platform 
 
 **Claude (Anthropic):**
 ```js
-const response = await fetch("https://api.anthropic.com/v1/messages", {
+// CRITICAL: Do NOT use AbortController or AbortSignal — they cannot be cloned
+// through the artifact sandbox postMessage proxy and will throw DataCloneError.
+// Use Promise.race with setTimeout for timeout instead.
+const fetchWithTimeout = (url, options, ms = 20000) =>
+  Promise.race([
+    fetch(url, options),
+    new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), ms))
+  ]);
+
+const response = await fetchWithTimeout("https://api.anthropic.com/v1/messages", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
@@ -270,6 +279,18 @@ Same skill files work for both Claude and Gemini. When deploying to Gemini:
 
 ---
 
+## §6.1 — Report Tab `[CA-RPT]`
+
+Full specification in [`report-tab-spec.md`](report-tab-spec.md). Summary:
+
+- **Position**: second-to-last tab (before AI Query)
+- **Content**: one-page printable assessment report pulling from all dashboard data
+- **Export**: HTML download + `window.print()` for PDF
+- **Cross-platform**: identical structure, no platform-specific behavior
+- **Collection variant**: [`collection-report-spec.md`](collection-report-spec.md) (ready, not active for workshop)
+
+---
+
 ## §7 — Compliance Check
 
 Before returning any artifact, verify:
@@ -292,3 +313,4 @@ Before returning any artifact, verify:
 |------|--------|
 | 2026-03-27 | v1 — Initial contract. Consolidates KG, Dashboard, Collection visual language across Claude, Gemini, GPT. |
 | 2026-03-27 | v1.1 — Full propagation: [CA-UX]/[CA-AIQ]/[CA-EC] refs added to mono v5, Gemini, GPT, split core. AI Query tab added to [CA-DB] + [CA-DB-C] across all platforms. MA-RC updated to v2 everywhere. GPT kg-spec renamed, collection-dashboard-spec created. Test artifacts for Gemini. |
+| 2026-03-27 | v1.2 — Added [CA-RPT] Report tab spec (§6.1). New files: report-tab-spec.md (single), collection-report-spec.md (collection, not active). GPT dashboard test files created. |

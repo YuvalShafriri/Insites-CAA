@@ -24,7 +24,8 @@ Generate a collection-level dashboard after MA-RC Read-Collection analysis. Visu
 | 5 | Gaps | Traffic-light matrix: sites × data dimensions |
 | 6 | Cross-Tabs | Stacked bar charts by country/type/period |
 | 7 | Clusters | Management-oriented grouping cards |
-| 8 | AI Query | Starter prompts for GPT conversation (placeholder mode) |
+| 8 | [Report] | Collection assessment summary (optional — see `collection-report-spec.md` [CA-RPT-C]) |
+| 9 | AI Query | Starter prompts for GPT conversation (placeholder mode) |
 
 ## Data Extraction
 

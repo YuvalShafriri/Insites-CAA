@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Old Mill Heritage — Assessment Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans:wght@400;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js" defer></script>
+<style>
+:root{--bg:#f8fafc;--card:#ffffff;--border:#e2e8f0;--text:#1e293b;--muted:#64748b;--accent:#3b82f6;--accent-light:#eff6ff;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans','Noto Sans',sans-serif;background:var(--bg);color:var(--text);font-size:13px;}
+.wrap{max-width:960px;margin:0 auto;padding:20px;}
+header{background:var(--accent);color:#fff;padding:20px 24px;border-radius:12px;margin-bottom:16px;}
+header h1{font-size:18px;font-weight:700;}
+header .meta{font-size:11px;opacity:.85;margin-top:4px;}
+.tab-bar{display:flex;gap:2px;flex-wrap:wrap;margin-bottom:0;}
+.tab-btn{padding:8px 14px;font-size:12px;font-weight:500;border:none;background:#f1f5f9;cursor:pointer;color:var(--muted);border-radius:8px 8px 0 0;transition:all .15s;font-family:inherit;}
+.tab-btn.active{color:var(--accent);background:var(--accent-light);font-weight:600;border-bottom:2px solid var(--accent);}
+.tab-content{background:var(--card);border-radius:0 12px 12px 12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.08);min-height:320px;}
+.tab-panel{display:none;}.tab-panel.active{display:block;}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.kpi{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;}
+.kpi-val{font-size:24px;font-weight:700;color:var(--accent);}
+.kpi-label{font-size:11px;color:var(--muted);margin-top:2px;}
+.card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;}
+.badge-blue{background:#dbeafe;color:#1e40af;}.badge-green{background:#dcfce7;color:#166534;}
+.badge-amber{background:#fef3c7;color:#92400e;}.badge-red{background:#fee2e2;color:#991b1b;}
+.badge-gray{background:#f1f5f9;color:#475569;}
+.pill{display:inline-block;padding:2px 10px;border-radius:12px;font-size:10px;font-weight:600;margin-right:4px;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);}
+th{font-weight:600;background:var(--bg);}
+h3{font-size:14px;font-weight:600;margin-bottom:10px;}
+.section{margin-bottom:16px;}
+.featured{background:var(--accent-light);border-left:3px solid var(--accent);padding:14px 18px;border-radius:0 10px 10px 0;font-size:13px;line-height:1.6;}
+.tl-item{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start;}
+.tl-dot{width:12px;height:12px;border-radius:50%;margin-top:3px;flex-shrink:0;}
+.tl-date{font-size:11px;color:var(--muted);font-weight:600;min-width:50px;}
+.starter-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.starter-card{padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-size:11px;cursor:default;}
+.btn{display:inline-block;padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;margin-right:8px;font-family:inherit;}
+.btn-outline{background:transparent;color:var(--accent);border:1px solid var(--accent);}
+#map-container{height:320px;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+#kg-container{height:340px;border-radius:10px;overflow:hidden;border:1px solid var(--border);background:#fafafa;}
+.report-section{margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.report-section:last-child{border-bottom:none;}
+.ev-dot{font-size:14px;margin-right:4px;}
+
+@media print{.tab-bar{display:none;}.tab-panel{display:block!important;page-break-inside:avoid;}.tab-content{box-shadow:none;}}
+@media(max-width:700px){.kpi-grid{grid-template-columns:repeat(2,1fr);}.starter-cards{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Old Mill (Flour Mill) — Assessment Dashboard</h1>
+    <div class="meta">Single-assessment &middot; Stage 6 complete &middot; Haifa, Israel &middot; 2026-03-27</div>
+  </header>
+
+  <nav class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
+    <button class="tab-btn" onclick="switchTab('timeline')">Timeline</button>
+    <button class="tab-btn" onclick="switchTab('values')">Values</button>
+    <button class="tab-btn" onclick="switchTab('integrity')">Integrity</button>
+    <button class="tab-btn" onclick="switchTab('significance')">Significance</button>
+    <button class="tab-btn" onclick="switchTab('process')">Process</button>
+    <button class="tab-btn" onclick="switchTab('map')">Map</button>
+    <button class="tab-btn" onclick="switchTab('kg')">KG</button>
+    <button class="tab-btn" onclick="switchTab('report')">Report</button>
+    <button class="tab-btn" onclick="switchTab('aiquery')">AI Query</button>
+  </nav>
+
+  <div class="tab-content">
+
+    <!-- Overview -->
+    <div class="tab-panel active" id="tab-overview">
+      <div class="section" style="display:flex;gap:12px;align-items:center;margin-bottom:14px;">
+        <div><h3 style="margin:0;">Old Mill (Flour Mill)</h3>
+        <span class="badge badge-blue">Industrial Heritage</span> <span class="badge badge-gray">1882–present</span></div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-val">4</div><div class="kpi-label">Values</div></div>
+        <div class="kpi"><div class="kpi-val">75%</div><div class="kpi-label">Evidence</div></div>
+        <div class="kpi"><div class="kpi-val">3</div><div class="kpi-label">Contexts</div></div>
+        <div class="kpi"><div class="kpi-val">2</div><div class="kpi-label">Gaps</div></div>
+      </div>
+      <div class="card">
+        <p>A 19th-century mechanized flour mill founded by German Templer settlers in the Haifa colony. The mill operated continuously through Ottoman, British Mandate, and Israeli periods, surviving a major fire during the 1936 Arab Revolt. It stands as one of the few remaining examples of early industrial infrastructure in the Levant.</p>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="tab-panel" id="tab-timeline">
+      <h3>Key Events</h3>
+      <div class="tl-item"><div class="tl-dot" style="background:#64748b;"></div><div><div class="tl-date">1882</div><div>Mill founded by Johann Weber as part of the German Templer colony in Haifa <span class="badge badge-gray">Late Ottoman</span></div></div></div>
+      <div class="tl-item"><div class="tl-dot" style="background:#ef4444;"></div><div><div class="tl-date">1936</div><div>Fire during Arab Revolt causes major damage; rebuilt with reinforced concrete <span class="badge badge-red">Destruction</span></div></div></div>
+      <div class="tl-item"><div class="tl-dot" style="background:#3b82f6;"></div><div><div class="tl-date">1948</div><div>Transfer to Israeli ownership after establishment of the state <span class="badge badge-blue">Political</span></div></div></div>
+      <div class="tl-item"><div class="tl-dot" style="background:#f59e0b;"></div><div><div class="tl-date">1985</div><div>Flour production ceases; building partially converted to commercial use <span class="badge badge-amber">Functional</span></div></div></div>
+      <div class="tl-item"><div class="tl-dot" style="background:#10b981;"></div><div><div class="tl-date">2018</div><div>Heritage survey conducted; conservation plan proposed <span class="badge badge-green">Conservation</span></div></div></div>
+    </div>
+
+    <!-- Values -->
+    <div class="tab-panel" id="tab-values">
+      <h3>Identified Values</h3>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span><span class="pill" style="background:#dbeafe;color:#1e40af;">Historical</span> <strong>Industrial Heritage</strong></span>
+          <span class="ev-dot" title="Strong evidence">&#9679;</span>
+        </div>
+        <p style="font-size:12px;color:var(--muted);">Rare surviving example of 19th-century mechanized flour production in the Levant, evidencing technological transfer from Central Europe to Ottoman Palestine.</p>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span><span class="pill" style="background:#dcfce7;color:#166534;">Landscape</span> <strong>Cultural Landscape</strong></span>
+          <span class="ev-dot" title="Partial evidence">&#9684;</span>
+        </div>
+        <p style="font-size:12px;color:var(--muted);">The mill, its water channels, and surrounding agricultural plots form a coherent production landscape linking the Templer colony to the regional economy.</p>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span><span class="pill" style="background:#fef3c7;color:#92400e;">Social</span> <strong>Community Memory</strong></span>
+          <span class="ev-dot" title="Weak evidence">&#9675;</span>
+        </div>
+        <p style="font-size:12px;color:var(--muted);">Local residents reference the mill as a landmark and gathering point. Oral histories exist but are not systematically documented.</p>
+      </div>
+    </div>
+
+    <!-- Integrity -->
+    <div class="tab-panel" id="tab-integrity">
+      <h3>Nara Grid — Integrity Assessment</h3>
+      <table>
+        <thead><tr><th>Aspect</th><th>Rating</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Materials</td><td><span class="badge badge-green">Good</span></td><td>Original limestone walls largely intact; 1936 concrete additions visible</td></tr>
+          <tr><td>Design</td><td><span class="badge badge-amber">Fair</span></td><td>Original floor plan readable; internal machinery removed in 1985</td></tr>
+          <tr><td>Setting</td><td><span class="badge badge-green">Good</span></td><td>Mill retains visual relationship with colony street grid and water channel route</td></tr>
+          <tr><td>Use</td><td><span class="badge badge-red">Poor</span></td><td>No longer functions as a mill; current commercial use does not interpret heritage</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Significance -->
+    <div class="tab-panel" id="tab-significance">
+      <h3>Cultural Significance Statement</h3>
+      <div class="featured">The Old Mill represents a rare surviving example of 19th-century mechanized flour production in the Levant, embodying the technological transfer brought by Templer settlers. Its continuous operation through Ottoman, Mandate, and Israeli periods — including survival of the 1936 fire — makes it a layered witness to regional political and economic transformations. The mill's landscape setting and community associations add social dimensions that extend beyond its industrial function.</div>
+    </div>
+
+    <!-- Process -->
+    <div class="tab-panel" id="tab-process">
+      <h3>Assessment Quality</h3>
+      <div class="card">
+        <strong>Strengths</strong>
+        <ul style="margin:6px 0 0 18px;font-size:12px;color:var(--muted);">
+          <li>Rich historical documentation from Templer archives</li>
+          <li>Physical survey with photographic record</li>
+          <li>Clear context-effect links between settlement history and industrial value</li>
+        </ul>
+      </div>
+      <div class="card">
+        <strong>Gaps</strong>
+        <ul style="margin:6px 0 0 18px;font-size:12px;color:var(--muted);">
+          <li>Community memory relies on informal oral sources — no structured interviews</li>
+          <li>Comparative analysis with other Templer-era mills incomplete</li>
+        </ul>
+      </div>
+      <div class="card">
+        <strong>Recommended Boosts</strong>
+        <ul style="margin:6px 0 0 18px;font-size:12px;color:var(--muted);">
+          <li>Conduct oral history interviews with long-term residents</li>
+          <li>Extend comparative scope to Jaffa and Sarona Templer colonies</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Map -->
+    <div class="tab-panel" id="tab-map">
+      <h3>Location</h3>
+      <div id="map-container"></div>
+    </div>
+
+    <!-- KG -->
+    <div class="tab-panel" id="tab-kg">
+      <h3>Knowledge Graph</h3>
+      <div id="kg-container"></div>
+    </div>
+
+    <!-- Report -->
+    <div class="tab-panel" id="tab-report">
+      <div class="report-section">
+        <h3>Old Mill (Flour Mill)</h3>
+        <p style="font-size:12px;color:var(--muted);">Haifa, Israel &middot; 1882 &middot; Industrial Heritage</p>
+      </div>
+      <div class="report-section">
+        <strong>Assessment Overview</strong>
+        <p style="font-size:12px;margin-top:4px;">A structured CBSA assessment of the Old Mill covering all six stages. The assessment identified four cultural values grounded in historical documentation and physical survey, with two data gaps flagged for follow-up research. Evidence coverage stands at 75%.</p>
+      </div>
+      <div class="report-section">
+        <strong>Key Values</strong>
+        <div style="font-size:12px;margin-top:6px;">
+          <div><span class="ev-dot">&#9679;</span> <strong>Industrial Heritage</strong> — Rare 19th-c. mechanized flour production in the Levant</div>
+          <div><span class="ev-dot">&#9684;</span> <strong>Cultural Landscape</strong> — Mill, water channels, and agricultural plots form a production landscape</div>
+          <div><span class="ev-dot">&#9675;</span> <strong>Community Memory</strong> — Local landmark with undocumented oral histories</div>
+        </div>
+      </div>
+      <div class="report-section">
+        <strong>Integrity Snapshot</strong>
+        <p style="font-size:12px;margin-top:4px;">Materials and setting are in good condition. Design integrity is fair (machinery removed). Use integrity is poor — current commercial function does not interpret heritage significance.</p>
+      </div>
+      <div class="report-section">
+        <strong>Significance Statement</strong>
+        <p style="font-size:12px;margin-top:4px;">The Old Mill represents a rare surviving example of 19th-century mechanized flour production in the Levant, embodying the technological transfer brought by Templer settlers.</p>
+      </div>
+      <div class="report-section">
+        <strong>Context Effects</strong>
+        <div class="card" style="margin-top:6px;">
+          <div style="font-size:12px;"><strong>Historical context (Templer settlement) <em>reframes</em> Industrial Heritage value</strong> — the mill is not just industrial infrastructure but evidence of cross-cultural technology transfer.</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:6px;"><em>Planning note:</em> Interpretation strategy should foreground the Templer connection, not just the milling process.</div>
+        </div>
+      </div>
+      <div class="report-section">
+        <strong>Session Analytics</strong>
+        <p style="font-size:12px;margin-top:4px;color:var(--muted);">12 turns &middot; 6 stages completed &middot; Depth: Rich</p>
+      </div>
+      <div style="margin-top:16px;">
+        <button class="btn" onclick="window.print()">&#128196; Export HTML</button>
+        <button class="btn btn-outline" onclick="window.print()">&#128424; Print / PDF</button>
+      </div>
+    </div>
+
+    <!-- AI Query -->
+    <div class="tab-panel" id="tab-aiquery">
+      <h3>Deep Analysis</h3>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">This dashboard was generated inside a GPT conversation. To run deeper analysis on the assessment data, return to the GPT chat and use one of the prompts below as a starting point.</p>
+      <div class="starter-cards">
+        <div class="starter-card"><strong>Context Effects</strong><br/>How do the identified contexts reshape the significance of the Industrial Heritage value?</div>
+        <div class="starter-card"><strong>Comparative Gaps</strong><br/>What comparable Templer-era industrial sites should be included in the comparative analysis?</div>
+        <div class="starter-card"><strong>Integrity Strategy</strong><br/>Given the poor Use integrity, what adaptive reuse models could restore functional heritage?</div>
+        <div class="starter-card"><strong>Evidence Gaps</strong><br/>What specific oral history methods would strengthen the Community Memory value?</div>
+      </div>
+    </div>
+
+  </div><!-- /tab-content -->
+</div><!-- /wrap -->
+
+<script>
+var mapInit=false, kgInit=false;
+
+function switchTab(id){
+  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('tab-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if(id==='map'&&!mapInit) initMap();
+  if(id==='kg'&&!kgInit) initKG();
+}
+
+function initMap(){
+  mapInit=true;
+  var map=L.map('map-container').setView([32.75,35.18],14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'&copy; OpenStreetMap contributors',maxZoom:18
+  }).addTo(map);
+  L.marker([32.75,35.18]).addTo(map).bindPopup('<strong>Old Mill (Flour Mill)</strong><br/>Haifa, est. 1882').openPopup();
+}
+
+function initKG(){
+  kgInit=true;
+  var nodes=new vis.DataSet([
+    {id:1,label:'Old Mill',color:'#E53935',font:{color:'#fff'}},
+    {id:2,label:'Haifa',color:'#10b981',font:{color:'#fff'}},
+    {id:3,label:'Industrial\nHeritage',color:'#6366f1',font:{color:'#fff'}},
+    {id:4,label:'Late Ottoman\nPeriod',color:'#64748b',font:{color:'#fff'}},
+    {id:5,label:'Johann Weber',color:'#ec4899',font:{color:'#fff'}},
+    {id:6,label:'1936 Fire',color:'#ef4444',font:{color:'#fff'}},
+    {id:7,label:'German\nTemplers',color:'#3b82f6',font:{color:'#fff'}},
+    {id:8,label:'Community\nMemory',color:'#6366f1',font:{color:'#fff'}}
+  ]);
+  var edges=new vis.DataSet([
+    {from:1,to:2,label:'located in',arrows:'to'},
+    {from:1,to:3,label:'embodies',arrows:'to'},
+    {from:1,to:4,label:'built during',arrows:'to'},
+    {from:5,to:1,label:'founded',arrows:'to'},
+    {from:6,to:1,label:'damaged',arrows:'to'},
+    {from:7,to:5,label:'member',arrows:'to'},
+    {from:7,to:1,label:'established',arrows:'to'},
+    {from:1,to:8,label:'evokes',arrows:'to'}
+  ]);
+  new vis.Network(document.getElementById('kg-container'),{nodes:nodes,edges:edges},{
+    nodes:{shape:'dot',size:20,font:{size:11,face:'DM Sans'}},
+    edges:{font:{size:9,face:'DM Sans',color:'#64748b'},color:{color:'#94a3b8'},smooth:{type:'curvedCW',roundness:0.2}},
+    physics:{solver:'forceAtlas2Based',forceAtlas2Based:{gravitationalConstant:-60}},
+    interaction:{hover:true}
+  });
+}
+</script>
+</body>
+</html>

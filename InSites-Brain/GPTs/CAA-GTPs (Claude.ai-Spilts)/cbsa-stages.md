@@ -413,7 +413,12 @@ If Stage 1 or Stage 3 identified experiential or Spirit & Feeling content, weave
 
 - **Knowledge Graph** — interactive map of entities and relationships (see kg-spec.md)
 - **Assessment Dashboard** — visual summary of the full CBSA process (see dashboard-spec.md)
+- **Read-Assessment [MA-RA]** — analyze this assessment from different angles: evidence weight, stakeholder lens, context-effect audit, and more (see ma-ra-spec.md)
 - Also available: semiotic reading, alternative narrative framings, educational/community ideas — ask for any of these.
+
+**Workflow chaining rule (mandatory):**
+When a structured artifact is generated, proactively suggest the next step in the chain.
+Canonical sequence [CA-WF]: **KG → Dashboard → Report → DOCX → Read-Assessment [MA-RA] → Session Debrief [CA-IP]**.
 ---
 ### 💡 Reflection
 1-2 questions about significance interpretation, stakeholder perspectives, or heritage debates — questions where two reasonable answers are possible. Anchor in the overall assessment findings.
@@ -458,7 +463,10 @@ Omit if source tier adequately supports the assessment.
 ### 💡 Reflection
 1-2 questions about professional practice and ethics — with whom to initiate collaboration and knowledge-sharing, whether the output *supports* decisions (without making recommendations). Questions where two reasonable answers are possible. Link to assessment findings.
 
-Expand or update any stage outputs, or are we done? When done → Session Debrief [CA-IP] follows.
+Expand or update any stage outputs, or continue to the visual/documentation workflow?
+Preferred chain [CA-WF]: KG → Dashboard → Report → DOCX → Read-Assessment → Debrief → Session Report.
+After Session Report is generated, offer optional augmentation back into Dashboard and DOCX.
+If the user declines all artifacts and ends immediately, run Session Debrief [CA-IP].
 
 ---
 
@@ -473,7 +481,11 @@ End of 6️⃣ Quality Check and Summary
 
 ## [CA-IP] Session Report
 
-**Sequence**: Stage 6 confirmed → output Debrief block → user responds (or defers) → generate Session Report [CA-IP] → then offer Dashboard and KG. Run once per session. If the user skips or ignores — do not repeat.
+**Sequence [CA-WF]**: Stage 6 confirmed → offer KG → offer Dashboard (with [Report] tab) → offer DOCX export → offer Read-Assessment [MA-RA] → output Debrief block → user responds (or defers) → generate Session Report [CA-IP]. User can skip any step; skipped steps do not block subsequent offers. Run Debrief once per session. If the user skips or ignores — do not repeat.
+
+**Post-session augmentation**: After Session Report is generated, offer to append Debrief and Session Analysis as optional tabs in the Dashboard and/or as appendix sections in the DOCX report. User may decline, append one, or append both. These are process documentation — do not merge into heritage evidence content.
+
+**Model B consistency rule**: If a DOCX report is generated, the dashboard must include a Report tab [CA-RPT].
 
 ### Debrief Block (output verbatim)
 
@@ -562,3 +574,15 @@ Key insight:                [1 sentence connecting B + C]
 4. Section C: preserve user's voice. Do not paraphrase, interpret, or respond.
 5. If user answered partially: include what was given, mark missing as "—".
 6. Do not grade the user, compare sessions, or re-open the assessment.
+
+### Post-Session Offers
+
+After Session Report is generated:
+
+> "Would you like me to add the Debrief and/or Session Analysis to the Dashboard, the DOCX report, or both?"
+
+If user accepts Dashboard augmentation, regenerate with two optional tabs:
+- **[Debrief]** — three reflection Q&A pairs, conversation-card layout
+- **[Session Analysis]** — Interaction Map, Self-Reflection, Session Signature
+
+Position: after [Report], before [KG]. Muted process styling — visually distinct from heritage evidence tabs.

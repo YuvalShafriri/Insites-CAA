@@ -103,10 +103,10 @@ Re-read all stage outputs from the conversation and extract:
 Each CBSA stage must have its own tab. Do not merge stages.
 
 ```
-Overview → [Map] → Timeline → Contexts → Values → [Themes] → Integrity → Comparative → Significance → [Vulnerability] → Process → [KG] → AI Query
+Overview → [Map] → Timeline → Contexts → Values → [Themes] → Integrity → Comparative → Significance → [Vulnerability] → Process → [Report] → [KG] → AI Query
 ```
 
-Brackets = conditional: Map only if `asset.coordinates.lat` is non-null; Themes only if ≥2 themes total across all categories; Vulnerability only if data exists; KG only if generated during session.
+Brackets = conditional: Map only if `asset.coordinates.lat` is non-null; Themes only if ≥2 themes total across all categories; Vulnerability only if data exists; Report — always generate (see `design/report-tab-spec.md` [CA-RPT]); KG only if generated during session.
 
 | Tab | Content | Key features |
 | --- | --- | --- |

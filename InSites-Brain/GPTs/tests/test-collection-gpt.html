@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Collection Dashboard Test — GPT</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #f8fafc; --card: #ffffff; --border: #e2e8f0; --sidebar: #f1f5f9;
+  --text: #1e293b; --muted: #64748b; --accent: #3b82f6; --accent-light: #eff6ff;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'DM Sans','Noto Sans',sans-serif; background:var(--bg); color:var(--text); font-size:13px; }
+.wrap { max-width:960px; margin:0 auto; padding:20px; }
+.header { background:var(--accent); color:#fff; padding:20px 24px; border-radius:12px; margin-bottom:16px; }
+.header h1 { font-size:18px; font-weight:700; }
+.header-meta { font-size:11px; opacity:.85; margin-top:4px; }
+.tab-bar { display:flex; gap:2px; flex-wrap:wrap; margin-bottom:0; }
+.tab-btn { padding:8px 16px; font-size:12px; font-weight:500; border:none; background:var(--sidebar);
+  cursor:pointer; color:var(--muted); border-radius:8px 8px 0 0; transition:all .15s; }
+.tab-btn.active { color:var(--text); background:var(--card); font-weight:600; box-shadow:0 -2px 6px rgba(0,0,0,.06); }
+.tab-content { background:var(--card); border-radius:0 12px 12px 12px; padding:20px; box-shadow:0 1px 3px rgba(0,0,0,.08); min-height:300px; }
+.tab-panel { display:none; } .tab-panel.active { display:block; }
+.kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
+.kpi { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:14px; text-align:center; }
+.kpi-val { font-size:24px; font-weight:700; color:var(--accent); }
+.kpi-label { font-size:11px; color:var(--muted); margin-top:2px; }
+.card { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:14px; margin-bottom:10px; }
+.card h3 { font-size:14px; font-weight:600; margin-bottom:6px; }
+.card-sub { font-size:11px; color:var(--muted); margin-bottom:4px; }
+.badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; }
+.badge-blue { background:var(--accent-light); color:#1d4ed8; }
+.badge-green { background:#dcfce7; color:#166534; }
+.badge-amber { background:#fef3c7; color:#92400e; }
+.badge-red { background:#fee2e2; color:#991b1b; }
+table { width:100%; border-collapse:collapse; font-size:12px; }
+th,td { padding:8px 10px; text-align:left; border-bottom:1px solid var(--border); }
+th { font-weight:600; background:var(--bg); }
+#map-container { width:100%; height:360px; border-radius:10px; border:1px solid var(--border); }
+.starter-cards { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
+.starter-card { padding:10px 12px; background:var(--card); border:1px solid var(--border); border-radius:8px;
+  font-size:11px; cursor:pointer; transition:all .15s; }
+.starter-card:hover { border-color:var(--accent); background:var(--accent-light); }
+.ai-placeholder { text-align:center; padding:40px 20px; color:var(--muted); }
+.ai-placeholder h3 { font-size:16px; color:var(--text); margin-bottom:8px; }
+.ai-placeholder p { font-size:12px; margin-bottom:16px; }
+.meter-bar { height:8px; background:var(--border); border-radius:4px; overflow:hidden; margin-top:6px; }
+.meter-fill { height:100%; border-radius:4px; background:var(--accent); }
+@media(max-width:700px) { .kpi-grid{grid-template-columns:repeat(2,1fr);} .starter-cards{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>EAC Heritage Collection</h1>
+    <div class="header-meta">Collection dashboard &middot; 4 sites &middot; 4 countries &middot; MA-RC output</div>
+  </div>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
+    <button class="tab-btn" onclick="switchTab('map')">Map</button>
+    <button class="tab-btn" onclick="switchTab('values')">Values</button>
+    <button class="tab-btn" onclick="switchTab('gaps')">Gaps</button>
+    <button class="tab-btn" onclick="switchTab('comparative')">Comparative</button>
+    <button class="tab-btn" onclick="switchTab('aiquery')">AI Query</button>
+  </div>
+  <div class="tab-content">
+
+    <!-- Overview -->
+    <div class="tab-panel active" id="tab-overview">
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-val">4</div><div class="kpi-label">Sites</div></div>
+        <div class="kpi"><div class="kpi-val">4</div><div class="kpi-label">Countries</div></div>
+        <div class="kpi"><div class="kpi-val">4</div><div class="kpi-label">Periods</div></div>
+        <div class="kpi"><div class="kpi-val">68%</div><div class="kpi-label">Avg Evidence</div></div>
+      </div>
+      <div class="card">
+        <h3>Collection Description</h3>
+        <p style="font-size:12px; line-height:1.6; color:var(--muted);">
+          A cross-regional heritage collection spanning four European and Middle Eastern sites, representing industrial, archaeological, medieval, and vernacular heritage typologies. The collection covers roughly two millennia of built heritage — from Roman-era archaeology to 19th-century industrial architecture — across Israel, Austria, and Finland.
+        </p>
+      </div>
+      <div class="card">
+        <h3>Sites</h3>
+        <table>
+          <tr><th>Site</th><th>Country</th><th>Type</th><th>Period</th></tr>
+          <tr><td>Old Mill, Haifa</td><td>Israel</td><td>Industrial Heritage</td><td>1882</td></tr>
+          <tr><td>Carnuntum</td><td>Austria</td><td>Archaeological</td><td>1st–4th c. CE</td></tr>
+          <tr><td>Raseborg Castle</td><td>Finland</td><td>Medieval Fortification</td><td>14th c.</td></tr>
+          <tr><td>Tuba-Zangariyye</td><td>Israel</td><td>Rural Vernacular</td><td>Ottoman</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Map -->
+    <div class="tab-panel" id="tab-map">
+      <div id="map-container"></div>
+    </div>
+
+    <!-- Values -->
+    <div class="tab-panel" id="tab-values">
+      <div class="card" style="margin-bottom:16px;">
+        <h3>Cross-Collection Value Patterns</h3>
+        <p style="font-size:12px; color:var(--muted); margin-bottom:12px;">Value categories identified across the collection. Dot indicates presence in a site's assessment.</p>
+      </div>
+      <table>
+        <tr><th>Value Category</th><th>Old Mill</th><th>Carnuntum</th><th>Raseborg</th><th>Tuba</th></tr>
+        <tr><td>Historical</td><td>&#9679;</td><td>&#9679;</td><td>&#9679;</td><td>&#9679;</td></tr>
+        <tr><td>Architectural</td><td>&#9679;</td><td>&#9684;</td><td>&#9679;</td><td>&#9679;</td></tr>
+        <tr><td>Archaeological</td><td>&#9675;</td><td>&#9679;</td><td>&#9684;</td><td>&#9675;</td></tr>
+        <tr><td>Social</td><td>&#9684;</td><td>&#9675;</td><td>&#9675;</td><td>&#9679;</td></tr>
+        <tr><td>Scientific / Technical</td><td>&#9679;</td><td>&#9679;</td><td>&#9675;</td><td>&#9675;</td></tr>
+        <tr><td>Aesthetic / Landscape</td><td>&#9675;</td><td>&#9679;</td><td>&#9679;</td><td>&#9684;</td></tr>
+      </table>
+      <p style="font-size:10px; color:var(--muted); margin-top:10px;">&#9679; explicit &nbsp; &#9684; implied &nbsp; &#9675; absent</p>
+    </div>
+
+    <!-- Gaps -->
+    <div class="tab-panel" id="tab-gaps">
+      <div class="card" style="margin-bottom:16px;">
+        <h3>Data Gaps Summary</h3>
+        <p style="font-size:12px; color:var(--muted);">Missing or incomplete data across sites. Addressing these would improve overall collection evidence coverage.</p>
+      </div>
+      <table>
+        <tr><th>Site</th><th>Missing Data</th><th>Impact</th></tr>
+        <tr><td>Old Mill, Haifa</td><td>Social context documentation; community oral history</td><td><span class="badge badge-amber">Medium</span></td></tr>
+        <tr><td>Carnuntum</td><td>Post-Roman reuse phases; modern conservation records</td><td><span class="badge badge-amber">Medium</span></td></tr>
+        <tr><td>Raseborg Castle</td><td>Archaeological survey data; scientific analysis of materials</td><td><span class="badge badge-red">High</span></td></tr>
+        <tr><td>Tuba-Zangariyye</td><td>Formal architectural survey; comparative analysis</td><td><span class="badge badge-red">High</span></td></tr>
+      </table>
+    </div>
+
+    <!-- Comparative -->
+    <div class="tab-panel" id="tab-comparative">
+      <div class="card">
+        <h3>Old Mill, Haifa</h3>
+        <div class="card-sub">Industrial Heritage &middot; 1882 &middot; Israel</div>
+        <p style="font-size:12px;">Late Ottoman industrial architecture with German Templer influence. Strong technical and historical evidence. Weak social documentation.</p>
+        <div style="display:flex; gap:16px; margin-top:10px;">
+          <div style="flex:1;"><span style="font-size:11px; color:var(--muted);">Evidence</span><div class="meter-bar"><div class="meter-fill" style="width:75%;"></div></div></div>
+          <div style="flex:1;"><span style="font-size:11px; color:var(--muted);">Completeness</span><div class="meter-bar"><div class="meter-fill" style="width:65%;"></div></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Carnuntum</h3>
+        <div class="card-sub">Archaeological &middot; 1st–4th c. CE &middot; Austria</div>
+        <p style="font-size:12px;">Roman legionary fortress and civilian town. Extensive archaeological evidence. Gaps in post-Roman phases and modern conservation documentation.</p>
+        <div style="display:flex; gap:16px; margin-top:10px;">
+          <div style="flex:1;"><span style="font-size:11px; color:var(--muted);">Evidence</span><div class="meter-bar"><div class="meter-fill" style="width:80%;"></div></div></div>
+          <div style="flex:1;"><span style="font-size:11px; color:var(--muted);">Completeness</span><div class="meter-bar"><div class="meter-fill" style="width:70%;"></div></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Raseborg Castle</h3>
+        <div class="card-sub">Medieval Fortification &middot; 14th c. &middot; Finland</div>
+        <p style="font-size:12px;">Medieval stone castle on a rocky outcrop. Strong architectural and historical evidence. Lacks scientific material analysis and full archaeological survey.</p>
+        <div style="display:flex; gap:16px; margin-top:10px;">
+          <div style="flex:1;"><span style="font-size:11px; color:var(--muted);">Evidence</span><div class="meter-bar"><div class="meter-fill" style="width:60%;"></div></div></div>
+          <div style="flex:1;"><span style="font-size:11px; color:var(--muted);">Completeness</span><div class="meter-bar"><div class="meter-fill" style="width:55%;"></div></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Tuba-Zangariyye</h3>
+        <div class="card-sub">Rural Vernacular &middot; Ottoman period &middot; Israel</div>
+        <p style="font-size:12px;">Ottoman-era rural village with vernacular stone architecture. Rich social and historical significance. Lacks formal survey and comparative analysis.</p>
+        <div style="display:flex; gap:16px; margin-top:10px;">
+          <div style="flex:1;"><span style="font-size:11px; color:var(--muted);">Evidence</span><div class="meter-bar"><div class="meter-fill" style="width:58%;"></div></div></div>
+          <div style="flex:1;"><span style="font-size:11px; color:var(--muted);">Completeness</span><div class="meter-bar"><div class="meter-fill" style="width:50%;"></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Query -->
+    <div class="tab-panel" id="tab-aiquery">
+      <div class="ai-placeholder">
+        <h3>Collection Analysis — AI Query</h3>
+        <p>Ask questions about patterns, gaps, and relationships across the collection.<br/>In a live GPT session, responses are generated from the full collection data.</p>
+      </div>
+      <div class="starter-cards">
+        <div class="starter-card">What value patterns emerge across the collection?</div>
+        <div class="starter-card">Which sites have the most critical data gaps?</div>
+        <div class="starter-card">How do the industrial and vernacular sites compare?</div>
+        <div class="starter-card">What shared conservation challenges exist?</div>
+      </div>
+      <p style="font-size:11px; color:var(--muted); text-align:center; margin-top:12px;">
+        <em>GPT placeholder mode — starter prompts show the type of collection queries available.</em>
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const TABS = ['overview','map','values','gaps','comparative','aiquery'];
+let mapInit = false;
+
+function switchTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  const idx = TABS.indexOf(id);
+  if (idx >= 0) document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+  if (id === 'map' && !mapInit) initMap();
+}
+
+function initMap() {
+  mapInit = true;
+  const el = document.getElementById('map-container');
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+  document.head.appendChild(link);
+  const scr = document.createElement('script');
+  scr.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+  scr.onload = function() {
+    const map = L.map(el, { scrollWheelZoom: true });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors', maxZoom: 18
+    }).addTo(map);
+    const sites = [
+      { name: 'Old Mill, Haifa',    lat: 32.75, lng: 35.18, type: 'Industrial Heritage' },
+      { name: 'Carnuntum',          lat: 48.11, lng: 16.86, type: 'Archaeological' },
+      { name: 'Raseborg Castle',    lat: 60.00, lng: 23.65, type: 'Medieval Fortification' },
+      { name: 'Tuba-Zangariyye',    lat: 32.92, lng: 35.51, type: 'Rural Vernacular' }
+    ];
+    const markers = sites.map(s =>
+      L.marker([s.lat, s.lng]).addTo(map)
+       .bindPopup('<strong>' + s.name + '</strong><br/><span style="font-size:11px;color:#64748b;">' + s.type + '</span>')
+    );
+    map.fitBounds(L.featureGroup(markers).getBounds().pad(0.15));
+  };
+  document.head.appendChild(scr);
+}
+
+function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+</script>
+</body>
+</html>
