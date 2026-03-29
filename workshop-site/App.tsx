@@ -717,7 +717,7 @@ const App: React.FC = () => {
         getAgentTheme={getAgentTheme}
       />
 
-      <div className="flex-1 min-h-0 overflow-hidden relative flex flex-col md:flex-row">
+      <div className="flex-1 min-h-0 overflow-y-auto relative flex flex-col md:flex-row md:items-start">
         <Sidebar
           width={sidebarWidth}
           isResizing={isResizingState}
@@ -1428,6 +1428,35 @@ const App: React.FC = () => {
                     </p>
                   </div>
 
+                  {/* Bot Platform Cards — compact row with brand logos */}
+                  <div>
+                    <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Try Atar.Bot</h4>
+                    <p className="text-[11px] text-slate-500 mb-2">Recommended: paid account with reasoning mode</p>
+                    <div className="grid grid-cols-3 gap-2">
+                      <a href="https://chatgpt.com/g/g-695d3567400c8191a402087b38c7b6b7-tr-bvt-h-rkt-mshm-vt-lshymvr" target="_blank" rel="noopener noreferrer"
+                        className="flex flex-col items-center gap-1.5 p-3 bg-white border border-slate-200 rounded-xl hover:border-emerald-300 hover:bg-emerald-50/30 transition-all group cursor-pointer">
+                        <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <Bot size={20} className="text-emerald-600" />
+                        </div>
+                        <span className="text-xs font-bold text-slate-700">ChatGPT</span>
+                      </a>
+                      <a href="https://gemini.google.com/gem/5b822b7e1771?usp=sharing" target="_blank" rel="noopener noreferrer"
+                        className="flex flex-col items-center gap-1.5 p-3 bg-white border border-slate-200 rounded-xl hover:border-blue-300 hover:bg-blue-50/30 transition-all group cursor-pointer">
+                        <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <Sparkles size={20} className="text-blue-600" />
+                        </div>
+                        <span className="text-xs font-bold text-slate-700">Gemini</span>
+                      </a>
+                      <div className="flex flex-col items-center gap-1.5 p-3 bg-white border border-slate-200 rounded-xl opacity-60 cursor-default">
+                        <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                          <Sparkles size={20} className="text-purple-600" />
+                        </div>
+                        <span className="text-xs font-bold text-slate-500">Claude</span>
+                        <span className="text-[9px] text-slate-400">Coming soon</span>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Workshop Program Card */}
                   <button
                     onClick={() => navigateTo("program")}
@@ -1438,164 +1467,90 @@ const App: React.FC = () => {
                     </div>
                     <div>
                       <h4 className="font-bold text-base text-indigo-900 mb-0.5">Workshop Program</h4>
-                      <p className="text-sm text-indigo-600/70">3-hour session: theory, hands-on assessment, ethics discussion</p>
+                      <p className="text-sm text-indigo-600/70">Presentation, hands-on assessment, ethics discussion</p>
                     </div>
                   </button>
 
-                  {/* Bot Links */}
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 gap-4">
-                      <ResourceGroup title="Links to Atar.Bot">
-                        <p className="text-xs text-slate-500 px-4 -mt-2">Recommended: paid account with reasoning mode</p>
-                        <ResourceLink
-                          href="https://chatgpt.com/g/g-695d3567400c8191a402087b38c7b6b7-tr-bvt-h-rkt-mshm-vt-lshymvr"
-                          icon={<Bot size={16} />}
-                          label="Atar.Bot (GPTs)"
-                          highlight={true}
-                          colorScheme="emerald"
-                        />
-                        <ResourceLink
-                          href="https://gemini.google.com/gem/5b822b7e1771?usp=sharing"
-                          icon={<Sparkles size={16} />}
-                          label="Atar.Bot (Gemini)"
-                          highlight={true}
-                          colorScheme="indigo"
-                        />
-                        <ResourceLink
-                          href="https://forms.gle/F9ZykAefJQ94n2Vc7"
-                          icon={<ClipboardCheck size={16} />}
-                          label="Feedback Form"
-                          secondaryLabel="Research feedback to improve the tool"
-                          noBorder
-                          highlight={true}
-                          colorScheme="amber"
-                        />
-                        <ResourceLink
-                          href="https://github.com/YuvalShafriri/atar.bot-Icomos.Israel/blob/main/Bot-Brain-he.md"
-                          icon={<Github size={16} />}
-                          label="Atar.Bot Brain"
-                          secondaryLabel="Source code and system instructions repository"
-                          highlight={true}
-                          noBorder
-                          colorScheme="slate"
-                        />
-                      </ResourceGroup>
+                  {/* Links */}
+                  <div className="space-y-2">
+                    <ResourceLink
+                      href="#"
+                      icon={<BookOpen size={16} />}
+                      label="Shared Materials"
+                      secondaryLabel="Heritage documents to work with during the workshop"
+                      highlight={true}
+                      colorScheme="emerald"
+                    />
+                    <ResourceLink
+                      onClick={() => navigateTo("presentation")}
+                      icon={<Bot size={16} />}
+                      label="The Architect — Agent Builder"
+                      secondaryLabel="Build your own AI system instructions (Ethics in Practice)"
+                      highlight={true}
+                      colorScheme="indigo"
+                    />
+                    <ResourceLink
+                      href="https://forms.gle/F9ZykAefJQ94n2Vc7"
+                      icon={<ClipboardCheck size={16} />}
+                      label="Feedback Form"
+                      secondaryLabel="Research feedback to improve the tool"
+                      highlight={true}
+                      colorScheme="amber"
+                    />
+                    <ResourceLink
+                      href="https://github.com/YuvalShafriri/atar.bot-Icomos.Israel/blob/main/Bot-Brain-he.md"
+                      icon={<Github size={16} />}
+                      label="GitHub Repository"
+                      secondaryLabel="Source code and system instructions"
+                      highlight={true}
+                      colorScheme="slate"
+                    />
+                  </div>
 
-                      {/* Key Terms button */}
-                      <button
-                        onClick={() => navigateTo("glossary")}
-                        className="w-full flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 hover:border-slate-300 transition-all group cursor-pointer text-left"
-                      >
-                        <div className="w-8 h-8 bg-slate-200 text-slate-600 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                          <BookText size={16} />
-                        </div>
-                        <div>
-                          <h4 className="font-bold text-sm text-slate-700">Key Terms</h4>
-                          <p className="text-[11px] text-slate-500">CBSA, HITL, Context Effect, Nara Grid and more</p>
-                        </div>
-                      </button>
+                  {/* Key Terms + More Resources */}
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => navigateTo("glossary")}
+                      className="w-full flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 hover:border-slate-300 transition-all group cursor-pointer text-left"
+                    >
+                      <div className="w-8 h-8 bg-slate-200 text-slate-600 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                        <BookText size={16} />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-sm text-slate-700">Key Terms</h4>
+                        <p className="text-[11px] text-slate-500">CBSA, HITL, Context Effect, Nara Grid and more</p>
+                      </div>
+                    </button>
 
-                      {/* Collapsible More Resources */}
-                      <details className="bg-white border border-slate-200 rounded-xl overflow-hidden group">
-                        <summary className="p-4 cursor-pointer flex items-center justify-between hover:bg-slate-50 transition-colors select-none">
-                          <span className="font-bold text-sm text-slate-600">More Resources</span>
-                          <ChevronDown size={16} className="text-slate-400 group-open:rotate-180 transition-transform" />
-                        </summary>
-                        <div className="px-4 pb-4 space-y-4 border-t border-slate-100">
-                          <ResourceGroup title="Beyond Atar.Bot — Customization">
-                            <ResourceLink
-                              href="https://chatgpt.com/g/g-69492aebb530819199628bb444d024f3-svkn-lbnyyt-svkn-yqvmvs"
-                              icon={<Bot size={16} />}
-                              label="Build Agent (GPTs)"
-                              noBorder
-                              colorScheme="emerald"
-                            />
-                            <ResourceLink
-                              href="https://gemini.google.com/gem/1LbC3oHGIS83rP8uWdIEEeaU9_ixfEMh1?usp=sharing"
-                              icon={<Sparkles size={16} />}
-                              label={
-                                <span className="flex items-center gap-2">
-                                  Build Agent (Gemini)
-                                  <span
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      window.open(
-                                        "https://gemini.google.com/gem/1No_FbNaQmz5khR51dl7NHFOXAFQ5x5Pu?usp=sharing",
-                                        "_blank"
-                                      );
-                                    }}
-                                    className="text-[11px] text-slate-500 bg-emerald-20 px-1.5 py-0.5 rounded-md hover:bg-emerald-100 transition-colors cursor-pointer border border-emerald-200 shadow-sm"
-                                  >
-                                    Example: image generator from architectural description
-                                  </span>
-                                </span>
-                              }
-                              noBorder
-                              colorScheme="emerald"
-                            />
-                          </ResourceGroup>
-
-                          <ResourceGroup title="Alternative Representation — Writing & Reading Assessments">
-                            <div className="sm:hidden">
-                              <ResourceLink
-                                icon={<LayoutDashboard size={16} />}
-                                label="Cultural Assessment Dashboard — Demo"
-                                secondaryLabel="Not available on mobile (open on desktop)"
-                                noBorder
-                              />
-                              <ResourceLink
-                                icon={<PieChart size={16} />}
-                                label="Collection Analysis Dashboard — Demo"
-                                secondaryLabel="Not available on mobile (open on desktop)"
-                                noBorder
-                              />
-                            </div>
-
-                            <div className="hidden sm:block">
-                              <ResourceLink
-                                onClick={() => navigateTo("dashboard-preview")}
-                                icon={<LayoutDashboard size={16} />}
-                                label="Cultural Assessment Dashboard — Demo"
-                                noBorder
-                              />
-                              <ResourceLink
-                                onClick={() => navigateTo("inventory")}
-                                icon={<PieChart size={16} />}
-                                label="Collection Analysis Dashboard — Demo"
-                                secondaryLabel="Collection analysis combining NotebookLM and Atar.Bot in Gemini"
-                                noBorder
-                              />
-                            </div>
-                          </ResourceGroup>
-
-                          <SectionDivider
-                            label="Inspiration"
-                            colorClass="text-emerald-500"
-                            bgColor="bg-slate-50/30"
-                          />
-
-                          <div className="grid grid-cols-1 gap-2.5">
-                            <ResourceLink
-                              href="https://drive.google.com/drive/folders/1AOu_r9towgJwqgQfrLEI8JcbOltprpJH?usp=sharing"
-                              icon={<LayoutDashboard size={16} />}
-                              label="Workshop Presentations"
-                              secondaryLabel="Workshop presentations and follow-up session"
-                              colorScheme="indigo"
-                              highlight
-                            />
-                            <ResourceLink
-                              href="https://bit.ly/49huqGS"
-                              icon={<BookOpen size={16} />}
-                              label="Alakhson: Another Organ of Consciousness"
-                              secondaryLabel="Article on place experience and consciousness with AI"
-                              colorScheme="emerald"
-                              highlight
-                            />
+                    <details className="bg-white border border-slate-200 rounded-xl overflow-hidden group">
+                      <summary className="p-4 cursor-pointer flex items-center justify-between hover:bg-slate-50 transition-colors select-none">
+                        <span className="font-bold text-sm text-slate-600">More Resources</span>
+                        <ChevronDown size={16} className="text-slate-400 group-open:rotate-180 transition-transform" />
+                      </summary>
+                      <div className="px-4 pb-4 space-y-3 border-t border-slate-100">
+                        <ResourceGroup title="Dashboards & Visualization">
+                          <div className="hidden sm:block">
+                            <ResourceLink onClick={() => navigateTo("dashboard-preview")} icon={<LayoutDashboard size={16} />} label="Assessment Dashboard — Demo" noBorder />
+                            <ResourceLink onClick={() => navigateTo("inventory")} icon={<PieChart size={16} />} label="Collection Dashboard — Demo" noBorder />
                           </div>
-                        </div>
-                      </details>
-                    </div>
+                          <div className="sm:hidden">
+                            <ResourceLink icon={<LayoutDashboard size={16} />} label="Assessment Dashboard — Demo" secondaryLabel="Open on desktop" noBorder />
+                          </div>
+                        </ResourceGroup>
+                        <ResourceGroup title="Agent Builder">
+                          <ResourceLink href="https://chatgpt.com/g/g-69492aebb530819199628bb444d024f3-svkn-lbnyyt-svkn-yqvmvs" icon={<Bot size={16} />} label="Build Agent (GPTs)" noBorder colorScheme="emerald" />
+                          <ResourceLink href="https://gemini.google.com/gem/1LbC3oHGIS83rP8uWdIEEeaU9_ixfEMh1?usp=sharing" icon={<Sparkles size={16} />} label="Build Agent (Gemini)" noBorder colorScheme="emerald" />
+                        </ResourceGroup>
+                        <ResourceLink
+                          href="https://drive.google.com/drive/folders/1AOu_r9towgJwqgQfrLEI8JcbOltprpJH?usp=sharing"
+                          icon={<LayoutDashboard size={16} />}
+                          label="Workshop Presentations"
+                          secondaryLabel="Previous workshop presentations"
+                          colorScheme="indigo"
+                          highlight
+                        />
+                      </div>
+                    </details>
                   </div>
                 </div>
               </div>
