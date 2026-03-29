@@ -107,19 +107,19 @@ const CHALLENGES = [
     quote: "It's important but too complex",
     response: "With AI trained in our assessment principles, we can simplify the process and link outputs directly to surveys and systems.",
     color: 'amber',
-    avatar: '/hatter.png',
+    avatar: '/rabbit.png',
   },
   {
     quote: "It's too heavy, no one reads it",
     response: "With natural language queries and visual tools like knowledge graphs, we can make cultural insights clearer, usable, and even discover new ones.",
     color: 'indigo',
-    avatar: '/alice.png',
+    avatar: '/hatter.png',
   },
   {
     quote: "So will AI replace the professionals?",
     response: "No. Experts remain essential. AI is a smart partner for detecting connections and contexts — but it needs our guidance.",
     color: 'emerald',
-    avatar: '/rabbit.png',
+    avatar: '/robot.png',
   },
 ];
 
@@ -162,7 +162,7 @@ const ChallengesTab: React.FC = () => (
               <img
                 src={ch.avatar}
                 alt=""
-                className="w-10 h-10 rounded-full border-2 border-white shadow-sm shrink-0 object-cover"
+                className="w-16 h-16 rounded-full border-2 border-white shadow-md shrink-0 object-cover"
                 onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
               />
               <span className={`font-bold text-sm ${c.quote} flex-1`}>"{ch.quote}"</span>
