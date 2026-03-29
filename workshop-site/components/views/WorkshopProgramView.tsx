@@ -38,9 +38,8 @@ const TYPE_LABELS: Record<string, string> = {
 
 const PROGRAM_TABS = [
   { id: 'challenges', label: 'Our Story', icon: <Users size={14} /> },
-  { id: 'story', label: 'Story (old)', icon: <Users size={14} /> },
-  { id: 'principles', label: 'Principles', icon: <Eye size={14} /> },
   { id: 'cbsa', label: 'CBSA', icon: <Lightbulb size={14} /> },
+  { id: 'principles', label: 'Principles', icon: <Eye size={14} /> },
   { id: 'schedule', label: 'Schedule', icon: <Clock size={14} /> },
 ] as const;
 
@@ -91,7 +90,6 @@ export const WorkshopProgramView: React.FC<WorkshopProgramViewProps> = ({ onNavi
 
         {/* Tab Content */}
         {activeTab === 'challenges' && <ChallengesTab />}
-        {activeTab === 'story' && <OurStoryTab />}
         {activeTab === 'principles' && <PrinciplesTab onNavigate={onNavigate} />}
         {activeTab === 'cbsa' && <CbsaTab onNavigate={onNavigate} />}
         {activeTab === 'schedule' && <ScheduleTab onNavigate={onNavigate} totalMinutes={totalMinutes} />}
@@ -186,46 +184,6 @@ const ChallengesTab: React.FC = () => (
       <p className="text-sm text-slate-700 leading-relaxed">
         Atar.Bot is our research prototype: a multi-platform AI assistant that structures heritage significance assessment through the CBSA method. Not a black box — a looking glass.
       </p>
-    </div>
-  </div>
-);
-
-// ─── Our Story Tab (original — kept for comparison) ───────────────
-
-const OurStoryTab: React.FC = () => (
-  <div className="space-y-5">
-    <div>
-      <h3 className="text-xl font-black text-slate-800">InSites Knowledge Lab</h3>
-      <p className="text-xs text-slate-400 mt-0.5">Technion — Israel Institute of Technology</p>
-    </div>
-
-    <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
-      <p className="text-sm text-slate-700 leading-relaxed">
-        At the intersection of <strong>assessment methods</strong>, <strong>novel technologies</strong>, and <strong>built-heritage data</strong> — we develop computational methods for evidence-based heritage assessment.
-      </p>
-      <p className="text-sm text-slate-700 leading-relaxed">
-        Atar.Bot is our research prototype: a multi-platform AI assistant that structures heritage significance assessment through the CBSA method. Not a black box — a looking glass.
-      </p>
-    </div>
-
-    <div className="bg-rose-50 border border-rose-200 rounded-xl p-4">
-      <h4 className="font-bold text-sm text-rose-900 mb-2">The Looking Glass Metaphor</h4>
-      <p className="text-sm text-rose-800/80 italic leading-relaxed">
-        "The LLM is a looking glass — more than a wonderland."
-      </p>
-      <p className="text-sm text-rose-800/70 mt-2 leading-relaxed">
-        It reflects your material back, structured through CBSA. Every claim sourced. Every step approved by you. Alice decides where and when to step.
-      </p>
-    </div>
-
-    <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4">
-      <h4 className="font-bold text-sm text-indigo-900 mb-2">What We'll Do Today</h4>
-      <ul className="text-sm text-indigo-800/80 space-y-1.5">
-        <li className="flex gap-2"><span className="text-indigo-500">1.</span> Understand the design principles behind AI-assisted assessment</li>
-        <li className="flex gap-2"><span className="text-indigo-500">2.</span> Write a real heritage assessment with the bot</li>
-        <li className="flex gap-2"><span className="text-indigo-500">3.</span> Read and analyze existing assessments</li>
-        <li className="flex gap-2"><span className="text-indigo-500">4.</span> Discuss ethics, transparency, and what this means for practice</li>
-      </ul>
     </div>
   </div>
 );
