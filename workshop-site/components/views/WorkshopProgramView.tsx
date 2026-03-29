@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Clock, BookOpen, PenTool, MessageSquare, Presentation, Coffee, ChevronDown, ArrowRight, Users, Lightbulb, Eye, ShieldCheck, Home } from 'lucide-react';
-import { SESSION_RESOURCES, LOOKING_GLASS_CARDS, CORE_AGENTS } from '../../constants';
+import { Clock, BookOpen, PenTool, MessageSquare, Presentation, Coffee, ChevronDown, ArrowRight, Users, Lightbulb, ShieldCheck, Home } from 'lucide-react';
+import { SESSION_RESOURCES } from '../../constants';
 
 // ─── Schedule Data ────────────────────────────────────────────────
 
@@ -73,7 +73,13 @@ export const WorkshopProgramView: React.FC<WorkshopProgramViewProps> = ({ onNavi
           {PROGRAM_TABS.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => {
+                if (tab.id === 'principles') {
+                  onNavigate?.('design');
+                } else {
+                  setActiveTab(tab.id);
+                }
+              }}
               className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 activeTab === tab.id
                   ? 'bg-white text-slate-800 shadow-sm'
@@ -89,7 +95,6 @@ export const WorkshopProgramView: React.FC<WorkshopProgramViewProps> = ({ onNavi
 
         {/* Tab Content */}
         {activeTab === 'story' && <OurStoryTab />}
-        {activeTab === 'principles' && <PrinciplesTab />}
         {activeTab === 'cbsa' && <CbsaTab onNavigate={onNavigate} />}
         {activeTab === 'schedule' && <ScheduleTab onNavigate={onNavigate} totalMinutes={totalMinutes} />}
       </div>
@@ -137,62 +142,6 @@ const OurStoryTab: React.FC = () => (
   </div>
 );
 
-// ─── Principles Tab ───────────────────────────────────────────────
-
-const PrinciplesTab: React.FC = () => {
-  const colorMap: Record<string, { border: string; bg: string; icon: string; text: string }> = {
-    rose: { border: 'border-rose-200', bg: 'bg-rose-50', icon: 'bg-rose-100 text-rose-600', text: 'text-rose-900' },
-    indigo: { border: 'border-indigo-200', bg: 'bg-indigo-50', icon: 'bg-indigo-100 text-indigo-600', text: 'text-indigo-900' },
-    emerald: { border: 'border-emerald-200', bg: 'bg-emerald-50', icon: 'bg-emerald-100 text-emerald-600', text: 'text-emerald-900' },
-  };
-
-  return (
-    <div className="space-y-4">
-      <div>
-        <h3 className="text-xl font-black text-slate-800">Design Principles</h3>
-        <p className="text-xs text-slate-500 mt-0.5">How transparency, control, and evidence governance work in Atar.Bot</p>
-      </div>
-
-      <p className="text-sm text-slate-500 italic">
-        "The LLM is a looking glass — more than a wonderland"
-      </p>
-
-      {LOOKING_GLASS_CARDS.map((card) => {
-        const c = colorMap[card.color] || colorMap.indigo;
-        return (
-          <details key={card.id} className={`bg-white border ${c.border} rounded-xl overflow-hidden group`}>
-            <summary className={`p-4 cursor-pointer flex items-center justify-between hover:${c.bg} transition-colors select-none`}>
-              <div className="flex items-center gap-3">
-                <div className={`w-8 h-8 ${c.icon} rounded-lg flex items-center justify-center shrink-0`}>
-                  <Eye size={16} />
-                </div>
-                <div>
-                  <h4 className="font-bold text-slate-800 text-sm">{card.title}</h4>
-                  <p className="text-[11px] text-slate-500">{card.tagline}</p>
-                </div>
-              </div>
-              <ChevronDown size={16} className="text-slate-400 group-open:rotate-180 transition-transform shrink-0" />
-            </summary>
-            <div className={`px-4 pb-4 pt-2 border-t ${c.border}`}>
-              <div className={`text-sm ${c.text}/80 leading-relaxed whitespace-pre-line`}>
-                {card.content.split('\\n').map((line, i) => {
-                  if (line.startsWith('**') && line.includes('**')) {
-                    const parts = line.split('**');
-                    return <p key={i} className="mt-2"><strong>{parts[1]}</strong>{parts[2]}</p>;
-                  }
-                  if (line.startsWith('- ')) return <p key={i} className="ml-3">{line}</p>;
-                  if (line.startsWith('*') && line.endsWith('*')) return <p key={i} className="italic mt-2">{line.slice(1, -1)}</p>;
-                  return <p key={i}>{line}</p>;
-                })}
-              </div>
-            </div>
-          </details>
-        );
-      })}
-    </div>
-  );
-};
-
 // ─── CBSA Tab ─────────────────────────────────────────────────────
 
 const CbsaTab: React.FC<{ onNavigate?: (route: string) => void }> = ({ onNavigate }) => (
@@ -206,40 +155,6 @@ const CbsaTab: React.FC<{ onNavigate?: (route: string) => void }> = ({ onNavigat
       <p className="text-sm text-slate-700 leading-relaxed">
         CBSA is a values-based heritage assessment method. It structures the thinking process through 7 stages — each building on the previous — from data inventory to a synthesized significance statement. The method is platform-independent; the bot implements it.
       </p>
-    </div>
-
-    {/* Stage Flow */}
-    <div className="space-y-2">
-      <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">The 7 Stages</h4>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        {CORE_AGENTS.map((agent, idx) => {
-          const colors: Record<string, string> = {
-            slate: 'border-slate-300 bg-slate-50 hover:bg-slate-100',
-            blue: 'border-blue-300 bg-blue-50 hover:bg-blue-100',
-            amber: 'border-amber-300 bg-amber-50 hover:bg-amber-100',
-            emerald: 'border-emerald-300 bg-emerald-50 hover:bg-emerald-100',
-            indigo: 'border-indigo-300 bg-indigo-50 hover:bg-indigo-100',
-            purple: 'border-purple-300 bg-purple-50 hover:bg-purple-100',
-            rose: 'border-rose-300 bg-rose-50 hover:bg-rose-100',
-          };
-          const colorClass = colors[agent.color] || colors.slate;
-          return (
-            <button
-              key={agent.id}
-              onClick={() => onNavigate?.(`step-${agent.id}`)}
-              className={`p-3 border rounded-xl ${colorClass} transition-all cursor-pointer text-left group`}
-            >
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-lg font-black text-slate-400">{agent.id}</span>
-                <ArrowRight size={12} className="text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity ml-auto" />
-              </div>
-              <p className="text-xs font-bold text-slate-700 leading-tight">
-                {agent.name.replace(/^\d+ - /, '')}
-              </p>
-            </button>
-          );
-        })}
-      </div>
     </div>
 
     {/* Two differentiators */}
