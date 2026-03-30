@@ -31,7 +31,7 @@ export const DashboardPreviewModal: React.FC<DashboardPreviewModalProps> = ({ is
             </div>
           </div>
           <a
-            href="/dashboard-demo.html"
+            href="./chaco-dashboard.html"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-bold hover:bg-indigo-100 transition-colors shrink-0"
@@ -44,10 +44,10 @@ export const DashboardPreviewModal: React.FC<DashboardPreviewModalProps> = ({ is
         {/* Desktop: iframe */}
         <div className="hidden sm:block rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-white">
           <iframe
-            src="./dashboard-demo.html"
+            src="./chaco-dashboard.html"
             className="w-full border-0"
             style={{ height: '70vh', minHeight: '500px' }}
-            title="Assessment Dashboard Demo — Ayelet HaShachar Water Tower"
+            title="Assessment Dashboard Demo — Chaco Culture NHP"
           />
         </div>
 
@@ -57,7 +57,7 @@ export const DashboardPreviewModal: React.FC<DashboardPreviewModalProps> = ({ is
             The interactive dashboard is best experienced on desktop.
           </p>
           <a
-            href="/dashboard-demo.html"
+            href="./chaco-dashboard.html"
             target="_blank"
             rel="noopener noreferrer"
             className="mt-3 flex items-center justify-center gap-1.5 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 transition-colors"

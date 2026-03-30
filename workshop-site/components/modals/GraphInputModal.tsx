@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { FileText, BookOpen, Zap, Landmark, Sparkles } from 'lucide-react';
+import { FileText, BookOpen, Zap, Sparkles } from 'lucide-react';
 import { Modal } from '../common';
-import { DEMO_DATA, ZAIRA_TEXT } from '../../constants';
-import { AYELET_WT_TEXT } from '../../sampleTexts';
+import { ZAIRA_TEXT } from '../../constants';
 
 export interface GraphInputModalProps {
   isOpen: boolean;
@@ -44,23 +43,19 @@ export const GraphInputModal: React.FC<GraphInputModalProps> = ({
           <label className="text-sm font-bold text-slate-700">Text for analysis:</label>
           <div className="flex flex-wrap gap-2 mb-2">
             <button
-              onClick={() => selectSample(DEMO_DATA, "demo")}
-              className="flex-1 min-w-[120px] py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2"
-            >
-              <FileText size={14} /> תחנת הקמח
-            </button>
-            <button
               onClick={() => selectSample(ZAIRA_TEXT, "zaira")}
               className="flex-1 min-w-[120px] py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 hover:text-indigo-900 border border-indigo-200 hover:border-indigo-300 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2"
             >
-              <BookOpen size={14} /> Zaira City (Hebrew)
+              <BookOpen size={14} /> Zaira — Invisible Cities
             </button>
-            <button
-              onClick={() => selectSample(AYELET_WT_TEXT, "ayelet")}
-              className="flex-1 min-w-[120px] py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2"
+            <a
+              href="./chaco-kg.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 min-w-[120px] py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 hover:text-emerald-900 border border-emerald-200 hover:border-emerald-300 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2"
             >
-              <Landmark size={14} /> Ayelet HaShachar Water Tower (Hebrew)
-            </button>
+              <FileText size={14} /> Chaco KG (demo)
+            </a>
           </div>
           <textarea
             className="w-full h-48 p-4 bg-white rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-4 focus:ring-emerald-500/10 transition-all outline-none text-sm leading-relaxed text-slate-700 placeholder:text-slate-300 resize-none shadow-inner"

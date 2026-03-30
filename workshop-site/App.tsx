@@ -269,7 +269,7 @@ const App: React.FC = () => {
   const [isConsulting, setIsConsulting] = useState<boolean>(false);
 
   // Custom KG input
-  const [kgInputText, setKgInputText] = useState<string>(ZAIRA_TEXT);
+  const [kgInputText, setKgInputText] = useState<string>(ZAIRA_TEXT);  // Zaira now in English via prebuiltGraphs
   const [kgSelectedSample, setKgSelectedSample] = useState<string | null>(
     "zaira",
   );

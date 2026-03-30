@@ -26,18 +26,18 @@ export interface KGData {
  */
 const ZAIRA_KG: KGData = {
   nodes: [
-    { id: "zaira", name: "זאירה", type: "site", meaning: "עיר דמיונית שחומותיה נשגבות — מכילה את עברה ביחסים, לא בתיאורים" },
-    { id: "kublai", name: "קובלאי חאן", type: "person", meaning: "הנמען — השליט שמבקש לשמוע תיאור של העיר" },
-    { id: "hanged_man", name: "הגזלן שנתלה", type: "person", meaning: "דמות שנתלתה על הפנס — עברה אלימה חקוקה במרחב" },
-    { id: "queen", name: "המלכה", type: "person", meaning: "דמות מלכותית שתהלוכת נישואיה עברה ברחוב" },
-    { id: "lover", name: "המאהב", type: "person", meaning: "מדלג מעל המעקה עם שחר — אהבה אסורה חקוקה בגובה" },
-    { id: "old_men", name: "שלושת הזקנים", type: "social_group", meaning: "יושבים על הרציף, מתקנים רשתות, מספרים סיפורים — שומרי הזיכרון" },
-    { id: "gunship", name: "ספינת התותחים", type: "event", meaning: "הופיעה לפתע והרסה את המרזב — אלימות שחקוקה במבנה" },
-    { id: "wedding", name: "תהלוכת הנישואין", type: "event", meaning: "חגיגה שעברה ברחוב — שמחה חקוקה בסרטים ובמרחב" },
-    { id: "street_lamp", name: "הפנס", type: "architectural_element", meaning: "נקודת מוצא של יחסים מרחביים — מתח בין אור לתליין" },
-    { id: "balcony", name: "המרפסת והמעקה", type: "architectural_element", meaning: "גבול בין פנים לחוץ — עד לאהבה ולמוות" },
-    { id: "memory", name: "זיכרון קולקטיבי", type: "cultural_value", meaning: "העיר אינה אומרת את עברה אלא מכילה אותו כרשת קווים של כף יד" },
-    { id: "palimpsest", name: "פלימפססט עירוני", type: "narrative", meaning: "כל קטע מחורט בשריטות, ניסורים, חיתוכים ופסיקים — שכבות על שכבות" },
+    { id: "zaira", name: "Zaira", type: "site", meaning: "Imaginary city whose high bastions contain its past through relationships, not descriptions" },
+    { id: "kublai", name: "Kublai Khan", type: "person", meaning: "The listener — the ruler who asks for a description of the city" },
+    { id: "hanged_man", name: "The Hanged Usurper", type: "person", meaning: "Figure hung from the street lamp — violence inscribed in space" },
+    { id: "queen", name: "The Queen", type: "person", meaning: "Royal figure whose bridal procession passed through the street" },
+    { id: "lover", name: "The Lover", type: "person", meaning: "Leaps over the railing at dawn — forbidden love inscribed in height" },
+    { id: "old_men", name: "Three Old Men", type: "social_group", meaning: "Sitting on the dock, mending nets, telling stories — keepers of memory" },
+    { id: "gunship", name: "The Gunboat", type: "event", meaning: "Appeared suddenly and destroyed the gutter — violence inscribed in structure" },
+    { id: "wedding", name: "Bridal Procession", type: "event", meaning: "Celebration that passed through the street — joy inscribed in ribbons and space" },
+    { id: "street_lamp", name: "The Street Lamp", type: "architectural_element", meaning: "Origin point of spatial relationships — tension between light and the hanged" },
+    { id: "balcony", name: "The Balcony & Railing", type: "architectural_element", meaning: "Boundary between inside and outside — witness to love and death" },
+    { id: "memory", name: "Collective Memory", type: "cultural_value", meaning: "The city does not tell its past but contains it like the lines of a hand" },
+    { id: "palimpsest", name: "Urban Palimpsest", type: "narrative", meaning: "Every segment marked with scratches, indentations, cuts, notches — layers upon layers" },
   ],
   edges: [
     { from: "zaira", to: "memory", label: "embodies" },
@@ -57,79 +57,48 @@ const ZAIRA_KG: KGData = {
 };
 
 /**
- * Ayelet HaShachar Water Tower — real heritage site
- * Kibbutz in Upper Galilee, founded 1918. Water tower built 1923-24.
- * Rich narrative of water struggle, Second Aliya ideology, and construction heritage.
+ * Chaco Culture NHP — real heritage site from workshop simulation
+ * UNESCO World Heritage archaeological landscape, ancestral Puebloan regional center.
  */
-const AYELET_KG: KGData = {
+const CHACO_KG: KGData = {
   nodes: [
-    { id: "water_tower", name: "מגדל המים", type: "structure", meaning: "הוקם 1923 — בטון מזויין עם עיטורים ניאו-קלאסיים, נקודת ציון בישוב" },
-    { id: "ayelet", name: "קיבוץ אילת השחר", type: "site", meaning: "נוסד 1918 בגליל העליון — ישוב חלוצי של העלייה השנייה" },
-    { id: "horseshoe", name: "כביש הפרסה", type: "architectural_element", meaning: "תכנון בצורת פרסה מקיף את הגרעין ההיסטורי — חותם המהנדס של יק\"א" },
-    { id: "wadi", name: "ואדי ווקאז (נחל חצור)", type: "natural_phenomenon", meaning: "מקור המים היחיד בשנים הראשונות — מוקד לעימותים עם ערביי הסביבה" },
-    { id: "pica", name: "יק\"א / פיק\"א", type: "social_group", meaning: "מימנו התיישבות ותשתיות — יחסים מורכבים עם הקיבוץ על תקציבים" },
-    { id: "achva", name: "קבוצת אחווה", type: "social_group", meaning: "מגדוד העבודה ע\"ש טרומפלדור — בנו את המבנים הראשונים ב1923" },
-    { id: "erlich", name: "מיכאל ארליך", type: "person", meaning: "מפקח הבניה — קבלן חלוצי, ממייסדי תל אביב, עיצב את המגדל" },
-    { id: "well_a", name: "באר א׳", type: "structure", meaning: "נחפרה בעבודת ידיים, הופעלה 1936 — שמחה ספונטנית בכל הישוב" },
-    { id: "water_struggle", name: "מאבק על המים", type: "event", meaning: "עימותים עם שכנים ערבים ועם פיק\"א על זכויות וחלוקת מים" },
-    { id: "second_aliya", name: "אידאולוגיית העלייה השנייה", type: "narrative", meaning: "כיבוש עבודה, חיי שותפות ושוויון — עולים ברגל לגליל" },
-    { id: "mekorot", name: "מקורות", type: "social_group", meaning: "הקימה מפעלי מים 1951-1957 — סוף מצוקת המים" },
-    { id: "solel_boneh", name: "סולל בונה", type: "social_group", meaning: "המשרד לעבודות ציבוריות של ההסתדרות — מסר העבודה לקבוצת אחווה" },
-    { id: "construction_value", name: "ערך הבנייה החלוצית", type: "cultural_value", meaning: "בנייה בידיים, ללא ניסיון, בתנאים קשים — ״כבש הפועל את המקצוע בסערה״" },
-    { id: "um_juni", name: "אום ג׳וני 1910", type: "event", meaning: "ארליך מצולם בצריף המכונן — קשר נסתר לרגע ההקמה" },
+    { id: "ccnhp", name: "Chaco Culture NHP", type: "site", meaning: "UNESCO World Heritage archaeological landscape, ancestral Puebloan regional center" },
+    { id: "pueblo_bonito", name: "Pueblo Bonito", type: "structure", meaning: "Largest great house — 600+ rooms, monumental masonry construction" },
+    { id: "casa_rinconada", name: "Casa Rinconada", type: "structure", meaning: "Great kiva closed in 1996 at tribal request to prevent desecration" },
+    { id: "fajada_butte", name: "Fajada Butte", type: "structure", meaning: "Sacred site with astronomical markers, closed to public since 1982" },
+    { id: "chaco_canyon", name: "San Juan Basin", type: "site", meaning: "Semiarid basin containing the canyon and 39 outlier protection sites" },
+    { id: "mesa_verde", name: "Mesa Verde", type: "site", meaning: "Migration destination and comparative site with cliff dwellings" },
+    { id: "puebloans", name: "Ancestral Puebloans", type: "social_group", meaning: "Builders of the great houses, A.D. 400–1300" },
+    { id: "hopi_pueblo", name: "Hopi & Pueblo Peoples", type: "social_group", meaning: "Living descendants maintaining pilgrimage practices since 13th century" },
+    { id: "navajo", name: "Navajo Nation", type: "social_group", meaning: "Inhabited canyon for 400 years; displaced by NPS in 1930s–1940s" },
+    { id: "nps", name: "National Park Service", type: "social_group", meaning: "Federal agency managing CCNHP since 1916" },
+    { id: "antiquities_act", name: "Antiquities Act 1906", type: "event", meaning: "First U.S. heritage law, catalyzed by excavation controversies at Chaco" },
+    { id: "wh_inscription", name: "WH Inscription 1987", type: "event", meaning: "UNESCO recognition under criterion C(iii)" },
+    { id: "chaco_phenom", name: "Chaco Phenomenon", type: "narrative", meaning: "A.D. 700–1300 regional system of roads, outliers, and ceremonial networks" },
+    { id: "val_scientific", name: "Scientific Value", type: "cultural_value", meaning: "Century-deep archaeological archive with ongoing research potential" },
+    { id: "val_historical", name: "Historical Value", type: "cultural_value", meaning: "Site that catalyzed American heritage protection law" },
   ],
   edges: [
-    { from: "water_tower", to: "ayelet", label: "landmark_of" },
-    { from: "water_tower", to: "horseshoe", label: "centered_in" },
-    { from: "water_tower", to: "wadi", label: "fed_by" },
-    { from: "achva", to: "water_tower", label: "built" },
-    { from: "erlich", to: "achva", label: "supervised" },
-    { from: "erlich", to: "water_tower", label: "designed" },
-    { from: "erlich", to: "um_juni", label: "documented_in" },
-    { from: "pica", to: "ayelet", label: "funded" },
-    { from: "solel_boneh", to: "achva", label: "contracted" },
-    { from: "water_struggle", to: "wadi", label: "centered_on" },
-    { from: "water_struggle", to: "pica", label: "appealed_to" },
-    { from: "well_a", to: "water_tower", label: "pumped_to" },
-    { from: "mekorot", to: "water_struggle", label: "resolved" },
-    { from: "second_aliya", to: "ayelet", label: "motivated" },
-    { from: "second_aliya", to: "construction_value", label: "expressed_through" },
-    { from: "construction_value", to: "water_tower", label: "embodied_in" },
-    { from: "achva", to: "second_aliya", label: "exemplifies" },
-  ]
-};
-
-/**
- * תחנת הקמח "הטוחן הישן" — fictional heritage site
- * An old flour mill on the Yarkon River, Tel Aviv. Founded 1922.
- * Social tensions between preservation and development.
- */
-const DEMO_KG: KGData = {
-  nodes: [
-    { id: "mill", name: "תחנת הקמח", type: "structure", meaning: "מבנה תעשייתי בן 3 קומות — סיליקט וכורכר, גג קרוס בחלקו" },
-    { id: "yarkon", name: "נחל הירקון", type: "natural_phenomenon", meaning: "גדת הנחל — מיקום אסטרטגי לתעשייה מוקדמת" },
-    { id: "greenberg", name: "יצחק גרינברג", type: "person", meaning: "מקים התחנה — חלק מניסיון התיעוש העברי בשנות ה-20" },
-    { id: "machinery", name: "מכונות גריסה גרמניות", type: "artwork", meaning: "חברת Amme, Giesecke & Konegen — שריד טכנולוגי מקורי" },
-    { id: "hagana", name: "סליק נשק ההגנה", type: "event", meaning: "שימוש צבאי סמוי בשנות ה-40 — שמועות על מרתף נסתר" },
-    { id: "eucalyptus", name: "עצי האקליפטוס", type: "natural_phenomenon", meaning: "עתיקים, שורשיהם מאיימים על היסודות — טבע כורת את המבנה" },
-    { id: "luxury_towers", name: "מגדלי היוקרה", type: "event", meaning: "לחץ פיתוח — להרוס לטובת ריאה ירוקה או חניון" },
-    { id: "veterans", name: "תושבים ותיקים", type: "social_group", meaning: "טוענים שזהו השריד האחרון לתעשייה המוקדמת באזור" },
-    { id: "graffiti", name: "אמני גרפיטי", type: "social_group", meaning: "שימוש בלתי רשמי — מקום מפגש, יצירה על חורבן" },
-    { id: "industrial_value", name: "ערך תעשייתי-חלוצי", type: "cultural_value", meaning: "עדות לתיעוש עברי מוקדם — שכבה נשכחת בסיפור תל אביב" },
-  ],
-  edges: [
-    { from: "mill", to: "yarkon", label: "located_on" },
-    { from: "greenberg", to: "mill", label: "founded" },
-    { from: "machinery", to: "mill", label: "housed_in" },
-    { from: "hagana", to: "mill", label: "concealed_in" },
-    { from: "eucalyptus", to: "mill", label: "threatens" },
-    { from: "luxury_towers", to: "mill", label: "threatens_to_replace" },
-    { from: "veterans", to: "mill", label: "advocates_for" },
-    { from: "veterans", to: "luxury_towers", label: "opposes" },
-    { from: "graffiti", to: "mill", label: "reappropriates" },
-    { from: "industrial_value", to: "mill", label: "embodied_in" },
-    { from: "mill", to: "industrial_value", label: "carries" },
-    { from: "greenberg", to: "industrial_value", label: "represents" },
+    { from: "ccnhp", to: "chaco_canyon", label: "located_in" },
+    { from: "pueblo_bonito", to: "ccnhp", label: "part_of" },
+    { from: "casa_rinconada", to: "ccnhp", label: "part_of" },
+    { from: "fajada_butte", to: "ccnhp", label: "part_of" },
+    { from: "ccnhp", to: "puebloans", label: "built_by" },
+    { from: "hopi_pueblo", to: "ccnhp", label: "pilgrimage_to" },
+    { from: "navajo", to: "chaco_canyon", label: "inhabited" },
+    { from: "nps", to: "ccnhp", label: "manages" },
+    { from: "ccnhp", to: "antiquities_act", label: "catalyzed" },
+    { from: "wh_inscription", to: "ccnhp", label: "recognizes" },
+    { from: "chaco_phenom", to: "ccnhp", label: "defines" },
+    { from: "ccnhp", to: "val_scientific", label: "expresses_value" },
+    { from: "ccnhp", to: "val_historical", label: "expresses_value" },
+    { from: "hopi_pueblo", to: "casa_rinconada", label: "sacred_to" },
+    { from: "hopi_pueblo", to: "fajada_butte", label: "sacred_to" },
+    { from: "puebloans", to: "hopi_pueblo", label: "ancestors_of" },
+    { from: "puebloans", to: "chaco_phenom", label: "created" },
+    { from: "mesa_verde", to: "chaco_canyon", label: "connected_to" },
+    { from: "nps", to: "navajo", label: "displaced" },
+    { from: "antiquities_act", to: "nps", label: "established_framework" },
   ]
 };
 
@@ -139,6 +108,5 @@ const DEMO_KG: KGData = {
  */
 export const PREBUILT_GRAPHS: Record<string, KGData> = {
   zaira: ZAIRA_KG,
-  ayelet: AYELET_KG,
-  demo: DEMO_KG,
+  chaco: CHACO_KG,
 };
