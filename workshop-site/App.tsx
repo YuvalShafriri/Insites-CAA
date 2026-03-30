@@ -1368,13 +1368,22 @@ const App: React.FC = () => {
                             <span className="text-xs font-bold text-slate-700">Gemini</span>
                             <span className="text-[9px] font-bold text-red-500">Thinking mode!</span>
                           </a>
-                          <div className="flex flex-col items-center gap-1.5 p-3 bg-white border border-slate-200 rounded-xl opacity-60 cursor-default">
-                            <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
-                              <Sparkles size={20} className="text-purple-600" />
+                          <details className="flex flex-col items-center bg-white border border-slate-200 rounded-xl cursor-pointer group">
+                            <summary className="flex flex-col items-center gap-1.5 p-3 select-none list-none">
+                              <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <Sparkles size={20} className="text-purple-600" />
+                              </div>
+                              <span className="text-xs font-bold text-slate-700">Claude</span>
+                              <span className="text-[9px] font-bold text-purple-500">DIY setup ↓</span>
+                            </summary>
+                            <div className="px-3 pb-3 text-left border-t border-slate-100 mt-1 pt-2">
+                              <ol className="text-[11px] text-slate-600 space-y-1 list-decimal ml-3">
+                                <li>Go to <strong>claude.ai → Projects → Create Project</strong></li>
+                                <li>Paste <a href="https://github.com/InSites-Lab/Insites-CAA2026/blob/dev/InSites-CAA/v5.4/InSites-Brain/Claude/InSites-CAA-mono%20v5.4.md" target="_blank" rel="noopener noreferrer" className="text-purple-600 underline">this prompt</a> into Custom Instructions</li>
+                                <li>Upload your document and type <strong>"start"</strong></li>
+                              </ol>
                             </div>
-                            <span className="text-xs font-bold text-slate-500">Claude</span>
-                            <span className="text-[9px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Coming soon</span>
-                          </div>
+                          </details>
                         </div>
                       </div>
 

@@ -1,8 +1,28 @@
-# InSites-CAA v2 — Claude.ai Project Setup Guide
+# InSites-CAA — Claude.ai Setup Guide
 
-## Overview
+## Quick Start (Workshop — Mono Prompt)
 
-InSites-CAA v2 uses a **core prompt + 4 Project Skills** architecture. The core prompt (~870 lines) is always loaded. Skills load on demand when triggered, reducing token usage by ~43% compared to the monolithic v1.
+The fastest way to run InSites-CAA on Claude.ai. One file, no skills to configure.
+
+1. Go to **claude.ai** → **Projects** → **Create Project**
+2. Name it: `InSites-CAA`
+3. Open project settings → **Custom Instructions**
+4. Copy the **entire contents** of [`InSites-CAA-mono v5.4.md`](InSites-CAA-mono%20v5.4.md) and paste
+5. Save. Start a conversation. Upload a heritage document and type **"start"**
+
+> **Tip:** Use a paid account with the latest Claude model for best results.
+
+That's it. The mono prompt includes everything — stages, KG, dashboard, reading workflows, all appendices.
+
+---
+
+## Advanced Setup (Skills-Split Architecture)
+
+For production use. Core prompt + 4 Project Skills — reduces token usage by ~43%.
+
+### Overview
+
+InSites-CAA v2 uses a **core prompt + 4 Project Skills** architecture. The core prompt (~870 lines) is always loaded. Skills load on demand when triggered.
 
 | Component | File | Loaded when |
 |-----------|------|-------------|
