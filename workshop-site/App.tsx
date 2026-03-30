@@ -288,6 +288,7 @@ const App: React.FC = () => {
   const [isReadAssessmentModalOpen, setIsReadAssessmentModalOpen] = useState(false);
   const [isGlossaryModalOpen, setIsGlossaryModalOpen] = useState(false);
   const [isPresentationModalOpen, setIsPresentationModalOpen] = useState(false);
+  const [isOpeningSlideOpen, setIsOpeningSlideOpen] = useState(false);
   const [readAssessmentInitialRoute, setReadAssessmentInitialRoute] = useState<string | null>(null);
   const [inventoryModalLang, setInventoryModalLang] = useState<"he" | "en">(
     "en"
@@ -355,6 +356,7 @@ const App: React.FC = () => {
     "read-assessment": () => { setReadAssessmentInitialRoute(null); setIsReadAssessmentModalOpen(true); },
     glossary: () => setIsGlossaryModalOpen(true),
     presentation: () => setIsPresentationModalOpen(true),
+    opening: () => setIsOpeningSlideOpen(true),
     design: () => {
       openDesignView();
       setMobileView(window.innerWidth < 768 ? "DESIGN" : "HOME");
@@ -1379,7 +1381,7 @@ const App: React.FC = () => {
                       {/* Links */}
                       <div className="space-y-2">
                         <ResourceLink
-                          href="#"
+                          href="https://drive.google.com/drive/folders/1HxWjZ1GVGtRsoGWZZi4kaiNuhhLPTfO1?usp=sharing"
                           icon={<BookOpen size={16} />}
                           label="Shared Materials"
                           secondaryLabel="Heritage documents to work with during the workshop"
@@ -1403,7 +1405,7 @@ const App: React.FC = () => {
                           colorScheme="amber"
                         />
                         <ResourceLink
-                          href="https://github.com/YuvalShafriri/atar.bot-Icomos.Israel/blob/main/Bot-Brain-he.md"
+                          href="https://github.com/InSites-Lab/Insites-CAA2026"
                           icon={<Github size={16} />}
                           label="GitHub Repository"
                           secondaryLabel="Source code and system instructions"
@@ -1602,6 +1604,30 @@ const App: React.FC = () => {
         onClose={() => { setIsPresentationModalOpen(false); navigateTo("program"); }}
         onNavigate={navigateTo}
       />
+
+      {/* Opening Slide — presenter only */}
+      {isOpeningSlideOpen && (
+        <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center p-8">
+          <button
+            onClick={() => { setIsOpeningSlideOpen(false); window.location.hash = ""; }}
+            className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-2xl cursor-pointer"
+          >✕</button>
+          <img src="/poster.png" alt="InSites Workshop" className="max-h-[45vh] rounded-2xl border border-slate-200 shadow-lg mb-6" />
+          <h1 className="text-3xl md:text-4xl font-black text-slate-800 text-center leading-tight mb-2">
+            InSites: Significance Assessment through<br />the Looking Glass of Gen-AI
+          </h1>
+          <p className="text-lg text-slate-500 mb-1">CAA 2026 Workshop</p>
+          <p className="text-base text-slate-600 mb-6">Dr. Yael Alef &amp; Yuval Shafriri · InSites Knowledge Lab · Technion</p>
+          <a
+            href="https://bit.ly/insites-caa"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-3xl md:text-5xl font-black text-indigo-600 hover:text-indigo-700 transition-colors underline underline-offset-4"
+          >
+            bit.ly/insites-caa
+          </a>
+        </div>
+      )}
 
       <style
         dangerouslySetInnerHTML={{

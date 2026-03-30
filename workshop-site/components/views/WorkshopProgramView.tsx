@@ -111,7 +111,7 @@ const CHALLENGES = [
     quote: "It's too heavy, no one reads it",
     response: "With natural language queries and visual tools like knowledge graphs, we can make cultural insights clearer, usable, and even discover new ones.",
     color: 'indigo',
-    avatar: '/hatter.png',
+    avatar: '/hatter.jpg',
   },
   {
     quote: "So will AI replace the professionals?",
@@ -156,7 +156,7 @@ const ChallengesTab: React.FC = () => (
         const isRight = idx % 2 === 0;
         return (
           <details key={idx} className={`${c.bg} border border-slate-200 ${c.border} border-l-4 rounded-xl overflow-hidden group`}>
-            <summary className={`p-4 cursor-pointer flex items-center gap-3 select-none ${isRight ? '' : 'flex-row-reverse'}`}>
+            <summary className={`p-4 cursor-pointer flex items-center gap-3 select-none ${isRight ? '' : 'flex-row-reverse text-right'}`}>
               <img
                 src={ch.avatar}
                 alt=""
