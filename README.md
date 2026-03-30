@@ -1,105 +1,139 @@
 # InSites-CAA — AI-Assisted Heritage Significance Assessment
 
-InSites-CAA is an AI assistant for structured **Cultural Heritage Significance Assessment** (CBSA). You upload documents about a built heritage site and the assistant guides you through a 6-stage analysis — identifying what makes the place culturally significant, how authentic it remains, and how it compares to similar sites. Every claim is evidence-based, every stage is reviewed by you.
+**InSites** is an AI assistant that guides you through a structured significance assessment of built heritage sites. Upload documents about a site, and the assistant walks you through 7 stages (0–6) — identifying what makes the place culturally significant, how authentic it remains, and how it compares to similar sites.
 
-Built by the **InSites Knowledge Lab** as a research prototype for the [CAA 2026 Workshop](https://alephplace.com/CAA26) (Athens, March 31 2026).
+Every claim is evidence-based. Every stage is reviewed by you. The AI proposes; you decide.
+
+> **Workshop:** [InSites: Significance Assessment through the Looking Glass of Gen-AI](https://bit.ly/insites-caa)
+> CAA 2026 — Athens, March 31, 2026
+> **[bit.ly/insites-caa](https://bit.ly/insites-caa)**
 
 ---
 
 ## Try It Now
 
-Set up your own InSites-CAA assistant in ~10 minutes on any platform:
+| Platform | Access | Notes |
+|----------|--------|-------|
+| **ChatGPT** | [Open InSites →](https://chatgpt.com/g/g-695d3567400c8191a402087b38c7b6b7-tr-bvt-h-rkt-mshm-vt-lshymvr) | Ready to use |
+| **Google Gemini** | [Open InSites →](https://gemini.google.com/gem/5b822b7e1771?usp=sharing) | Use Thinking mode |
+| **Claude.ai** | [Setup Guide →](InSites-Brain/Claude/SETUP-GUIDE.md) | DIY: paste one file into a Project (~5 min) |
 
-| Platform | Guide |
-|----------|-------|
-| **Claude.ai** | [Setup Guide →](InSites-Brain/Claude/WORKSHOP-README.md) |
-| **ChatGPT** | [Setup Guide →](InSites-Brain/GPTs/CAA-GTPs%20(Claude.ai-Spilts)/README.md) |
-| **Google Gemini** | [Setup Guide →](InSites-Brain/Gemini/README.md) |
-
-All three platforms use the same CBSA methodology. Choose whichever you prefer.
+**To start:** Upload a heritage document and type **"start"**.
 
 ---
 
-## What Can the Bot Do?
+## Quick Questions to Ask the Bot
 
-A structured 6-stage heritage assessment with interactive outputs. [Full feature overview →](docs/BOT-FEATURES.md)
+The best way to understand InSites is to ask it. These questions let the bot introduce its own concepts.
 
-- **Stages 0-6** — from preliminary review to significance statement, with your review after every stage
-- **Knowledge Graph** — interactive visual map of entities and relationships in the assessment
-- **Dashboard** — 10-tab visual summary of a completed assessment
-- **Read-Assessment** — deep interpretive reading of a single assessment
-- **Read-Collection** — pattern analysis across multiple site assessments
+### Understand the method
+
+| Ask this | What you'll learn |
+|----------|-------------------|
+| **"What is InSites?"** | What it does, how it works, what it expects from you |
+| **"What is CBSA?"** | The 7-stage assessment method — evidence-based, human-reviewed |
+| **"What is context effect?"** | The core principle — how contexts and values shape each other |
+| **"What are epistemic markers?"** | How the bot marks what's explicit, inferred 〰️, or interpretive 💭 |
+
+### Explore capabilities
+
+| Ask this | What you'll see |
+|----------|----------------|
+| **"kg"** or **"knowledge graph"** | Interactive map of entities and relationships |
+| **"dashboard"** | Multi-tab visual summary of a completed assessment |
+| **"read assessment"** | Deep interpretive reading through multiple lenses |
+| **"read collection"** | Pattern analysis across multiple site assessments |
+
+### Test its principles
+
+| Ask this | Why it matters |
+|----------|---------------|
+| **"What evidence supports that claim?"** | Must cite your documents — file and page |
+| **"What are the data gaps?"** | Stage 0 identifies what's missing before analysis |
+| **"Can you search the web?"** | Should decline — works only with your uploads |
 
 ---
 
-## Companion Website
+## What the Bot Does
 
-**[alephplace.com/CAA26](https://alephplace.com/CAA26)** — interactive workshop guide with CBSA stage walkthroughs, design principles, Knowledge Graph demo, glossary, and program timeline.
+**7-stage assessment (Stages 0–6)** — From document review through contexts, values, authenticity, comparison, significance statement, to quality check. Pauses after every stage for your review.
 
-Source code: [`workshop-site/`](workshop-site/)
+**Knowledge Graph** — Interactive entity-relationship visualization.
+
+**Assessment Dashboard** — Multi-tab visual summary (values, contexts, timeline, integrity, threats).
+
+**Read-Assessment** — Analytical and interpretive readings of a completed assessment.
+
+**Read-Collection** — Cross-cutting analysis of multiple site assessments.
+
+### Design principles
+
+- **Evidence Mandate** — Uses only your uploaded documents. No external sources, no fabrication.
+- **Human-in-the-Loop** — You approve every stage. The AI proposes; you decide.
+- **Context Effect** — Bidirectional: contexts frame significance, and significance reframes contexts.
+- **Epistemic Transparency** — Claims marked: explicit (sourced), 〰️ inferred, 💭 interpretive.
 
 ---
 
 ## Workshop Materials
 
-- [Sample assessment data](docs/SAMPLE-DATA.md) — EAC11 collection (17 sites, 10 countries) + workshop input files
-- [The Architect — Build Your Own Agent](docs/THE-ARCHITECT.md) — meta-agent for designing AI system instructions, used in the Ethics in Practice session
+- **[Companion website](https://bit.ly/insites-caa)** — Presentation, stage walkthroughs, KG demo, glossary
+- **[Shared materials](https://drive.google.com/drive/folders/1HxWjZ1GVGtRsoGWZZi4kaiNuhhLPTfO1?usp=sharing)** — Heritage documents to work with during the workshop
+- **[The Architect](docs/THE-ARCHITECT.md)** — Build your own AI agent (Ethics in Practice session)
+- **[Sample data](docs/SAMPLE-DATA.md)** — Test datasets for hands-on sessions
 
 ---
 
-## For Researchers — Methodology
-
-The design specifications behind InSites-CAA:
-
-| Document | What it covers |
-|----------|---------------|
-| [MA-RA Spec](InSites-Brain/design/MA-RA-spec-v2.md) | Read-Assessment workflow — deep reading of single assessments |
-| [MA-RC Spec](InSites-Brain/design/MA-RC-spec-v2.md) | Read-Collection workflow — cross-site pattern analysis |
-| [MA-RC Guide](InSites-Brain/design/MA-RC-guide.md) | Rationale: why collection-level analysis matters |
-| [Epistemic Notation](InSites-Brain/design/epistemic-notation.md) | How claims are classified by evidence traceability |
-| [Dashboard Reference](InSites-Brain/design/Single-Dashboard-example.html) | Reference implementation for assessment dashboards |
-| [Session Report Protocol](InSites-Brain/design/Bot-Research-Skiil/) | Research instrument for session documentation |
-
----
-
-## Repository Map
+## Repository Structure
 
 ```
 InSites-Brain/
-  Claude/                    # Claude.ai bot prompt + 4 skills + setup guides
-  GPTs/                      # ChatGPT custom GPT package
-  Gemini/                    # Google Gemini prompt + setup guide
-  agent-for-agents/          # "The Architect" meta-agent (English + Hebrew)
-  design/                    # Methodology specs (source of truth)
-  sites-data/                # Heritage site data + test collections
+  Claude/                    Claude.ai mono prompt (v5.4) + setup guide
+  GPTs/                      ChatGPT custom GPT (instructions + knowledge files)
+  Gemini/                    Google Gemini prompt
+  agent-for-agents/          "The Architect" meta-agent (EN + HE)
+  design/                    Methodology specs (source of truth)
+  sites-data/                Heritage site data for testing
 
-workshop-site/               # Companion site source (alephplace.com/CAA26)
-
-docs/
-  BOT-FEATURES.md            # What the bot can do (non-technical overview)
-  SAMPLE-DATA.md             # Guide to test data
-  THE-ARCHITECT.md           # Agent-building activity guide
+workshop-site/               Companion website source (Vite + React + Tailwind)
+docs/                        Non-technical overviews
 ```
+
+---
+
+## For Researchers
+
+### Prompt source
+
+The complete system prompt: [`InSites-Brain/Claude/InSites-CAA-mono v5.4.md`](InSites-Brain/Claude/InSites-CAA-mono%20v5.4.md)
+
+### Design specs
+
+| Document | Content |
+|----------|---------|
+| [MA-RA Spec](InSites-Brain/design/MA-RA-spec-v2.md) | Read-Assessment workflow |
+| [MA-RC Spec](InSites-Brain/design/MA-RC-spec-v2.md) | Read-Collection workflow |
+| [Artifact UX Contract](InSites-Brain/design/artifact-ux-contract.md) | Cross-platform visual language |
+| [Dashboard Reference](InSites-Brain/design/Single-Dashboard-example.html) | Assessment dashboard implementation |
+| [Session Report](InSites-Brain/design/Bot-Research-Skiil/) | Research instrument for documenting sessions |
 
 ---
 
 ## How to Cite
 
-> Alef, Y., & Shafriri, Y. (2026). InSites-CAA: AI-Assisted Heritage Significance Assessment. InSites Knowledge Lab. https://github.com/[repo-url]
-
-*(Paper citations will be added after acceptance.)*
-
----
-
-## License
-
-[CC-BY 4.0](LICENSE) — use freely, adapt, share. Credit the **InSites Knowledge Lab**.
+> Alef, Y., & Shafriri, Y. (2026). InSites-CAA: AI-Assisted Heritage Significance Assessment. InSites Knowledge Lab, Technion — Israel Institute of Technology. https://github.com/InSites-Lab/Insites-CAA2026
 
 ---
 
 ## The InSites Knowledge Lab
 
-The InSites Knowledge Lab develops computational methods for evidence-based heritage assessment at the intersection of **Assessment Methods**, **Novel Technologies**, and **Built-Heritage Data**. InSites-CAA is a research prototype that explores how structured AI-Human collaboration can make heritage significance assessment more transparent, documented, and accessible.
+At the intersection of assessment methods, novel technologies, and built-heritage data — we develop computational methods for evidence-based heritage assessment.
 
-**Dr. Yael Alef** — Heritage assessment methodology, CBSA development, domain expertise
-**Yuval Shafriri** — AI systems architecture, prompt engineering, platform development
+**Dr. Yael Alef** — Heritage assessment methodology, CBSA development
+**Yuval Shafriri** — AI systems architecture, prompt engineering
+
+[InSites Knowledge Lab](https://github.com/InSites-Lab) · Technion — Israel Institute of Technology
+
+---
+
+[CC-BY 4.0](LICENSE)
