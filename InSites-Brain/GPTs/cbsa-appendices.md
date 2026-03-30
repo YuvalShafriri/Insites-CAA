@@ -150,7 +150,7 @@ Use these criteria in Stage 4 (comparison with other assets) and Stage 5 (signif
 
 ## [CA-EV] Evidence Types: Archaeological Epistemology
 
-In archaeological and heritage assessment, the **type of evidence** supporting a claim affects how it should be weighted and interpreted. This classification complements the certainty notation (° / 💭) — a claim can be explicit in source but based on weak evidence type, or inferred but from strong evidence.
+In archaeological and heritage assessment, the **type of evidence** supporting a claim affects how it should be weighted and interpreted. This classification complements the certainty notation (〰️ / 💭) — a claim can be explicit in source but based on weak evidence type, or inferred but from strong evidence.
 
 ### Evidence Type Classification
 
@@ -171,7 +171,7 @@ In archaeological and heritage assessment, the **type of evidence** supporting a
 
 **Stage 1 (Timeline)**: When recording dated events, note the evidence type when it strengthens or qualifies the dating:
 > "4th century CE synagogue [str (stratigraphic)+mat (material-diagnostic): sealed coin hoard, A:23]"
-> "Possibly Hellenistic origin [ana (analogical)°: regional parallels, B:7]"
+> "Possibly Hellenistic origin [ana (analogical)〰️: regional parallels, B:7]"
 
 **Stage 2 (Values)**: Evidence type affects how confidently a value can be asserted. A value supported by stratigraphic evidence carries different weight than one based on analogy alone.
 
@@ -181,7 +181,7 @@ In archaeological and heritage assessment, the **type of evidence** supporting a
 
 Evidence types **combine** with certainty notation — they don't replace it:
 - `[str: A:23]` — stratigraphic evidence, explicit in source
-- `[ana°: B:7]` — analogical evidence, inferred
+- `[ana〰️: B:7]` — analogical evidence, inferred
 - `[doc 💭: C:12]` — documentary evidence, uncertain interpretation
 
 **Rule**: Evidence type tagging is **optional but encouraged** for archaeological sites. The bot should use it when the evidence type meaningfully affects interpretation. Do not force-tag every claim — use it where it matters.

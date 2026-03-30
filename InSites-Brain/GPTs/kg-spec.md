@@ -31,6 +31,51 @@ Forbidden:
 
 If exact execution is blocked, state the blocker and stop. Do not substitute another implementation.
 
+## Trigger
+
+Execute this spec only on explicit Knowledge Graph requests ("kg", "knowledge graph", "create kg"). Respond **only** with the Canvas (no surrounding prose).
+
+## CBSA Data Extraction → DATA
+
+1. Re-read stage outputs (contexts, timeline, values, comparisons).
+2. List candidate nodes (target 10–15, maximum 20) in this priority order:
+   - **Value-bearing entities** central to Stage 2 (the things that carry identified values)
+   - **Key places/structures** and **major events** (the central heritage subject and temporal anchors)
+   - **Context anchors** (geographic, social, political entities that shape significance)
+   - **Social actors** (individuals, groups, communities relevant to the asset)
+   - **Up to 3 Cultural Value nodes** (abstract value entities for KG illustration)
+3. Capture relationship verbs that show CBSA logic (`located_in`, `expresses_value`, `part_of`, `commemorates`, `influenced_by`, `supports`, etc.).
+4. Drop weak/duplicate nodes; avoid orphans (every node must connect at least once).
+5. Assign each node a `type` from the [CA-EC] entity categories. Default to the closest existing category. A new type may be introduced only when a node genuinely falls outside all 14 categories and forcing a match would misrepresent its heritage role — in that case, name the new type clearly and add it to the colour map.
+
+## DATA Schema (strict)
+
+⚠ Apply Language Policy to all KG fields.
+
+```json
+{
+  "title": "Asset Name",
+  "nodes": [
+    {
+      "id": "unique_id",
+      "name": "Display Name",
+      "type": "Entity Type",
+      "meaning": "5-12 words describing its heritage role",
+      "value_type": "Optional value label from [CA-V]"
+    }
+  ],
+  "edges": [
+    { "from": "source_id", "to": "target_id", "label": "relationship_verb" }
+  ]
+}
+```
+
+**Rules**:
+- `type` must use English tokens from [CA-EC] for colour mapping (the renderer automatically translates to display labels when needed).
+- `meaning` is concise, site-specific, written in English.
+- Optional `value_type` must match [CA-V].
+- Edges use lowercase verbs; keep total edges ≤ 25.
+
 ## HTML Generation Pattern
 
 Generate exactly this structure. Only replace `{LANG}`, `{DIR}`, `{TITLE}`, and the `DATA` content:
@@ -82,8 +127,8 @@ Only the graph data belongs in the inline script block. Everything else is handl
 |-------|------|-------------|
 | `id` | string | Unique identifier (snake_case, e.g. `asset_tower`) |
 | `name` | string | Display name |
-| `type` | string | One of the 15 canonical entity types (see below) |
-| `meaning` | string | Heritage significance description |
+| `type` | string | One of the 14 canonical entity types (see below) |
+| `meaning` | string | Heritage significance description (5-12 words) |
 
 ### Optional Node Fields
 
@@ -104,7 +149,26 @@ Only the graph data belongs in the inline script block. Everything else is handl
 
 The runtime resolves colors automatically from the `type` field. The bot must NOT specify `color` per node — only `type`.
 
-15 canonical types:
+14 canonical types:
+
+| Type | Description |
+|------|-------------|
+| Place | A geographic location, area, or region relevant to the heritage asset |
+| Structure / Building | A constructed edifice or architectural ensemble |
+| Architectural Element | A specific component of a structure (column, arch, frieze, etc.) |
+| Person | An individual historically or culturally linked to the asset |
+| Event | A discrete historical occurrence tied to the asset's timeline |
+| Story / Narrative | An oral tradition, legend, or documented account |
+| Cultural Value | An abstract value category from the CBSA assessment |
+| Natural Phenomenon | A geological, ecological, or climatic feature |
+| Artwork / Artefact | A movable object, inscription, or decorative element |
+| Tradition / Custom | A recurring cultural practice associated with the asset |
+| Social Group | A community, guild, congregation, or population segment |
+| Historical Period | A defined chronological era relevant to the assessment |
+| Religion / Belief | A faith system, cosmology, or spiritual practice |
+| Collective Memory | A shared remembrance, commemoration, or cultural narrative |
+
+**Runtime color mapping**: The runtime maps each type to its hex color automatically:
 
 | Type | Hex |
 |------|-----|
@@ -132,14 +196,23 @@ The runtime applies three sizing tiers automatically:
 
 | Tier | Applies to | Radius |
 |------|-----------|--------|
-| Asset | type === `Asset` | 16px |
-| Value | type === `Cultural Value` or `value_type` is set | 11px |
-| Default | all others | 9px |
+| Asset (primary) | The assessed heritage subject | 14–16px |
+| Cultural Value | Nodes with `value_type` set | 11px |
+| All others | Every other entity type | 8–10px |
+
+Node labels: placed below the node, font-size ≥ 10px. Truncate at 20 characters with ellipsis.
+
+## Edge Geometry
+
+- **Curvature**: Edges rendered as gentle arcs (curved Bézier), not straight lines. Prevents edge overlap and gives the graph a looser, organic feel.
+- **Edge labels**: placed at curve midpoint, font-size ≥ 10px.
+- **Arrow markers**: small directional arrowheads at target end of each edge.
 
 ## Graph Limits
 
 - Target: 10–15 nodes, max 20
 - Edges: max 25
+- ≤ 3 Cultural Value nodes
 - User can request more
 
 ## Runtime-Provided UX
@@ -161,9 +234,9 @@ The external runtime (`kg-runtime.js` + `kg-runtime.css`) provides all of the fo
 - Type filter buttons with colored dots
 
 ### Sidebar (3 tabs)
-- **Info**: node details (name, type badge, meaning, value_type, meta) + outgoing/incoming connections as clickable cards
-- **Analytics**: 2×2 stat grid (Nodes, Edges, Types, Density) + top 5 most connected nodes
-- **AI Query**: placeholder mode — title, description, example prompts for the GPT chat
+- **Info**: node details (name, type badge, meaning, value_type, meta) + outgoing/incoming connections as clickable cards. When no node is selected: placeholder prompt ("Click a node to inspect it"). When selected: node name (≥ 1rem, bold), type badge (coloured by [CA-EC]), meaning text (≥ 0.88rem), connections list grouped into outgoing and incoming.
+- **Analytics**: Search input filtering nodes by name or meaning. Type filter toggle buttons with count badges. Statistics: node count, edge count, entity type count, graph density. Top 5 most connected nodes by degree, clickable (navigates to Info tab on click).
+- **AI Query**: placeholder mode — title, description, example prompts for the GPT chat. No live API calls from the Canvas.
 
 ### Legend
 - Bottom of canvas, shows only types present in current data
@@ -174,6 +247,16 @@ The external runtime (`kg-runtime.js` + `kg-runtime.css`) provides all of the fo
 - Switches all UI labels to Hebrew when RTL detected
 - Respects `lang` and `dir` attributes on `<html>`
 
+## Light Chrome Palette
+
+The runtime uses the following palette for all KG UI chrome (background, sidebar, borders, text). Entity node colours remain governed by [CA-EC]:
+
+```
+Background: #f8fafc → sidebar: #f1f5f9 → cards: #ffffff → borders: #e2e8f0
+Text-primary: #1e293b → text-dim: #64748b → text-muted: #94a3b8
+Accent: #3b82f6 (interactive elements, active tab indicator)
+```
+
 ## Language and Direction
 
 Set `lang` and `dir` on `<html>` to match the user's instruction language:
@@ -183,10 +266,21 @@ Set `lang` and `dir` on `<html>` to match the user's instruction language:
 
 ## AI Query Tab [CA-AIQ]
 
-Follows **placeholder mode** (GPT platform). No live API calls from the artifact — all interpretation is routed through the GPT conversation. The runtime displays:
+Follows **placeholder mode** (GPT platform). No live API calls from the Canvas — all interpretation is routed through the GPT conversation. The runtime displays:
 - Title ("Deep Graph Query")
 - Explanation of capabilities
-- 4 example prompts users can copy into chat
+- 5 starter prompts users can copy into chat:
+  1. "What are the key relationships in this knowledge graph?"
+  2. "Which entities are most connected?"
+  3. "How do contexts relate to values?"
+  4. "Explain the context-effect relationships"
+  5. "What patterns emerge from the graph structure?"
+
+When user clicks a starter prompt or types a question, display: "💬 Copy this question to the chat conversation for an answer based on the full assessment context." Include a copy-to-clipboard button for the question text.
+
+## After KG
+
+Offer to highlight one context-effect edge pair. If accepted: 2 sentences max — Context→Asset, Asset→Context. No theory preamble.
 
 ## Compliance Check
 
@@ -203,5 +297,9 @@ Before returning a Knowledge Graph Canvas, verify:
 - [ ] No inline toolbar, sidebar, search, filter, legend, or physics logic
 - [ ] No inline CSS beyond `#kg-app { width: 100vw; height: 100vh; }`
 - [ ] `lang` and `dir` match user language
+- [ ] Counts: 10–15 nodes (≤ 20), ≤ 25 edges, ≤ 3 Cultural Value nodes
+- [ ] Every node has `id`, `name`, `type`, `meaning` (English). No orphan nodes.
+- [ ] Relationship verbs describe actual CBSA links (avoid duplicate "related_to" unless necessary)
+- [ ] Output: Canvas document only; no surrounding explanation
 
 If any item fails, revise before returning output.
