@@ -22,6 +22,7 @@ InSites-Brain/Gemini/InSites-CAA-mono*.md
 ~$*
 .tmp.driveupload/
 .tmp.drivedownload/
+.tmp.drive*/
 
 # Environment / API keys
 .env*

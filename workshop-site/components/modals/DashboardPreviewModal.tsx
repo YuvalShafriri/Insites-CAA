@@ -23,7 +23,7 @@ export const DashboardPreviewModal: React.FC<DashboardPreviewModalProps> = ({ is
               assessment. Tabs cross-reference each other — clicking a context highlights related values, and vice versa.
             </p>
             <div className="flex flex-wrap gap-2 mt-2">
-              {['Overview', 'Timeline', 'Contexts', 'Values', 'Integrity', 'Comparative', 'Significance', 'Vulnerability', 'Process', 'KG'].map(tab => (
+              {['Overview', 'Map', 'Timeline', 'Contexts & Values', 'Integrity', 'Comparative', 'Significance', 'Report', 'AI Query'].map(tab => (
                 <span key={tab} className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[10px] font-bold uppercase tracking-wider">
                   {tab}
                 </span>

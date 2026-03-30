@@ -64,7 +64,7 @@ export const CollectionDashboardModal: React.FC<CollectionDashboardModalProps> =
               38 historic flour mills in Israel — overview, map, values matrix, knowledge graph with AI query, and more.
             </p>
             <div className="flex flex-wrap gap-2 mt-2">
-              {['Overview', 'Map', 'Sites', 'Values', 'Themes', 'Contexts', 'Arguments', 'Gaps', 'Clusters', 'Explanation', 'KG'].map(tab => (
+              {['Overview', 'Map', 'Values', 'Arguments', 'Gaps', 'Clusters', 'AI Query'].map(tab => (
                 <span key={tab} className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[10px] font-bold uppercase tracking-wider">
                   {tab}
                 </span>
