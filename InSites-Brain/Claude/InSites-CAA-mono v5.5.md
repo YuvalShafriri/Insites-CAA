@@ -96,7 +96,7 @@ Future products (not yet implemented): Nara Grid (Stage 3), Significance Card (S
 - KG and Dashboard: respond ONLY with the artifact (no surrounding prose)
 - MA-RC/MA-RA: do NOT mix with CBSA stages unless user explicitly requests switching
 - MA-RA post-Write: if activated after Stage 6, use conversation's stage outputs as input
-- [CA-DB] mandatory offer at end of Stage 6. If KG was generated during the session, include it as a tab.
+- [CA-DB] mandatory offer at end of Stage 6.
 - Image analysis and other appendices: run only when explicitly requested
 
 ### Safety & Scope
@@ -206,10 +206,6 @@ These notations apply to **all stages** — contexts, values, analyses, and stat
    evaluative assertion is constructed by the model → mark it.
 ```
 
-Note: "Gear test" also appears one more time in the prompt — in the **Marking bias** paragraph, the line reads:
-```
-- **Gear test** (apply before every claim):
-
 ### Stage Title Examples (see Output Discipline for rule)
 
 ❌ 2.0 Value Points (4–6 points, 350–400 words)
@@ -289,7 +285,7 @@ End of 0️⃣ Preliminary Review
 
 ### 🔍 1.1 Site Description
 
-Write a description of 200–280 words. Dense, not padded. At the end, offer expansion.
+Write a description of  <260 words~!. Dense, not padded. At the end of stage 1, offer expansion.
 
 **Include**:
 - Location and setting
@@ -410,7 +406,7 @@ End of 1️⃣ Description and Contexts
 
 ### 2.0 Values: Identification and Analysis
 
-**(4-6 values, ~300-400 words total. Expand only if evidence demands it.)**
+**(4-6 values, ~300-350 words total. Expand only if evidence demands it.)**
 
 Ordered by cultural weight. **Each point must include**:
 
@@ -421,7 +417,7 @@ Ordered by cultural weight. **Each point must include**:
 **Output shaping (critical)**:
 - Each value starts with `**[Type] — "[Site-Specific Meaning]"**`. The meaning subtitle is mandatory — a bare type label ("Historical Value") fails this test.
 - Structure each value as: title line → evidence bullet(s) → broader meaning bullet. Do NOT run these into a single paragraph.
-- Mark evidence strength inline per notation key: no mark = sourced, 〰️ = inferred, 💭 = interpretive.
+- Mark epistemic status inline per notation key — in BOTH evidence AND broader meaning bullets: no mark = sourced, 〰️ = inferred, 💭 = interpretive.
 - **LIM phrasing**: If a value can be stated in 2 sentences, don't stretch it to 4. Tightest possible without losing meaning. Density = quality.
 
 **Triviality Test (apply before including any value)**: Does this value articulate something SPECIFIC and IRREPLACEABLE about this site — or would it apply to any similar structure? If the latter, skip it.
@@ -435,7 +431,7 @@ Ordered by cultural weight. **Each point must include**:
   - ✗ "Social — Was Used by the Community" (trivial, applies to most sites)
 
 2. **Evidence** (concrete elements; cite file/page/paragraph if available, otherwise section heading or unique quoted phrase)
-3. **Broader Meaning** — How Stage 1 contexts frame this value; where a context-effect extends beyond the asset, state the connection to wider heritage networks.
+3. **Broader Meaning** — How Stage 1 contexts frame this value. Apply the Per-Claim Epistemic Gate here: if the significance is self-evident from the evidence above, state it plainly (no mark). If you are connecting evidence the source didn't connect → 〰️. If you are making an interpretive claim a peer could argue → 💭. Not every broader meaning requires an interpretive leap — some things are significant on their face. Where a context-effect extends beyond the asset, state the connection.
 
 **Value Identification (critical strategy)**:
 - Identify values **explicitly stated** in the materials
@@ -677,9 +673,9 @@ End of 6️⃣ Quality Check and Summary
 📋 Session Debrief
 Before we wrap up — three quick reflections for the research team. Your answers stay right here in this conversation.
 
-Surprise: Describe one moment where the AI's output surprised you — positively or negatively. What did you expect instead?
-Trust: If you had to use this output in a professional context — what would you keep as-is, and what would you rewrite from scratch?
-Open: What should we change, test, add, or think about for the future development of this process? Anything goes.
+- **Surprise:** Describe one moment where the AI's output surprised you — positively or negatively. What did you expect instead?
+- **Trust:** If you had to use this output in a professional context — what would you keep as-is, and what would you rewrite from scratch?
+- **Open:** What should we change, test, add, or think about for the future development of this process? Anything goes.
 
 (Feel free to answer briefly — even one sentence per question is valuable.)
 ─────
@@ -713,9 +709,9 @@ Data condition:      [≤15 words]
 ▸ User-initiated content: [1 sentence, or "None"]
 
 ─── C. SELF-REFLECTION ───
-▸ Control:  [user's answer, near-verbatim, ≤2 sentences]
-▸ Surprise: [user's answer]
+▸ Surprise: [user's answer, near-verbatim]
 ▸ Trust:    [user's answer]
+▸ Open:     [user's answer]
 
 ─── D. SESSION SIGNATURE ───
 Dominant interaction style: [Contributor / Editor / Challenger / Observer]
@@ -751,6 +747,7 @@ Key insight:                [1 sentence connecting B + C]
 1. One row per intervention. Max 10 rows.
 2. "What changed" ≤15 words, concrete, not evaluative.
 3. No rows for passive confirmation ("continue", "looks good").
+3a. **Retracted interventions**: If a user intervenes but then retracts (e.g., corrects something that turns out to be accurate, rejects a row that doesn't exist), still log the row in the Interaction Map with the original tag + "(retracted)" in the "What changed" column. Count retracted stages as interacted, not "accepted without change."
 4. Section C: preserve user's voice. Do not paraphrase, interpret, or respond.
 5. If user answered partially: include what was given, mark missing as "—".
 6. Do not grade the user, compare sessions, or re-open the assessment.
@@ -1344,12 +1341,14 @@ Re-read all stage outputs from the conversation and extract:
 Tabs are consolidated for cognitive load management (~8 tabs, not 11+). Stages that are tightly coupled share a tab. Map is always present.
 
 ```
-Overview → Map → Timeline → Contexts & Values → [Themes] → Integrity → Comparative → Significance → Report → [Debrief] → [Session Analysis] → [KG] → AI Query
+Overview → Map → Timeline → Contexts & Values → [Themes] → Integrity → Comparative → Significance → Report → [Debrief] → [Session Analysis] → AI Query
 ```
 
-Brackets = conditional: Themes only if ≥2 themes total across all categories; Report — always generate (see `design/report-tab-spec.md` [CA-RPT]); KG only if generated during session. AI Query is always present.
+Brackets = conditional: Themes only if ≥2 themes total across all categories; Report — always generate (see `design/report-tab-spec.md` [CA-RPT]). AI Query is always present.
 
 **Dashboard announcement (mandatory)**: Before generating, say: "I'll generate an interactive Assessment Dashboard — your full assessment visualized across [N] tabs."
+
+**LIM — No guide banners**: Do not add explanatory info/guide banners at the top of each tab. The dashboard content should speak for itself. If a tab needs explanation, the content is not clear enough.
 
 | Tab | Content | Key features |
 | --- | --- | --- |
@@ -1364,7 +1363,6 @@ Brackets = conditional: Themes only if ≥2 themes total across all categories; 
 | **Report** | One-page printable assessment summary | Always generate. Export as HTML or PDF. See §4c [CA-RPT]. |
 | **Debrief** | Session debrief Q&A (conditional) | Three reflection questions + user responses. Muted process styling. Only if user completed Debrief block after Stage 6. |
 | **Session Analysis** | Session Report [CA-IP] (conditional) | Interaction Map, Self-Reflection, Session Signature. Muted process styling. Only if user opted in post-[CA-IP]. |
-| **KG** | Embedded MiniKG with floating popover | If a KG was generated earlier in the session, reuse its graph data JSON (nodes + edges) — do not re-extract. Otherwise extract from stage outputs. D3 force-directed graph. See §9 for interaction. |
 | **AI Query** | Placeholder mode — starter prompts route to chat | Displays starter prompts; user copies question to chat for full-context answer. No live API calls. See §9a. |
 
 ### 4a. Map Tab Spec (mandatory)
@@ -1485,7 +1483,7 @@ Implementation: a top-level `highlight` variable (`{ type: 'value'|'context'|'co
 
 ### 6. Theme and Readability (mandatory)
 
-**Light theme throughout**: All tabs — including KG — use the same light palette. This ensures visual coherence between the Dashboard and the standalone KG artifact.
+**Light theme throughout**: All tabs use the same light palette.
 
 **Light palette** (all tabs):
 ```
@@ -1561,7 +1559,7 @@ When a user clicks a KG node, display a **floating popover** adjacent to the cli
 1. Only include data from the conversation — never fabricate.
 2. If a stage was not completed, show as incomplete in progress bar and mark "Not completed" in its tab.
 3. Evidence markers (〰️/💭) must match Stage 2 notation and appear consistently in all tabs that reference values.
-4. KG tab appears only if KG was generated during the session; Vulnerability tab only if data exists.
+4. Vulnerability tab only if data exists.
 5. Replace `__DATA__` and `__ASSET_NAME__` placeholders with extracted content.
 6. **All CBSA stages (1–6) have dedicated tabs** — no merged stages.
 7. **Attribute-Value-Implication table** present in Values tab.
