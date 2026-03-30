@@ -1423,7 +1423,7 @@ const App: React.FC = () => {
                       </p>
                       <div className="grid grid-cols-3 gap-2">
                         <a
-                          href="https://chatgpt.com/g/g-695d3567400c8191a402087b38c7b6b7-tr-bvt-h-rkt-mshm-vt-lshymvr"
+                          href="https://chatgpt.com/g/g-69ca986712f88191828a4a1122278392-insites-caa26"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex flex-col items-center gap-1.5 p-3 bg-white border border-slate-200 rounded-xl hover:border-emerald-300 hover:bg-emerald-50/30 transition-all group cursor-pointer"
@@ -1436,7 +1436,7 @@ const App: React.FC = () => {
                           </span>
                         </a>
                         <a
-                          href="https://gemini.google.com/gem/5b822b7e1771?usp=sharing"
+                          href="https://gemini.google.com/gem/1PMAcB6O2FGJPYonixa3ZA7_2xwiTIVKA?usp=sharing"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex flex-col items-center gap-1.5 p-3 bg-white border border-slate-200 rounded-xl hover:border-blue-300 hover:bg-blue-50/30 transition-all group cursor-pointer"
@@ -1474,7 +1474,7 @@ const App: React.FC = () => {
                               <li>
                                 Paste{" "}
                                 <a
-                                  href="https://github.com/InSites-Lab/Insites-CAA2026/blob/dev/InSites-CAA/v5.4/InSites-Brain/Claude/InSites-CAA-mono%20v5.4.md"
+                                  href="https://github.com/InSites-Lab/Insites-CAA2026/blob/main/InSites-Brain/Claude/InSites-CAA-mono%20v5.5.md"
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="text-purple-600 underline"
@@ -1512,7 +1512,7 @@ const App: React.FC = () => {
                         colorScheme="indigo"
                       />
                       <ResourceLink
-                        href="https://forms.gle/F9ZykAefJQ94n2Vc7"
+                        href="https://forms.gle/zqsZA7DXNJVe4zJc7"
                         icon={<ClipboardCheck size={16} />}
                         label="Feedback Form"
                         secondaryLabel="Research feedback to improve the tool"
