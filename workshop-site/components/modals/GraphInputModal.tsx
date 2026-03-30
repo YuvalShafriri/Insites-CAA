@@ -28,9 +28,13 @@ export const GraphInputModal: React.FC<GraphInputModalProps> = ({
     }
   };
 
-  // Auto-load Zaira on open if textarea is empty
+  // Auto-load Zaira on open if empty
   React.useEffect(() => {
-    if (isOpen && !inputText.trim()) loadZaira();
+    if (isOpen && !inputText.trim()) {
+      if (onSampleSelect) {
+        onSampleSelect(ZAIRA_TEXT, "zaira");
+      }
+    }
   }, [isOpen]);
 
   return (
@@ -48,7 +52,9 @@ export const GraphInputModal: React.FC<GraphInputModalProps> = ({
         <div className="flex items-center justify-between pt-3 border-t border-slate-100">
           <button
             onClick={() => {
-              if (!inputText.trim()) loadZaira();
+              if (!inputText.trim() && onSampleSelect) {
+                onSampleSelect(ZAIRA_TEXT, "zaira");
+              }
               onClose();
               onGenerate(false);
             }}
