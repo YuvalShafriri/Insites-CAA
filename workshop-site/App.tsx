@@ -1621,13 +1621,15 @@ const App: React.FC = () => {
             onClick={() => { setIsOpeningSlideOpen(false); window.location.hash = ""; }}
             className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-2xl cursor-pointer"
           >✕</button>
-          <img src="./poster.png" alt="InSites Workshop" className="max-h-[45vh] rounded-2xl border border-slate-200 shadow-lg mb-6" />
+          <img src="./poster.png" alt="InSites Workshop" className="max-h-[55vh] rounded-2xl border border-slate-200 shadow-lg mb-6" />
           <h1 className="text-3xl md:text-4xl font-black text-slate-800 text-center leading-tight mb-2">
-            InSites: Significance Assessment through<br />the Looking Glass of Gen-AI
+            InSites: Significance Assessment <br />through the Looking Glass of Gen-AI
           </h1>
-          <p className="text-lg text-slate-500 mb-1">CAA 2026 Workshop</p>
-          <p className="text-base text-slate-600 mb-6">Dr. Yael Alef &amp; Yuval Shafriri · InSites Knowledge Lab · Technion</p>
-          <a
+ 
+          <p className="text-2xl text-slate-800 mb-6">Dr. Yael Alef &amp; Yuval Shafriri · InSites Knowledge Lab · Technion</p>
+        
+                  <p className="text-2xl text-slate-800 mb-6">Dr. Yael Alef &amp; Yuval Shafriri · InSites Knowledge Lab · Technion</p>
+  <a
             href="https://bit.ly/insites-caa"
             target="_blank"
             rel="noopener noreferrer"
