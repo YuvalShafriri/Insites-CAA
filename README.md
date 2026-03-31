@@ -14,8 +14,8 @@ Every claim is evidence-based. Every stage is reviewed by you. The AI proposes; 
 
 | Platform | Access | Notes |
 |----------|--------|-------|
-| **ChatGPT** | [Open InSites →](https://chatgpt.com/g/g-695d3567400c8191a402087b38c7b6b7-tr-bvt-h-rkt-mshm-vt-lshymvr) | Ready to use |
-| **Google Gemini** | [Open InSites →](https://gemini.google.com/gem/5b822b7e1771?usp=sharing) | Use Thinking mode |
+| **ChatGPT** | [Open InSites →](https://chatgpt.com/g/g-69ca986712f88191828a4a1122278392-insites-caa26) | Ready to use |
+| **Google Gemini** | [Open InSites →](https://gemini.google.com/gem/1PMAcB6O2FGJPYonixa3ZA7_2xwiTIVKA?usp=sharing) | Use Thinking mode |
 | **Claude.ai** | [Setup Guide →](InSites-Brain/Claude/SETUP-GUIDE.md) | DIY: paste one file into a Project (~5 min) |
 
 **To start:** Upload a heritage document and type **"start"**.
@@ -51,6 +51,7 @@ The best way to understand InSites is to ask it. These questions let the bot int
 | **"What evidence supports that claim?"** | Must cite your documents — file and page |
 | **"What are the data gaps?"** | Stage 0 identifies what's missing before analysis |
 | **"Can you search the web?"** | Should decline — works only with your uploads |
+| **"What can't you do?"** | Reveals boundaries — what it won't attempt and why |
 
 ---
 
@@ -79,8 +80,8 @@ The best way to understand InSites is to ask it. These questions let the bot int
 
 - **[Companion website](https://bit.ly/insites-caa)** — Presentation, stage walkthroughs, KG demo, glossary
 - **[Shared materials](https://drive.google.com/drive/folders/1HxWjZ1GVGtRsoGWZZi4kaiNuhhLPTfO1?usp=sharing)** — Heritage documents to work with during the workshop
-- **[The Architect](docs/THE-ARCHITECT.md)** — Build your own AI agent (Ethics in Practice session)
-- **[Sample data](docs/SAMPLE-DATA.md)** — Test datasets for hands-on sessions
+- **[Build Your Own AI Assistant](agent-for-agents/README.md)** — Design your own AI agent
+- **[Examples](examples/)** — KG and Dashboard demo outputs
 
 ---
 
@@ -88,15 +89,15 @@ The best way to understand InSites is to ask it. These questions let the bot int
 
 ```
 InSites-Brain/
-  Claude/                    Claude.ai mono prompt (v5.4) + setup guide
+  Claude/                    Claude.ai prompt + setup guide
   GPTs/                      ChatGPT custom GPT (instructions + knowledge files)
   Gemini/                    Google Gemini prompt
-  agent-for-agents/          "The Architect" meta-agent (EN + HE)
   design/                    Methodology specs (source of truth)
-  sites-data/                Heritage site data for testing
+  sites-data/                Heritage site data for workshop
 
+agent-for-agents/            Build Your Own AI Assistant (standalone tool)
+examples/                    KG and Dashboard demo outputs
 workshop-site/               Companion website source (Vite + React + Tailwind)
-docs/                        Non-technical overviews
 ```
 
 ---
@@ -105,7 +106,7 @@ docs/                        Non-technical overviews
 
 ### Prompt source
 
-The complete system prompt: [`InSites-Brain/Claude/InSites-CAA-mono v5.4.md`](InSites-Brain/Claude/InSites-CAA-mono%20v5.4.md)
+The complete system prompt: [`InSites-Brain/Claude/InSites-CAA-claude.md`](InSites-Brain/Claude/InSites-CAA-claude.md)
 
 ### Design specs
 
@@ -116,6 +117,15 @@ The complete system prompt: [`InSites-Brain/Claude/InSites-CAA-mono v5.4.md`](In
 | [Artifact UX Contract](InSites-Brain/design/artifact-ux-contract.md) | Cross-platform visual language |
 | [Dashboard Reference](InSites-Brain/design/Single-Dashboard-example.html) | Assessment dashboard implementation |
 | [Session Report](InSites-Brain/design/Bot-Research-Skiil/) | Research instrument for documenting sessions |
+
+---
+
+## References
+
+- **Getty Conservation Institute** — [Research on the Values of Heritage](https://www.getty.edu/projects/research-values-heritage/)
+- **Historic England** — [Conservation Principles](https://historicengland.org.uk/images-books/publications/conservation-principles-sustainable-management-historic-environment/)
+- **EAC Guidelines 9** — [Assessing Archaeological Significance: Key Concepts](https://zenodo.org/records/10697000)
+- **EAC Guidelines 11** — [Articulating the Significance of Archaeological Sites](https://zenodo.org/records/14975018)
 
 ---
 
