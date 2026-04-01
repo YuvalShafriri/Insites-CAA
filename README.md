@@ -79,9 +79,9 @@ The best way to understand InSites is to ask it. These questions let the bot int
 ## Workshop Materials
 
 - **[Companion website](https://bit.ly/insites-caa)** — Presentation, stage walkthroughs, KG demo, glossary
-- **[Shared materials](https://drive.google.com/drive/folders/1HxWjZ1GVGtRsoGWZZi4kaiNuhhLPTfO1?usp=sharing)** — Heritage documents to work with during the workshop
+- **[Shared materials](https://drive.google.com/drive/folders/1XWc4TZVK2x0S8daxqwc20eZqr_tvCDEm?usp=sharing)** — Heritage documents to work with during the workshop
 - **[Build Your Own AI Assistant](agent-for-agents/README.md)** — Design your own AI agent
-- **[Examples](examples/)** — KG and Dashboard demo outputs
+- **[Examples](InSites-Brain/sites-data/results-examples/)** — KG, dashboard, and collection analysis outputs
 
 ---
 
@@ -89,14 +89,17 @@ The best way to understand InSites is to ask it. These questions let the bot int
 
 ```
 InSites-Brain/
-  Claude/                    Claude.ai prompt + setup guide
+  Claude/                    Claude.ai bot prompt + setup guide
   GPTs/                      ChatGPT custom GPT (instructions + knowledge files)
   Gemini/                    Google Gemini prompt
-  design/                    Methodology specs (source of truth)
-  sites-data/                Heritage site data for workshop
+  design/
+    specs/                   Workflow specifications (MA-RA, MA-RC, session report)
+    contracts/               Cross-platform rules (UX contract, epistemic notation)
+    examples/                Reference implementations (dashboard HTML)
+    skills/                  Reusable Claude Code skills (LIM, dashboard review, expert review)
+  sites-data/                Heritage site documents + result examples
 
 agent-for-agents/            Build Your Own AI Assistant (standalone tool)
-examples/                    KG and Dashboard demo outputs
 workshop-site/               Companion website source (Vite + React + Tailwind)
 ```
 
@@ -112,11 +115,13 @@ The complete system prompt: [`InSites-Brain/Claude/InSites-CAA-claude.md`](InSit
 
 | Document | Content |
 |----------|---------|
-| [MA-RA Spec](InSites-Brain/design/MA-RA-spec-v2.md) | Read-Assessment workflow |
-| [MA-RC Spec](InSites-Brain/design/MA-RC-spec-v2.md) | Read-Collection workflow |
-| [Artifact UX Contract](InSites-Brain/design/artifact-ux-contract.md) | Cross-platform visual language |
-| [Dashboard Reference](InSites-Brain/design/Single-Dashboard-example.html) | Assessment dashboard implementation |
-| [Session Report](InSites-Brain/design/Bot-Research-Skiil/) | Research instrument for documenting sessions |
+| [MA-RA Spec](InSites-Brain/design/specs/MA-RA-spec-v2.md) | Read-Assessment workflow |
+| [MA-RC Spec](InSites-Brain/design/specs/MA-RC-spec-v2.md) | Read-Collection workflow |
+| [Artifact UX Contract](InSites-Brain/design/contracts/artifact-ux-contract.md) | Cross-platform visual language |
+| [Epistemic Notation](InSites-Brain/design/contracts/epistemic-notation.md) | Three-tier evidence marking system |
+| [Dashboard Reference](InSites-Brain/design/examples/Single-Dashboard-example.html) | Assessment dashboard implementation |
+| [Session Report](InSites-Brain/design/specs/Bot-Research-Skiil/) | Research instrument for documenting sessions |
+| [Claude Code Skills](InSites-Brain/design/skills/) | Reusable skills: LIM, dashboard review, expert review |
 
 ---
 
