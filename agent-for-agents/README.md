@@ -1,6 +1,6 @@
 # Build Your Own AI Assistant
 
-An AI that helps you design your own AI agent — choose its expertise, principles, and workflow, then deploy it.
+An AI that helps you design your own AI agent or assistant — choose its expertise, principles, and workflow, then deploy it.
 
 ## Quick Start
 
