@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Songoy-Cojal — Knowledge Graph</title>
+  <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;800&family=Noto+Sans+Hebrew:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://alephplace.com/atar.bot/canvas/kg-runtime.css"/>
+  <style>
+    #kg-app { width: 100vw; height: 100vh; }
+  </style>
+</head>
+<body>
+  <div id="kg-app">
+    <div id="kg-toolbar"></div>
+    <div id="kg-network"></div>
+    <aside id="kg-sidebar"></aside>
+  </div>
+
+  <script>
+    window.__DATA_JSON__ = {
+      title: "Songoy-Cojal",
+      nodes: [
+        { id: "songoy_cojal", name: "Songoy-Cojal", type: "Place", meaning: "Gallinazo monument and production complex" },
+        { id: "huaca_songoy", name: "Huaca Songoy", type: "Structure / Building", meaning: "Monumental huaca overlooking valley corridor" },
+        { id: "cojal_east", name: "Cojal East", type: "Place", meaning: "Residential and plaza sector with workshops" },
+        { id: "tal2_kiln", name: "TAL-2 Kiln", type: "Structure / Building", meaning: "Excavated firing feature with production evidence" },
+        { id: "middle_zana_valley", name: "Middle Zaña Valley", type: "Place", meaning: "Corridor landscape framing access and visibility" },
+        { id: "gallinazo_communities", name: "Gallinazo Communities", type: "Social Group", meaning: "Communities linked to settlement and craft activity" },
+        { id: "moche_groups", name: "Mochica Groups", type: "Social Group", meaning: "Coexisting regional population in archaeological debate" },
+        { id: "gallinazo_period", name: "Gallinazo Horizon", type: "Historical Period", meaning: "Primary cultural horizon associated with complex" },
+        { id: "craft_production", name: "Craft Production", type: "Tradition / Custom", meaning: "Ceramic and workshop practices embedded onsite" },
+        { id: "metallurgical_activity", name: "Metallurgical Activity", type: "Tradition / Custom", meaning: "Copper processing tied to regional production" },
+        { id: "coexistence_debate", name: "Gallinazo-Mochica Debate", type: "Story / Narrative", meaning: "Narrative testing coexistence in Lambayeque" },
+        { id: "technological_value", name: "Technological Value", type: "Cultural Value", meaning: "Production knowledge preserved in fabric and process", value_type: "Technological" },
+        { id: "scientific_value", name: "Scientific Value", type: "Cultural Value", meaning: "Research anchor for chronology and production", value_type: "Scientific" },
+        { id: "landscape_value", name: "Landscape Value", type: "Cultural Value", meaning: "Monumentality and route control remain legible", value_type: "Landscape" },
+        { id: "huaca_letrada", name: "Huaca Letrada", type: "Place", meaning: "Regional Gallinazo comparator in Lambayeque" }
+      ],
+      edges: [
+        { from: "huaca_songoy", to: "songoy_cojal", label: "part_of" },
+        { from: "cojal_east", to: "songoy_cojal", label: "part_of" },
+        { from: "tal2_kiln", to: "cojal_east", label: "located_in" },
+        { from: "songoy_cojal", to: "middle_zana_valley", label: "located_in" },
+        { from: "gallinazo_communities", to: "songoy_cojal", label: "occupied" },
+        { from: "moche_groups", to: "coexistence_debate", label: "shapes" },
+        { from: "gallinazo_communities", to: "coexistence_debate", label: "shapes" },
+        { from: "gallinazo_period", to: "songoy_cojal", label: "frames" },
+        { from: "craft_production", to: "tal2_kiln", label: "evidenced_by" },
+        { from: "metallurgical_activity", to: "songoy_cojal", label: "evidenced_by" },
+        { from: "craft_production", to: "technological_value", label: "expresses_value" },
+        { from: "metallurgical_activity", to: "technological_value", label: "supports" },
+        { from: "tal2_kiln", to: "scientific_value", label: "supports" },
+        { from: "songoy_cojal", to: "scientific_value", label: "expresses_value" },
+        { from: "huaca_songoy", to: "landscape_value", label: "expresses_value" },
+        { from: "middle_zana_valley", to: "landscape_value", label: "frames" },
+        { from: "songoy_cojal", to: "coexistence_debate", label: "informs" },
+        { from: "huaca_letrada", to: "songoy_cojal", label: "compares_with" },
+        { from: "huaca_letrada", to: "gallinazo_period", label: "linked_to" }
+      ]
+    };
+  </script>
+  <script src="https://alephplace.com/atar.bot/canvas/kg-runtime.js"></script>
+</body>
+</html>

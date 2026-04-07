@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tuba-Zangariyye Dolmen Field - CBSA Dashboard</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --line: #e2e8f0;
+      --blue: #2563eb;
+      --blue-soft: #dbeafe;
+      --green: #16a34a;
+      --amber: #d97706;
+      --red: #dc2626;
+      --slate: #64748b;
+      --purple: #7c3aed;
+      --shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .app {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: 100vh;
+    }
+    .sidebar {
+      background: #0f172a;
+      color: white;
+      padding: 24px 18px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+    }
+    .brand {
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #93c5fd;
+      margin-bottom: 10px;
+    }
+    .site-title {
+      font-size: 22px;
+      line-height: 1.2;
+      font-weight: 800;
+      margin: 0 0 8px;
+    }
+    .site-meta {
+      color: #cbd5e1;
+      font-size: 14px;
+      line-height: 1.45;
+      margin-bottom: 20px;
+    }
+    .nav {
+      display: grid;
+      gap: 8px;
+      margin-top: 18px;
+    }
+    .nav button {
+      border: 0;
+      background: rgba(255,255,255,0.06);
+      color: white;
+      padding: 12px 14px;
+      text-align: left;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .nav button.active,
+    .nav button:hover { background: rgba(37,99,235,0.55); }
+    .content {
+      padding: 26px;
+      overflow: auto;
+    }
+    .panel {
+      display: none;
+      animation: fade 0.24s ease;
+    }
+    .panel.active { display: block; }
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero {
+      background: linear-gradient(135deg, #ffffff, #eff6ff);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 30px;
+      line-height: 1.1;
+    }
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 1000px;
+    }
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+    .grid.kpis { grid-template-columns: repeat(4, minmax(0,1fr)); margin-bottom: 18px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+    .card h3, .card h4 { margin: 0 0 12px; }
+    .small-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--slate);
+      margin-bottom: 6px;
+    }
+    .kpi-value {
+      font-size: 34px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .muted { color: var(--muted); }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid var(--line);
+      background: #fff;
+      margin: 0 6px 6px 0;
+    }
+    .pill.blue { background: var(--blue-soft); color: var(--blue); border-color: #bfdbfe; }
+    .pill.green { background: #dcfce7; color: var(--green); border-color: #bbf7d0; }
+    .pill.amber { background: #fef3c7; color: var(--amber); border-color: #fde68a; }
+    .pill.red { background: #fee2e2; color: var(--red); border-color: #fecaca; }
+    .pill.purple { background: #ede9fe; color: var(--purple); border-color: #ddd6fe; }
+    #map {
+      height: 440px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+    .timeline {
+      position: relative;
+      padding: 40px 10px 10px;
+      min-height: 220px;
+    }
+    .timeline-line {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      top: 110px;
+      height: 4px;
+      background: linear-gradient(90deg, #cbd5e1, #94a3b8);
+      border-radius: 999px;
+    }
+    .event {
+      position: absolute;
+      top: 66px;
+      width: 170px;
+      transform: translateX(-50%);
+    }
+    .event .dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      margin: 0 auto 10px;
+      border: 3px solid white;
+      box-shadow: 0 0 0 2px rgba(15,23,42,0.08);
+    }
+    .event .year {
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+      color: var(--slate);
+      margin-bottom: 4px;
+    }
+    .event .box {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      box-shadow: var(--shadow);
+      font-size: 12px;
+      line-height: 1.45;
+      min-height: 92px;
+    }
+    .context-card, .value-card, .comp-card, .integrity-card {
+      border-left: 5px solid var(--blue);
+    }
+    .value-card[data-evidence="inferred"] { border-left-color: var(--amber); }
+    .value-card[data-evidence="uncertain"] { border-left-color: var(--purple); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      color: var(--slate);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .rating {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .rating.high { background: #dcfce7; color: var(--green); }
+    .rating.medium { background: #fef3c7; color: var(--amber); }
+    .rating.low { background: #fee2e2; color: var(--red); }
+    .heat td.center, .heat th.center { text-align: center; }
+    .heat-3 { background: #fecaca; }
+    .heat-2 { background: #fde68a; }
+    .heat-1 { background: #f8fafc; }
+    .sig {
+      font-size: 18px;
+      line-height: 1.7;
+      padding: 24px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #ffffff, #f8fafc);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+    .report {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      max-width: 980px;
+      margin: 0 auto;
+    }
+    .report h2 { margin-top: 0; }
+    .debrief-q {
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .source-list, .list {
+      margin: 0;
+      padding-left: 18px;
+      line-height: 1.7;
+    }
+    .prompt {
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+    }
+    .legend-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .section-title { margin: 0 0 14px; font-size: 22px; }
+    .mini { font-size: 12px; color: var(--slate); }
+    .bars svg, .donut svg { width: 100%; height: auto; display: block; }
+    @media (max-width: 1200px) {
+      .grid.kpis, .grid.two, .grid.three { grid-template-columns: 1fr; }
+      .app { grid-template-columns: 1fr; }
+      .sidebar { position: relative; height: auto; }
+      .event { position: relative; left: auto !important; transform: none; width: auto; top: auto; margin-bottom: 16px; }
+      .timeline { padding-top: 12px; }
+      .timeline-line { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">CBSA Dashboard</div>
+      <div class="site-title">Tuba-Zangariyye Dolmen Field</div>
+      <div class="site-meta">Korazim Plateau, basalt hill southeast of Tuba Zangariyye<br />Intermediate-Middle Bronze burial field with later agricultural-road phase</div>
+      <div class="nav" id="nav"></div>
+    </aside>
+    <main class="content">
+      <section class="hero">
+        <h1>Full assessment dashboard</h1>
+        <p>This dashboard consolidates the completed CBSA process for the Tuba-Zangariyye dolmen field. The strongest claim running across the assessment is that the site matters primarily as a connected remnant of a megalithic landscape, not as a loose set of isolated monuments.</p>
+      </section>
+      <div id="panels"></div>
+    </main>
+  </div>
+
+  <script>
+    const data = {
+      asset: {
+        name: "Tuba-Zangariyye Dolmen Field",
+        location: "Tuba Ridge, southeast of Tuba Zangariyye, Korazim Plateau, Israel",
+        type: "Megalithic burial landscape",
+        period: "Intermediate-Middle Bronze horizon; later agricultural-road phase",
+        description: "Basalt hilltop and slope field of dolmens, cairns and ring walls under development pressure.",
+        coordinates: { lat: 32.951, lng: 35.574 },
+        coordinateSource: "inferred"
+      },
+      dataQuality: {
+        sources: [
+          "Tuba_Survey.pdf",
+          "Tuba_Dolmens_ARM.pdf",
+          "Corazim_Plateau.pdf"
+        ],
+        gaps: [
+          "No uploaded dolmen appendix / feature inventory",
+          "No full excavation archive or locus sheets",
+          "No direct scientific dates from the Tuba field in the uploaded set",
+          "Measured plans and sections not included",
+          "Later agricultural-road phase only tentatively dated"
+        ]
+      },
+      timeline: [
+        { year: "c. 2300-1800 BCE", yearStart: -2300, label: "Main burial phase", changeType: "use", note: "Dolmens, cairns, ring walls and local variants established." },
+        { year: "British Mandate era, possibly earlier", yearStart: 1930, label: "Agricultural-road phase", changeType: "structure", note: "Pens, building remains and road traces overlay earlier field." },
+        { year: "1877", yearStart: 1877, label: "Hajr ed-Dum recorded", changeType: "interpretation", note: "Site enters modern written record." },
+        { year: "1917", yearStart: 1917, label: "Wider field identified", changeType: "interpretation", note: "Broader Korazim dolmen field recognized." },
+        { year: "1920s-1931", yearStart: 1925, label: "Turville-Petre investigations", changeType: "interpretation", note: "Excavation and scholarly framing of regional dolmens." },
+        { year: "1990-1993", yearStart: 1990, label: "Rosh Pinna survey", changeType: "interpretation", note: "Around 30 dolmens recorded on the hill." },
+        { year: "2015", yearStart: 2015, label: "Development-led survey", changeType: "setting", note: "Condition and preservation risk become explicit." },
+        { year: "2019", yearStart: 2019, label: "Expanded survey and reassessment", changeType: "setting", note: "Landscape-scale significance and preservation-in-situ approach strengthened." }
+      ],
+      contexts: [
+        {
+          id: "ctx_landscape",
+          type: "Landscape",
+          label: "Basalt hill and intervisible megalithic terrain",
+          description: "The field occupies a basalt hill and elongated spur with broad views to other dolmen concentrations. Its meaning depends on connected visibility and hill-wide patterning.",
+          relatedValues: ["Landscape", "Symbolic / Spiritual"],
+          timespan: "Bronze Age to present"
+        },
+        {
+          id: "ctx_historical",
+          type: "Historical",
+          label: "Layered burial and rural reuse",
+          description: "The early burial phase remains primary, but later agricultural and route use also shape what survives and how the hill is read.",
+          relatedValues: ["Historical"],
+          timespan: "Bronze Age to British Mandate era"
+        },
+        {
+          id: "ctx_arch",
+          type: "Archaeological",
+          label: "Survey-led knowledge with uneven chronology",
+          description: "Spatial recording is strong, while chronology still depends heavily on typology and regional parallels rather than direct site-specific scientific dates.",
+          relatedValues: ["Scientific", "Documentary / Archival"],
+          timespan: "1877-2019"
+        },
+        {
+          id: "ctx_political",
+          type: "Political",
+          label: "Planning pressure and preservation tools",
+          description: "Housing development and infrastructure risk forced the site into a test case for landscape-aware preservation rather than isolated monument rescue.",
+          relatedValues: ["Landscape", "Historical"],
+          timespan: "2015-2019"
+        },
+        {
+          id: "ctx_intangible",
+          type: "Intangible Heritage",
+          label: "Long-recognized named place",
+          description: "Hajr ed-Dum and the persistent visibility of the monuments suggest remembered presence, though continuity of local oral tradition is not securely documented.",
+          relatedValues: ["Symbolic / Spiritual"],
+          timespan: "1877 to present"
+        }
+      ],
+      values: [
+        { id: "v_land", name: "Landscape", category: "Landscape", evidence: "sourced", summary: "The dense hilltop field and intervisibility make the whole setting, not single dolmens, the main carrier of value." },
+        { id: "v_hist", name: "Historical", category: "Historical", evidence: "sourced", summary: "The site preserves a layered story from Bronze Age burial use to later agricultural-road activity and long research visibility." },
+        { id: "v_sci", name: "Scientific", category: "Scientific", evidence: "sourced", summary: "Typological variety, marked stones and unresolved chronology keep the field valuable for further research." },
+        { id: "v_tech", name: "Technological", category: "Technological", evidence: "sourced", summary: "Basalt construction, slab roofing and local structural variants embody substantial skill and organization." },
+        { id: "v_sym", name: "Symbolic / Spiritual", category: "Spiritual", evidence: "uncertain", summary: "Possible ritual or cultural-centrality value is suggested by funerary context, cupmarks and long mnemonic presence, but remains interpretive." }
+      ],
+      attributeTable: [
+        { attribute: "Dense hilltop and NE-slope concentration", values: ["Landscape", "Symbolic / Spiritual"], significance: "Regional burial ensemble with commanding views and connected legibility.", implication: "Loss of spatial continuity or views turns the site into disconnected objects." },
+        { attribute: "Early burial phase plus later agricultural-road traces", values: ["Historical"], significance: "Layered hill with repeated human focus over different periods.", implication: "Removing later traces collapses the story into a single-period monument." },
+        { attribute: "Basalt chambers, slab roofs, tumuli, ring walls", values: ["Technological", "Historical"], significance: "Monumental burial engineering in basalt.", implication: "Fabric loss obscures construction skill and organized labor." },
+        { attribute: "Tortoise Shell variants and typological range", values: ["Scientific", "Technological"], significance: "Local variation within the Korazim dolmen tradition.", implication: "Loss of variants reduces research value and local distinctiveness." },
+        { attribute: "Cupmarks and gameboard depressions", values: ["Scientific", "Symbolic / Spiritual"], significance: "Ritual traces with unresolved later reuse.", implication: "Loss of markings erases evidence for funerary practice and later occupation." }
+      ],
+      authenticity: {
+        summary: "Material and form remain readable, but the field's strongest values weaken when open continuity is broken by disturbance or development.",
+        grid: [
+          { aspect: "Form & Design", description: "Rectangular chambers, cairns and Tortoise Shell forms remain legible.", valueExpression: "Technological, Scientific", rating: "high" },
+          { aspect: "Materials & Fabric", description: "Basalt capstones and chamber elements largely survive, though some loss is likely.", valueExpression: "Historical, Technological", rating: "medium" },
+          { aspect: "Setting", description: "Open hill context survives but is pressured by development and local disturbance.", valueExpression: "Landscape, Symbolic / Spiritual", rating: "medium" },
+          { aspect: "Use / Function", description: "Original burial use has ended; later grazing, agriculture and roads overlay the site.", valueExpression: "Historical, Symbolic / Spiritual", rating: "low" },
+          { aspect: "Documentary / Archival", description: "Survey documentation is strong, but full archive access remains unclear.", valueExpression: "Scientific, Documentary / Archival", rating: "medium" }
+        ]
+      },
+      comparative: {
+        summary: "Tuba is not unique as a dolmen tradition, but it is comparatively distinctive as a still-readable, planning-tested connected field within the wider Korazim megalithic landscape.",
+        comparators: [
+          {
+            id: "cmp_golan",
+            name: "Golan Heights dolmen fields",
+            period: "Intermediate-Middle Bronze horizon",
+            architect: "-",
+            distinction: "Comparable in period and broader cultural framework, but the uploaded assessment highlights Tuba more strongly as a threatened connected ensemble under active planning pressure.",
+            criteria: { rarity: "medium", documentation: "medium", condition: "unknown" },
+            coordinates: { lat: 32.98, lng: 35.79 }
+          },
+          {
+            id: "cmp_korazim",
+            name: "Wider Korazim Plateau dolmen field",
+            period: "Intermediate-Middle Bronze horizon",
+            architect: "-",
+            distinction: "Tuba is part of this larger field, but stands out in the assessment for mapped concentration, management framing and landscape legibility.",
+            criteria: { rarity: "medium", documentation: "high", condition: "medium" },
+            coordinates: { lat: 32.95, lng: 35.57 }
+          },
+          {
+            id: "cmp_en_adaya",
+            name: "En Adaya area dolmen",
+            period: "Bronze Age",
+            architect: "-",
+            distinction: "Useful nearby comparator showing what single investigated or damaged monuments look like beside Tuba's denser hilltop field.",
+            criteria: { rarity: "low", documentation: "medium", condition: "low" },
+            coordinates: { lat: 32.949, lng: 35.564 }
+          }
+        ]
+      },
+      significance: {
+        statement: "The Tuba-Zangariyye dolmen field is significant as a surviving connected remnant of the Korazim Plateau megalithic landscape, where historical, landscape, scientific and technological values converge more strongly at the scale of the field than at the level of any single monument. Its significance rests on the Intermediate-Middle Bronze burial horizon, the dense hilltop and slope concentration of dolmens and cairns, and the continued legibility of basalt-built forms including local Tortoise Shell variants and marked stones with cupmarks and gameboard depressions. This significance extends outward because the site helps express the wider Korazim and Golan megalithic network, while its modern management history shows how value-based assessment can shift planning from isolated-object preservation toward landscape continuity." 
+      },
+      vulnerability: [
+        { value: "Landscape", form: 2, material: 1, use: 1, setting: 3, documentary: 1 },
+        { value: "Historical", form: 2, material: 2, use: 2, setting: 2, documentary: 1 },
+        { value: "Scientific", form: 2, material: 2, use: 1, setting: 2, documentary: 3 },
+        { value: "Technological", form: 3, material: 3, use: 1, setting: 1, documentary: 1 },
+        { value: "Symbolic / Spiritual", form: 2, material: 1, use: 3, setting: 3, documentary: 1 }
+      ],
+      processQuality: {
+        strengths: 3,
+        gaps: 5,
+        quickBoosts: [
+          "Upload the linked dolmen appendix and detailed feature inventory.",
+          "Add excavation sheets, finds tables and archive metadata for Tuba and nearby salvage work."
+        ],
+        nextSteps: [
+          "Tie value and integrity claims to numbered dolmens rather than the field in aggregate.",
+          "Revisit the later agricultural-road phase with stronger documentary evidence."
+        ]
+      },
+      stagesCompleted: [0,1,2,3,4,5,6],
+      debrief: {
+        surprise: "Strong visual and documentary output quality. The InSite materials were unexpectedly good and usable for practice.",
+        trust: "The user would reflect on the material and try to incorporate parts of it into everyday professional work.",
+        open: "The unresolved issue is data protection. Archive documents would not be uploaded to hosted AI tools; a local installation is needed."
+      },
+      aiQueries: [
+        "Which specific dolmens or feature clusters now deserve the highest protection priority, and why?",
+        "How does the integrity pattern change if setting continuity is treated as the main value carrier?",
+        "Which claims in this assessment are strongest, and which still rely on typological inference?",
+        "How should a planner translate this assessment into a preservation boundary?",
+        "What additional archive material would most improve confidence in chronology and documentary integrity?"
+      ]
+    };
+
+    const tabs = [
+      ["overview", "Overview"],
+      ["mapTab", "Map"],
+      ["timeline", "Timeline"],
+      ["contexts", "Contexts & Values"],
+      ["integrity", "Integrity"],
+      ["comparative", "Comparative"],
+      ["significance", "Significance"],
+      ["report", "Report"],
+      ["debrief", "Debrief"],
+      ["ai", "AI Query"]
+    ];
+
+    const panels = document.getElementById('panels');
+    const nav = document.getElementById('nav');
+
+    const ratingClass = r => r === 'high' ? 'high' : r === 'medium' ? 'medium' : 'low';
+    const changeColor = type => ({ use: '#2563eb', structure: '#d97706', setting: '#dc2626', infrastructure: '#16a34a', interpretation: '#7c3aed' }[type] || '#64748b');
+    const evidenceMap = { sourced: '● sourced', inferred: '◐ inferred', uncertain: '○ interpretive' };
+
+    function panel(id, title, inner) {
+      const el = document.createElement('section');
+      el.className = 'panel';
+      el.id = id;
+      el.innerHTML = `<h2 class="section-title">${title}</h2>${inner}`;
+      panels.appendChild(el);
+      return el;
+    }
+
+    tabs.forEach(([id, label], idx) => {
+      const b = document.createElement('button');
+      b.textContent = label;
+      b.onclick = () => activate(id);
+      if (idx === 0) b.classList.add('active');
+      b.dataset.target = id;
+      nav.appendChild(b);
+    });
+
+    panel('overview', 'Overview', `
+      <div class="grid kpis">
+        <div class="card"><div class="small-label">Values</div><div class="kpi-value">${data.values.length}</div><div class="muted">Explicitly identified</div></div>
+        <div class="card"><div class="small-label">Contexts</div><div class="kpi-value">${data.contexts.length}</div><div class="muted">Analytical frames</div></div>
+        <div class="card"><div class="small-label">Integrity range</div><div class="kpi-value">H-M-L</div><div class="muted">Strongest in form, weakest in use</div></div>
+        <div class="card"><div class="small-label">Data gaps</div><div class="kpi-value">${data.dataQuality.gaps.length}</div><div class="muted">Key missing inputs</div></div>
+      </div>
+      <div class="grid two">
+        <div class="card">
+          <h3>Asset profile</h3>
+          <p class="muted"><strong>Type:</strong> ${data.asset.type}<br /><strong>Location:</strong> ${data.asset.location}<br /><strong>Period:</strong> ${data.asset.period}</p>
+          <p class="muted">${data.asset.description}</p>
+          <div class="legend-row">
+            ${data.stagesCompleted.map(s => `<span class="pill blue">Stage ${s}</span>`).join('')}
+          </div>
+        </div>
+        <div class="card donut">
+          <h3>Evidence profile</h3>
+          <svg viewBox="0 0 320 220" aria-label="evidence profile chart"></svg>
+          <div class="mini">Distribution of value evidence status across the identified value set.</div>
+        </div>
+      </div>
+      <div class="grid two" style="margin-top:18px;">
+        <div class="card bars">
+          <h3>Timeline distribution</h3>
+          <svg viewBox="0 0 420 240" aria-label="timeline distribution chart"></svg>
+          <div class="mini">Events cluster in research and management history, not only in the ancient horizon.</div>
+        </div>
+        <div class="card">
+          <h3>Sources and process quality</h3>
+          <div class="small-label">Sources</div>
+          <ul class="source-list">${data.dataQuality.sources.map(s => `<li>${s}</li>`).join('')}</ul>
+          <div class="small-label" style="margin-top:14px;">Quick boosts</div>
+          <ul class="list">${data.processQuality.quickBoosts.map(s => `<li>${s}</li>`).join('')}</ul>
+          <div class="small-label" style="margin-top:14px;">Next steps</div>
+          <ul class="list">${data.processQuality.nextSteps.map(s => `<li>${s}</li>`).join('')}</ul>
+        </div>
+      </div>
+    `);
+
+    panel('mapTab', 'Map', `
+      <div class="card">
+        <div id="map"></div>
+        <p class="mini">📍 Coordinates: ${data.asset.coordinateSource}. Asset in blue, related locations in slate.</p>
+      </div>
+    `);
+
+    panel('timeline', 'Timeline', `
+      <div class="card">
+        <div class="timeline">
+          <div class="timeline-line"></div>
+          ${data.timeline.map((e, i) => `<div class="event" data-year="${e.yearStart}" style="top:${i % 2 === 0 ? 18 : 118}px">
+            <div class="year">${e.year}</div>
+            <div class="dot" style="background:${changeColor(e.changeType)}"></div>
+            <div class="box"><strong>${e.label}</strong><br />${e.note}<br /><span class="mini">${e.changeType}</span></div>
+          </div>`).join('')}
+        </div>
+        <div class="legend-row">
+          <span class="pill blue">Use</span>
+          <span class="pill amber">Structure</span>
+          <span class="pill red">Setting</span>
+          <span class="pill green">Infrastructure</span>
+          <span class="pill purple">Interpretation</span>
+        </div>
+      </div>
+    `);
+
+    panel('contexts', 'Contexts & Values', `
+      <div class="grid two">
+        <div>
+          ${data.contexts.map(c => `<div class="card context-card" id="${c.id}" style="margin-bottom:14px;">
+            <div class="small-label">${c.type} · ${c.timespan}</div>
+            <h3>${c.label}</h3>
+            <p class="muted">${c.description}</p>
+            <div>${c.relatedValues.map(v => `<span class="pill blue">${v}</span>`).join('')}</div>
+          </div>`).join('')}
+        </div>
+        <div>
+          ${data.values.map(v => `<div class="card value-card" data-evidence="${v.evidence}" style="margin-bottom:14px;">
+            <div class="small-label">${v.category}</div>
+            <h3>${v.name}</h3>
+            <p class="muted">${v.summary}</p>
+            <span class="pill ${v.evidence === 'sourced' ? 'green' : v.evidence === 'inferred' ? 'amber' : 'purple'}">${evidenceMap[v.evidence]}</span>
+          </div>`).join('')}
+        </div>
+      </div>
+      <div class="card" style="margin-top:18px;">
+        <h3>Attribute table</h3>
+        <table>
+          <thead><tr><th>Attribute</th><th>Associated values</th><th>Site-specific significance</th><th>Implication</th></tr></thead>
+          <tbody>
+            ${data.attributeTable.map(r => `<tr><td>${r.attribute}</td><td>${r.values.map(v => `<span class="pill">${v}</span>`).join('')}</td><td>${r.significance}</td><td>🔑 ${r.implication}</td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    `);
+
+    panel('integrity', 'Integrity', `
+      <div class="grid two">
+        <div>
+          ${data.authenticity.grid.map(g => `<div class="card integrity-card" style="margin-bottom:14px;border-left-color:${g.rating === 'high' ? '#16a34a' : g.rating === 'medium' ? '#d97706' : '#dc2626'};">
+            <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;">
+              <h3 style="margin:0;">${g.aspect}</h3>
+              <span class="rating ${ratingClass(g.rating)}">${g.rating}</span>
+            </div>
+            <p class="muted">${g.description}</p>
+            <div>${g.valueExpression.split(',').map(v => `<span class="pill">${v.trim()}</span>`).join('')}</div>
+          </div>`).join('')}
+        </div>
+        <div class="card">
+          <h3>Vulnerability analysis</h3>
+          <p class="muted">🔴 loss severely damages this value, 🟡 moderate effect, ⚪ minor or indirect effect.</p>
+          <table class="heat">
+            <thead>
+              <tr><th>Value</th><th class="center">Form</th><th class="center">Material</th><th class="center">Use</th><th class="center">Setting</th><th class="center">Archive</th></tr>
+            </thead>
+            <tbody>
+              ${data.vulnerability.map(v => `<tr>
+                <td>${v.value}</td>
+                <td class="center heat-${v.form}">${v.form}</td>
+                <td class="center heat-${v.material}">${v.material}</td>
+                <td class="center heat-${v.use}">${v.use}</td>
+                <td class="center heat-${v.setting}">${v.setting}</td>
+                <td class="center heat-${v.documentary}">${v.documentary}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+          <p class="muted" style="margin-top:12px;">${data.authenticity.summary}</p>
+        </div>
+      </div>
+    `);
+
+    panel('comparative', 'Comparative', `
+      <div class="card" style="margin-bottom:16px;"><p class="muted">${data.comparative.summary}</p></div>
+      <div class="grid three">
+        ${data.comparative.comparators.map(c => `<div class="card comp-card" id="${c.id}">
+          <div class="small-label">${c.period}</div>
+          <h3>${c.name}</h3>
+          <p class="muted">${c.distinction}</p>
+          <div>
+            <span class="pill ${c.criteria.rarity === 'high' ? 'green' : c.criteria.rarity === 'medium' ? 'amber' : 'red'}">Rarity: ${c.criteria.rarity}</span>
+            <span class="pill ${c.criteria.documentation === 'high' ? 'green' : c.criteria.documentation === 'medium' ? 'amber' : 'red'}">Documentation: ${c.criteria.documentation}</span>
+            <span class="pill ${c.criteria.condition === 'high' ? 'green' : c.criteria.condition === 'medium' ? 'amber' : 'red'}">Condition: ${c.criteria.condition}</span>
+          </div>
+        </div>`).join('')}
+      </div>
+    `);
+
+    panel('significance', 'Significance', `
+      <div class="sig">${data.significance.statement}</div>
+    `);
+
+    panel('report', 'Report', `
+      <div class="report">
+        <h2>Tuba-Zangariyye Dolmen Field</h2>
+        <p><strong>Type:</strong> ${data.asset.type}<br /><strong>Location:</strong> ${data.asset.location}<br /><strong>Main significance claim:</strong> connected remnant of a wider megalithic landscape.</p>
+        <h3>Assessment summary</h3>
+        <p>The site is best understood as a hill-wide burial landscape of the Intermediate-Middle Bronze horizon, later reused for agricultural and route-related activity. Its strongest values are landscape, historical, scientific and technological, with symbolic or spiritual value remaining plausible but interpretive.</p>
+        <h3>Integrity summary</h3>
+        <p>Form and design remain comparatively strong, materials and setting are moderate, documentary integrity is partial, and original use is lost. The main threat is fragmentation of landscape continuity rather than loss of one isolated monument.</p>
+        <h3>Comparative position</h3>
+        <p>Tuba is not unique as a dolmen field, but it is distinctive as a still-legible, development-tested connected remnant within the Korazim Plateau landscape.</p>
+        <h3>Priority data additions</h3>
+        <ul class="list">
+          ${data.processQuality.quickBoosts.map(x => `<li>${x}</li>`).join('')}
+        </ul>
+      </div>
+    `);
+
+    panel('debrief', 'Debrief', `
+      <div class="grid two">
+        <div class="card">
+          <div class="debrief-q">Surprise</div>
+          <p class="muted">${data.debrief.surprise}</p>
+        </div>
+        <div class="card">
+          <div class="debrief-q">Trust</div>
+          <p class="muted">${data.debrief.trust}</p>
+        </div>
+      </div>
+      <div class="card" style="margin-top:18px;">
+        <div class="debrief-q">Open issue</div>
+        <p class="muted">${data.debrief.open}</p>
+      </div>
+    `);
+
+    panel('ai', 'AI Query', `
+      <div class="card">
+        <h3>Starter prompts</h3>
+        ${data.aiQueries.map(q => `<div class="prompt">${q}</div>`).join('')}
+      </div>
+    `);
+
+    function activate(id) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === id));
+      document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active', b.dataset.target === id));
+      if (id === 'mapTab' && !window._mapInit) initMap();
+    }
+
+    function initMap() {
+      window._mapInit = true;
+      if (typeof L === 'undefined') return;
+      const map = L.map('map');
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+      const markers = [];
+      const a = data.asset.coordinates;
+      const assetMarker = L.circleMarker([a.lat, a.lng], {
+        radius: 10,
+        fillColor: '#2563eb',
+        color: '#ffffff',
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.95
+      }).addTo(map).bindPopup(`<strong>${data.asset.name}</strong><br/>${data.asset.type}<br/>${data.asset.period}<br/>${data.asset.description}`);
+      markers.push(assetMarker);
+      data.comparative.comparators.forEach(c => {
+        if (c.coordinates && c.coordinates.lat != null) {
+          const m = L.circleMarker([c.coordinates.lat, c.coordinates.lng], {
+            radius: 7,
+            fillColor: '#94a3b8',
+            color: c.criteria.documentation === 'high' ? '#16a34a' : c.criteria.documentation === 'medium' ? '#d97706' : '#dc2626',
+            weight: 2,
+            fillOpacity: 0.95
+          }).addTo(map).bindPopup(`<strong>${c.name}</strong><br/>${c.period}<br/>${c.distinction}`);
+          m.on('click', () => {
+            activate('comparative');
+            const card = document.getElementById(c.id);
+            if (card) {
+              card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              card.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.01)' }, { transform: 'scale(1)' }], { duration: 600 });
+            }
+          });
+          markers.push(m);
+        }
+      });
+      const group = L.featureGroup(markers);
+      map.fitBounds(group.getBounds(), { padding: [40, 40] });
+      if (markers.length === 1) map.setZoom(12);
+      setTimeout(() => map.invalidateSize(), 100);
+    }
+
+    function drawDonut() {
+      const svg = d3.select('.donut svg');
+      const width = 320, height = 220, radius = 72;
+      const g = svg.append('g').attr('transform', `translate(${width/2},${height/2 - 6})`);
+      const counts = {
+        sourced: data.values.filter(v => v.evidence === 'sourced').length,
+        inferred: data.values.filter(v => v.evidence === 'inferred').length,
+        uncertain: data.values.filter(v => v.evidence === 'uncertain').length
+      };
+      const pie = d3.pie().value(d => d[1])(Object.entries(counts));
+      const arc = d3.arc().innerRadius(42).outerRadius(radius);
+      const colors = { sourced: '#16a34a', inferred: '#d97706', uncertain: '#7c3aed' };
+      g.selectAll('path').data(pie).enter().append('path').attr('d', arc).attr('fill', d => colors[d.data[0]]).attr('stroke', 'white').attr('stroke-width', 2);
+      g.append('text').attr('text-anchor', 'middle').attr('dy', '-0.1em').attr('font-size', 28).attr('font-weight', 800).text(data.values.length);
+      g.append('text').attr('text-anchor', 'middle').attr('dy', '1.4em').attr('font-size', 12).attr('fill', '#475569').text('values');
+      const legend = svg.append('g').attr('transform', 'translate(20,186)');
+      Object.entries(counts).forEach((d, i) => {
+        legend.append('circle').attr('cx', i * 100).attr('cy', 0).attr('r', 6).attr('fill', colors[d[0]]);
+        legend.append('text').attr('x', i * 100 + 12).attr('y', 4).attr('font-size', 12).text(`${d[0]} ${d[1]}`);
+      });
+    }
+
+    function drawBars() {
+      const svg = d3.select('.bars svg');
+      const width = 420, height = 240, margin = { top: 18, right: 20, bottom: 36, left: 44 };
+      const categories = d3.rollup(data.timeline, v => v.length, d => d.changeType);
+      const arr = Array.from(categories, ([key, value]) => ({ key, value }));
+      const x = d3.scaleBand().domain(arr.map(d => d.key)).range([margin.left, width - margin.right]).padding(0.28);
+      const y = d3.scaleLinear().domain([0, d3.max(arr, d => d.value) + 1]).range([height - margin.bottom, margin.top]);
+      svg.append('g').attr('transform', `translate(0,${height - margin.bottom})`).call(d3.axisBottom(x));
+      svg.append('g').attr('transform', `translate(${margin.left},0)`).call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('d')));
+      svg.selectAll('rect').data(arr).enter().append('rect')
+        .attr('x', d => x(d.key)).attr('y', d => y(d.value)).attr('width', x.bandwidth()).attr('height', d => y(0) - y(d.value))
+        .attr('rx', 8).attr('fill', d => changeColor(d.key));
+      svg.selectAll('.label').data(arr).enter().append('text')
+        .attr('x', d => x(d.key) + x.bandwidth() / 2).attr('y', d => y(d.value) - 8).attr('text-anchor', 'middle').attr('font-size', 12).text(d => d.value);
+    }
+
+    function layoutTimeline() {
+      const events = [...document.querySelectorAll('.event')];
+      const years = data.timeline.map(d => d.yearStart);
+      const min = Math.min(...years);
+      const max = Math.max(...years);
+      events.forEach((el, i) => {
+        const year = +el.dataset.year;
+        const pct = (year - min) / (max - min || 1);
+        el.style.left = `${22 + pct * 74}%`;
+      });
+    }
+
+    activate('overview');
+    drawDonut();
+    drawBars();
+    layoutTimeline();
+  </script>
+</body>
+</html>

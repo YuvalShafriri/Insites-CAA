@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Las Cuevas — Knowledge Graph</title>
+  <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;800&family=Noto+Sans+Hebrew:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://alephplace.com/atar.bot/canvas/kg-runtime.css"/>
+  <style>
+    #kg-app { width: 100vw; height: 100vh; }
+  </style>
+</head>
+<body>
+  <div id="kg-app">
+    <div id="kg-toolbar"></div>
+    <div id="kg-network"></div>
+    <aside id="kg-sidebar"></aside>
+  </div>
+
+  <script>
+    window.__DATA_JSON__ = {
+      title: "Las Cuevas",
+      nodes: [
+        { id: "las_cuevas", name: "Las Cuevas", type: "Asset", meaning: "Late Classic temple-sinkhole-cave ritual ensemble" },
+        { id: "chiquibul_forest_reserve", name: "Chiquibul Forest Reserve", type: "Place", meaning: "Protected western Belize forest containing the site" },
+        { id: "structure_1", name: "Structure 1", type: "Structure / Building", meaning: "Temple built directly above the cave mouth" },
+        { id: "entrance_chamber", name: "Entrance Chamber", type: "Structure / Building", meaning: "Monumental modified cave chamber for collective ritual" },
+        { id: "sinkhole_cenote", name: "Sinkhole-Cenote", type: "Natural Phenomenon", meaning: "Dry sinkhole and water feature linking surface underground" },
+        { id: "chamber_8_window", name: "Chamber 8 Window", type: "Architectural Element", meaning: "Elevated oratory-like opening within controlled tunnel route" },
+        { id: "stucco_tooth_frieze", name: "Stucco Tooth Frieze", type: "Architectural Element", meaning: "Witz-maw imagery marking sacred threshold architecture" },
+        { id: "late_classic", name: "Late Classic", type: "Historical Period", meaning: "Main phase of construction and ritual use" },
+        { id: "lcar_research_2011_2022", name: "LCAR Research 2011–2022", type: "Event", meaning: "Renewed excavation mapping and digital documentation campaign" },
+        { id: "pilgrimage_ceremony", name: "Pilgrimage Ceremony", type: "Tradition / Custom", meaning: "Managed collective ritual movement through cave spaces" },
+        { id: "spiritual_value", name: "Spiritual Value", type: "Cultural Value", meaning: "Ritual passage into the underworld", value_type: "Spiritual" },
+        { id: "social_value", name: "Social Value", type: "Cultural Value", meaning: "Managed pilgrimage and graded participation", value_type: "Social" },
+        { id: "technological_value", name: "Technological Value", type: "Cultural Value", meaning: "Subterranean lime-plaster engineering at scale", value_type: "Technological" },
+        { id: "actun_chapat", name: "Actun Chapat", type: "Place", meaning: "Regional cave comparator with large gathering architecture" },
+        { id: "kin_kaba_actun", name: "K’in Kaba Actun", type: "Place", meaning: "Regional plaster-platform cave tradition comparator" }
+      ],
+      edges: [
+        { from: "las_cuevas", to: "chiquibul_forest_reserve", label: "located_in" },
+        { from: "las_cuevas", to: "late_classic", label: "dates_to" },
+        { from: "las_cuevas", to: "structure_1", label: "includes" },
+        { from: "las_cuevas", to: "entrance_chamber", label: "includes" },
+        { from: "las_cuevas", to: "sinkhole_cenote", label: "centers_on" },
+        { from: "structure_1", to: "sinkhole_cenote", label: "rises_above" },
+        { from: "structure_1", to: "stucco_tooth_frieze", label: "bears" },
+        { from: "las_cuevas", to: "chamber_8_window", label: "contains" },
+        { from: "pilgrimage_ceremony", to: "las_cuevas", label: "occurs_at" },
+        { from: "pilgrimage_ceremony", to: "sinkhole_cenote", label: "centers_on" },
+        { from: "pilgrimage_ceremony", to: "chamber_8_window", label: "uses" },
+        { from: "entrance_chamber", to: "technological_value", label: "embodies" },
+        { from: "las_cuevas", to: "spiritual_value", label: "expresses_value" },
+        { from: "las_cuevas", to: "social_value", label: "expresses_value" },
+        { from: "las_cuevas", to: "technological_value", label: "expresses_value" },
+        { from: "spiritual_value", to: "sinkhole_cenote", label: "centered_on" },
+        { from: "social_value", to: "pilgrimage_ceremony", label: "framed_by" },
+        { from: "lcar_research_2011_2022", to: "las_cuevas", label: "documented" },
+        { from: "actun_chapat", to: "entrance_chamber", label: "parallels" },
+        { from: "kin_kaba_actun", to: "entrance_chamber", label: "contextualizes" }
+      ]
+    };
+  </script>
+  <script src="https://alephplace.com/atar.bot/canvas/kg-runtime.js"></script>
+</body>
+</html>

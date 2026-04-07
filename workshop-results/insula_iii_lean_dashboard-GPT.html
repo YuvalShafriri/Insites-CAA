@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Insula III Lean Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    :root{
+      --bg:#f8fafc;--card:#fff;--text:#0f172a;--muted:#475569;--line:#e2e8f0;--blue:#2563eb;
+      --green:#16a34a;--amber:#d97706;--red:#dc2626;--slate:#64748b;--violet:#7c3aed;
+      --shadow:0 8px 24px rgba(15,23,42,.08);--r:16px;
+    }
+    *{box-sizing:border-box} html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans-serif}
+    body{min-height:100vh} .wrap{max-width:1280px;margin:0 auto;padding:20px}
+    .header{display:grid;gap:8px;margin-bottom:18px}.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);font-weight:700}
+    h1{font-size:32px;line-height:1.05;margin:0}.sub{color:var(--muted);max-width:900px}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 20px}.tab{border:1px solid var(--line);background:#fff;color:var(--muted);padding:10px 14px;border-radius:999px;cursor:pointer;font:inherit;font-weight:700}
+    .tab.active{background:var(--blue);border-color:var(--blue);color:#fff}
+    .panel{display:none}.panel.active{display:block}
+    .grid{display:grid;gap:16px}.grid.kpi{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}.grid.two{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:16px}
+    .card h2,.card h3{margin:0 0 10px}.kpi .card{padding:18px}.kpi-num{font-size:32px;font-weight:700}.muted{color:var(--muted)}
+    .small{font-size:13px}.pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:13px;font-weight:700;border:1px solid #dbeafe;margin:4px 6px 0 0;cursor:pointer}
+    .pill.gray{background:#f1f5f9;color:#334155;border-color:#e2e8f0}.pill.theme{cursor:default}
+    .list{margin:0;padding-left:18px}.list li{margin:6px 0}
+    .section-title{font-size:20px;margin:0 0 10px}.section-sub{color:var(--muted);margin:0 0 14px}
+    .strip{display:flex;flex-wrap:wrap;gap:8px}.rate{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;font-size:13px;font-weight:700;border:1px solid var(--line);background:#fff}
+    .dot{width:10px;height:10px;border-radius:50%}.high{background:#dcfce7;color:#166534}.medium{background:#fef3c7;color:#92400e}.low{background:#fee2e2;color:#991b1b}
+    .left-high{border-left:5px solid var(--green)}.left-medium{border-left:5px solid var(--amber)}.left-low{border-left:5px solid var(--red)}
+    #map{height:440px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+    #timelineSvg{width:100%;height:320px;display:block}.legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}.legend .pill{cursor:default}
+    .value-card,.ctx-card,.comp-card,.theme-card{scroll-margin-top:90px}
+    .value-card.active,.ctx-card.active,.comp-card.active,.theme-card.active{outline:3px solid #93c5fd}
+    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}.table{width:100%;border-collapse:collapse;background:#fff}.table th,.table td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.table th{background:#f8fafc;font-size:13px}
+    .matrix td,.matrix th{text-align:center}.matrix td:first-child,.matrix th:first-child{text-align:left}.heat3{background:#fecaca}.heat2{background:#fde68a}.heat1{background:#f8fafc}
+    .quote{font-size:18px;line-height:1.55}.report{max-width:900px;margin:auto}.hr{height:1px;background:var(--line);margin:14px 0}
+    .tagline{display:flex;gap:10px;flex-wrap:wrap}.meta{display:grid;gap:6px}.map-note{margin-top:10px;color:var(--muted);font-size:13px}
+    @media print{.tabs{display:none}.wrap{max-width:none;padding:0}.panel{display:block !important;page-break-after:always}.panel:last-child{page-break-after:auto}.card{box-shadow:none}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header class="header">
+    <div class="eyebrow">Assessment Dashboard</div>
+    <h1>Insula III, Hellenistic-Roman Quarter, Agrigento</h1>
+    <div class="sub">Lean single-assessment dashboard built from the completed CBSA stages. Focus: urban grid, long occupation, domestic transformation, documentary continuity.</div>
+    <div class="tagline">
+      <span class="pill gray">Stages completed: 0-6</span>
+      <span class="pill gray">KG: not included</span>
+      <span class="pill gray">Map: inferred coordinates</span>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs"></nav>
+  <main id="app"></main>
+</div>
+
+<script>
+const DATA = {
+  asset: {
+    name: 'Insula III',
+    location: 'Hellenistic-Roman Quarter, Agrigento (Akragas), Sicily, Italy',
+    type: 'Urban archaeological insula / domestic quarter',
+    period: 'First half of 6th c. BCE to 8th c. CE',
+    description: 'A multi-period urban block near the agora/forum and theater, read through houses, streets, infrastructure, later productive reuse, and archive-led archaeology.',
+    coordinates: { lat: 37.2907, lng: 13.5859 },
+    coordinateSource: 'inferred'
+  },
+  dataQuality: {
+    sources: [
+      'Agrigento_1_Quartiere_Ellenistico_romano.pdf',
+      'Agrigento_I_nuove_ricerche_nellinsula_II.pdf',
+      'Agrigento_Analisi_geofisiche_nella_III_i.pdf',
+      'Alaimo - Monte.pdf'
+    ],
+    gaps: [
+      'Exact GIS coordinates for Insula III are not explicit in the uploaded sources.',
+      'Full trench-by-trench stratigraphic documentation is not available here.',
+      'Current condition coverage is uneven across the insula.',
+      'Ritual and lived social practice are framed, but detailed evidence remains partial.'
+    ]
+  },
+  timeline: [
+    { year:'First half of 6th c. BCE', yearStart:-550, label:'Earliest occupation of the urban sector', changeType:'structure' },
+    { year:'5th c. BCE', yearStart:-450, label:'Rebuilding above an earlier destroyed phase', changeType:'structure' },
+    { year:'Mid-4th to mid-3rd c. BCE', yearStart:-350, label:'Reoccupation of the quarter', changeType:'use' },
+    { year:'2nd-1st c. BCE', yearStart:-150, label:'New lot division and perimeter reconstruction', changeType:'structure' },
+    { year:'1st-3rd c. CE', yearStart:100, label:'Imperial renewal, new structures, mosaic floors', changeType:'structure' },
+    { year:'4th-5th c. CE', yearStart:400, label:'Productive and commercial adaptation', changeType:'use' },
+    { year:'8th c. CE', yearStart:750, label:'Late occupation horizon still present', changeType:'use' },
+    { year:'2016-2018', yearStart:2016, label:'Integrated geophysics, survey, archive recovery, excavation, conservation', changeType:'infrastructure' }
+  ],
+  contexts: [
+    { id:'ctx_urban', type:'Urban', label:'Street grid and block logic frame the insula as part of a planned city rather than an isolated ruin.', relatedValues:['Urban','Historical','Scientific'], timespan:'Archaic to Late Antique' },
+    { id:'ctx_hist', type:'Historical', label:'The insula condenses repeated phases of occupation, rebuilding, replanning, and reuse across a very long chronology.', relatedValues:['Historical','Scientific'], timespan:'6th c. BCE to 8th c. CE' },
+    { id:'ctx_arch', type:'Archaeological', label:'Older excavation archives, new trenches, geophysics, and survey together shape what can be known about the site.', relatedValues:['Scientific','Documentary / Archival'], timespan:'19th c. to present' },
+    { id:'ctx_social', type:'Social', label:'Domestic life, later work activity, teaching excavation, and public presentation all frame the insula as lived and re-lived space.', relatedValues:['Social','Educational','Historical'], timespan:'Antiquity to present' },
+    { id:'ctx_tech', type:'Technological', label:'Hydraulic systems, construction logic, and modern digital/non-invasive methods frame the insula as both ancient infrastructure and methodological case study.', relatedValues:['Technological','Scientific'], timespan:'Roman phases to present' }
+  ],
+  values: [
+    { id:'v_hist', name:'Long Urban Biography', category:'Historical', evidence:'sourced', summary:'The insula makes major phases of Agrigento visible at domestic scale.' },
+    { id:'v_urban', name:'One Block That Explains the City', category:'Urban', evidence:'sourced', summary:'Its block, streets, and terrace relations help explain the wider city plan.' },
+    { id:'v_arch', name:'Domestic Form in Transformation', category:'Aesthetic / Architectural', evidence:'sourced', summary:'Pastas-type planning, later peristyles, pavements, and decorated space remain legible.' },
+    { id:'v_sci', name:'Research Potential in a Partly Open Question', category:'Scientific', evidence:'sourced', summary:'Archive, geophysics, survey, and excavation still leave major interpretive questions open.' },
+    { id:'v_doc', name:'A Site Rebuilt Through Its Records', category:'Documentary / Archival', evidence:'sourced', summary:'Recovered plans, finds, and publications are central to the site’s significance.' },
+    { id:'v_soc', name:'Domestic Practice and Public Archaeology', category:'Social / Educational', evidence:'inferred', summary:'Ancient dwelling, later work use, and current teaching/public presentation overlap.' }
+  ],
+  attributeTable: [
+    { attribute:'Long multi-period occupation sequence', values:['Historical','Scientific'], significance:'Rare domestic time-depth in one block.', implication:'Loss of stratified sequence weakens the insula’s ability to show Agrigento’s long urban biography.' },
+    { attribute:'Position within planned street grid', values:['Urban','Historical'], significance:'Explains city structure through one insula.', implication:'Loss of street/block legibility reduces the insula’s role in interpreting the wider city plan.' },
+    { attribute:'Pastas-to-peristyle house development', values:['Aesthetic / Architectural','Historical'], significance:'Domestic form visibly evolves over time.', implication:'Loss of plan evidence obscures architectural transformation and typological meaning.' },
+    { attribute:'Decorated pavements and wall surfaces', values:['Aesthetic / Architectural','Social / Educational'], significance:'Shows status, interior expression, and lived domestic space.', implication:'Loss of decorated surfaces diminishes understanding of representation and domestic life.' },
+    { attribute:'Water and productive installations', values:['Technological','Historical','Social / Educational'], significance:'Connects dwelling to work and daily infrastructure.', implication:'Loss of hydraulic and productive evidence narrows the insula to “housing” alone.' },
+    { attribute:'Archive, plans, finds, recovered records', values:['Documentary / Archival','Scientific'], significance:'Significance survives through records as well as fabric.', implication:'Loss of archival linkage fragments interpretation and weakens older excavation evidence.' }
+  ],
+  authenticity: {
+    grid: [
+      { aspect:'Form & Design', description:'Elongated insula, streets, courts, and house plans remain legible.', valueExpression:'Urban, Historical', rating:'high' },
+      { aspect:'Materials & Substance', description:'Walls, floors, and decorated remains survive selectively and unevenly.', valueExpression:'Historical, Aesthetic', rating:'medium' },
+      { aspect:'Use & Function', description:'Domestic use later shifted toward productive and commercial activity.', valueExpression:'Historical, Social', rating:'medium' },
+      { aspect:'Techniques & Systems', description:'Construction logic and water systems remain partly readable, often through research mediation.', valueExpression:'Technological, Scientific', rating:'medium' },
+      { aspect:'Location & Setting', description:'The insula remains in situ within the quarter near civic areas.', valueExpression:'Urban, Historical', rating:'high' },
+      { aspect:'Spirit & Feeling', description:'The site still conveys excavated urban domesticity, though as an interpreted ruin.', valueExpression:'Social, Educational', rating:'medium' },
+      { aspect:'Documentary / Archival', description:'Archive recovery and new recording strongly support interpretation.', valueExpression:'Scientific, Documentary', rating:'high' }
+    ],
+    summary:'Spatial legibility and documentary continuity are strong; material completeness and original domestic use survive more unevenly.'
+  },
+  comparative: {
+    summary:'Insula III is strongest not as the purest Greek house-type example, but as a layered Sicilian urban block where planned layout, long occupation, domestic transformation, and research continuity coincide.',
+    comparators: [
+      { id:'c_gate2', name:'Agrigento, Gate II Quarter', period:'Greek to Roman urban quarter', architect:'—', distinction:'Closest contextual comparator for block logic, domestic planning, and mixed residential/productive character.', criteria:{ rarity:'medium', documentation:'medium', condition:'unknown' }, coordinates:{ lat:37.2897, lng:13.5818 } },
+      { id:'c_gela', name:'Gela', period:'5th c. BCE onward', architect:'—', distinction:'Strong Sicilian comparator for regularized housing plots, courtyards, and street-grid domestic planning.', criteria:{ rarity:'medium', documentation:'medium', condition:'medium' }, coordinates:{ lat:37.0719, lng:14.2401 } },
+      { id:'c_himera', name:'Himera', period:'Classical Greek city', architect:'—', distinction:'Useful comparator for planned courtyard houses in regular insulae.', criteria:{ rarity:'medium', documentation:'medium', condition:'medium' }, coordinates:{ lat:37.9962, lng:13.9725 } },
+      { id:'c_morg', name:'Morgantina', period:'Hellenistic and Roman', architect:'—', distinction:'Strong for domestic variety and later house development in inland Sicily.', criteria:{ rarity:'medium', documentation:'high', condition:'medium' }, coordinates:{ lat:37.4369, lng:14.4577 } },
+      { id:'c_olyn', name:'Olynthos', period:'Classical-Hellenistic', architect:'—', distinction:'Best typological anchor for pastas house studies and regularized Greek domestic planning.', criteria:{ rarity:'low', documentation:'high', condition:'medium' }, coordinates:{ lat:40.2925, lng:23.3497 } },
+      { id:'c_pri', name:'Priene', period:'4th c. BCE onward', architect:'—', distinction:'Useful anchor for formalized insula planning and ordered residential layout.', criteria:{ rarity:'low', documentation:'high', condition:'medium' }, coordinates:{ lat:37.6592, lng:27.3068 } }
+    ]
+  },
+  significance: {
+    statement: 'Insula III is culturally significant as a multi-period Sicilian urban block whose streets, houses, infrastructures, and archives together make the long transformation of Agrigento unusually legible. Its significance rests on the convergence of planned urban form, long occupation, domestic architectural change, later productive adaptation, and strong documentary continuity.'
+  },
+  vulnerability: [
+    { value:'Historical', form:3, material:3, use:2, setting:2, documentary:2 },
+    { value:'Urban', form:3, material:1, use:1, setting:3, documentary:2 },
+    { value:'Aesthetic / Architectural', form:3, material:3, use:1, setting:1, documentary:1 },
+    { value:'Scientific', form:2, material:2, use:1, setting:1, documentary:3 },
+    { value:'Documentary / Archival', form:1, material:1, use:1, setting:1, documentary:3 },
+    { value:'Social / Educational', form:2, material:2, use:3, setting:1, documentary:2 }
+  ],
+  processQuality: {
+    strengths: 4,
+    gaps: 4,
+    quickBoosts: [
+      'Add full chapter access from the 2019 Insula III volume.',
+      'Add a site-wide photo and plan dossier for the whole insula.'
+    ],
+    nextSteps: [
+      'Tighten ritual, hydraulic, and phase-by-phase evidence with fuller source sections.',
+      'Match strong documentary analysis with stronger whole-site condition visibility.'
+    ]
+  },
+  kg: null,
+  themes: {
+    valueThemes: [
+      { id:'th_city', label:'Urban legibility', description:'Values tied to streets, block logic, and city-scale reading.', valueIds:['v_hist','v_urban'], color:'#2563eb' },
+      { id:'th_house', label:'Domestic transformation', description:'Values tied to changing house form, decoration, and adaptive reuse.', valueIds:['v_arch','v_soc'], color:'#7c3aed' },
+      { id:'th_research', label:'Research continuity', description:'Values carried by archive, geophysics, excavation, and documentation.', valueIds:['v_sci','v_doc'], color:'#0f766e' }
+    ],
+    contextThemes: [
+      { id:'ct_city', label:'City and block', description:'Urban and historical framing overlap around the readable grid and long sequence.', contextIds:['ctx_urban','ctx_hist'], color:'#2563eb' },
+      { id:'ct_method', label:'Method and evidence', description:'Archaeological and technological contexts overlap through methods that shape interpretation.', contextIds:['ctx_arch','ctx_tech'], color:'#0f766e' }
+    ],
+    threatThemes: [
+      { id:'tt_leg', label:'Legibility under loss', description:'High vulnerability where form and material losses obscure urban and historical reading.', vulnerabilities:['Historical:form','Historical:material','Urban:form','Urban:setting','Aesthetic / Architectural:form','Aesthetic / Architectural:material'], color:'#dc2626' }
+    ]
+  }
+};
+
+const TABS = [
+  ['overview','Overview'],['map','Map'],['timeline','Timeline'],['cv','Contexts & Values'],['themes','Themes'],['integrity','Integrity'],['comparative','Comparative'],['significance','Significance'],['report','Report']
+];
+
+const state = { tab:'overview', highlight:null, map:null };
+
+const el = (tag, cls, html='') => { const e=document.createElement(tag); if(cls)e.className=cls; e.innerHTML=html; return e; };
+const ratingClass = r => r==='high' ? 'high' : r==='medium' ? 'medium' : 'low';
+const badge = r => `<span class="rate ${ratingClass(r)}"><span class="dot ${ratingClass(r)}"></span>${r}</span>`;
+
+function renderTabs(){
+  const nav = document.getElementById('tabs');
+  nav.innerHTML='';
+  TABS.forEach(([id,label])=>{
+    const b = el('button', 'tab'+(state.tab===id?' active':''), label);
+    b.onclick=()=>{ state.tab=id; render(); };
+    nav.appendChild(b);
+  });
+}
+
+function renderOverview(){
+  const range = DATA.authenticity.grid.map(g=>`<span class="rate ${ratingClass(g.rating)}"><span class="dot ${ratingClass(g.rating)}"></span>${g.aspect}</span>`).join('');
+  return `
+  <section class="panel active">
+    <div class="grid kpi">
+      <div class="card"><div class="small muted">Values</div><div class="kpi-num">${DATA.values.length}</div></div>
+      <div class="card"><div class="small muted">Contexts</div><div class="kpi-num">${DATA.contexts.length}</div></div>
+      <div class="card"><div class="small muted">Data gaps</div><div class="kpi-num">${DATA.dataQuality.gaps.length}</div></div>
+      <div class="card"><div class="small muted">Sources</div><div class="kpi-num">${DATA.dataQuality.sources.length}</div></div>
+    </div>
+    <div class="grid two" style="margin-top:16px">
+      <div class="card">
+        <h2 class="section-title">Asset</h2>
+        <p class="section-sub">${DATA.asset.description}</p>
+        <div class="meta small">
+          <div><strong>Location:</strong> ${DATA.asset.location}</div>
+          <div><strong>Type:</strong> ${DATA.asset.type}</div>
+          <div><strong>Period:</strong> ${DATA.asset.period}</div>
+        </div>
+      </div>
+      <div class="card">
+        <h2 class="section-title">Integrity range</h2>
+        <div class="strip">${range}</div>
+        <p class="section-sub" style="margin-top:12px">${DATA.authenticity.summary}</p>
+      </div>
+      <div class="card">
+        <h2 class="section-title">Gaps</h2>
+        <ul class="list">${DATA.dataQuality.gaps.map(g=>`<li>${g}</li>`).join('')}</ul>
+      </div>
+      <div class="card">
+        <h2 class="section-title">Process</h2>
+        <div class="small"><strong>Strengths:</strong> ${DATA.processQuality.strengths} &nbsp; <strong>Gaps:</strong> ${DATA.processQuality.gaps}</div>
+        <div class="hr"></div>
+        <div class="small"><strong>Quick boosts</strong></div>
+        <ul class="list">${DATA.processQuality.quickBoosts.map(i=>`<li>${i}</li>`).join('')}</ul>
+        <div class="small"><strong>Next steps</strong></div>
+        <ul class="list">${DATA.processQuality.nextSteps.map(i=>`<li>${i}</li>`).join('')}</ul>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2 class="section-title">Sources</h2>
+      <div class="strip">${DATA.dataQuality.sources.map(s=>`<span class="pill gray">${s}</span>`).join('')}</div>
+    </div>
+  </section>`;
+}
+
+function renderMap(){
+  return `
+  <section class="panel active">
+    <div class="card">
+      <h2 class="section-title">Asset and comparison sites</h2>
+      <div id="map"></div>
+      <div class="map-note">📍 Coordinates: ${DATA.asset.coordinateSource}. Asset marker uses the quarter area in Agrigento; comparator markers use well-known site locations.</div>
+    </div>
+  </section>`;
+}
+
+function renderTimeline(){
+  return `
+  <section class="panel active">
+    <div class="card">
+      <h2 class="section-title">Chronological sequence</h2>
+      <p class="section-sub">Events are spaced proportionally by date and colored by change type.</p>
+      <svg id="timelineSvg" viewBox="0 0 1100 320" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="legend">
+        <span class="pill gray">structure</span>
+        <span class="pill gray">use</span>
+        <span class="pill gray">infrastructure</span>
+      </div>
+    </div>
+  </section>`;
+}
+
+function renderCV(){
+  return `
+  <section class="panel active">
+    <div class="grid two">
+      <div class="card">
+        <h2 class="section-title">Contexts</h2>
+        ${DATA.contexts.map(c=>`
+          <div class="ctx-card card" id="${c.id}" style="margin:10px 0;padding:14px">
+            <h3>${c.type}</h3>
+            <div class="small muted">${c.timespan}</div>
+            <p>${c.label}</p>
+            <div class="strip">${c.relatedValues.map(v=>`<span class="pill" data-value-name="${v}">${v}</span>`).join('')}</div>
+          </div>`).join('')}
+      </div>
+      <div class="card">
+        <h2 class="section-title">Values</h2>
+        ${DATA.values.map(v=>`
+          <div class="value-card card" id="${v.id}" style="margin:10px 0;padding:14px">
+            <h3>${v.name}</h3>
+            <div class="strip"><span class="pill gray">${v.category}</span><span class="pill gray">evidence: ${v.evidence}</span></div>
+            <p>${v.summary}</p>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2 class="section-title">Attribute table</h2>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>Attribute</th><th>Values</th><th>Site-specific meaning</th><th>Implication</th></tr></thead>
+          <tbody>
+            ${DATA.attributeTable.map(r=>`<tr><td>${r.attribute}</td><td>${r.values.join(', ')}</td><td>${r.significance}</td><td>🔑 ${r.implication}</td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>`;
+}
+
+function renderThemes(){
+  const vt = DATA.themes.valueThemes, ct = DATA.themes.contextThemes, tt = DATA.themes.threatThemes;
+  return `
+  <section class="panel active">
+    <div class="grid two">
+      <div class="card">
+        <h2 class="section-title">Value themes</h2>
+        ${vt.map(t=>`<div class="theme-card card" id="${t.id}" style="margin:10px 0;padding:14px"><h3><span class="dot" style="background:${t.color};display:inline-block;margin-right:8px"></span>${t.label}</h3><p>${t.description}</p><div class="strip">${t.valueIds.map(id=>{const v=DATA.values.find(x=>x.id===id);return `<span class="pill" data-jump="${id}">${v.name}</span>`}).join('')}</div></div>`).join('')}
+      </div>
+      <div class="card">
+        <h2 class="section-title">Context themes</h2>
+        ${ct.map(t=>`<div class="theme-card card" style="margin:10px 0;padding:14px"><h3><span class="dot" style="background:${t.color};display:inline-block;margin-right:8px"></span>${t.label}</h3><p>${t.description}</p><div class="strip">${t.contextIds.map(id=>{const c=DATA.contexts.find(x=>x.id===id);return `<span class="pill" data-jump="${id}">${c.type}</span>`}).join('')}</div></div>`).join('')}
+        <h2 class="section-title" style="margin-top:18px">Threat themes</h2>
+        ${tt.map(t=>`<div class="theme-card card" style="margin:10px 0;padding:14px"><h3><span class="dot" style="background:${t.color};display:inline-block;margin-right:8px"></span>${t.label}</h3><p>${t.description}</p><div class="strip">${t.vulnerabilities.map(v=>`<span class="pill gray">${v}</span>`).join('')}</div></div>`).join('')}
+      </div>
+    </div>
+  </section>`;
+}
+
+function renderIntegrity(){
+  return `
+  <section class="panel active">
+    <div class="grid two">
+      ${DATA.authenticity.grid.map(g=>`<div class="card left-${ratingClass(g.rating)}"><h3>${g.aspect}</h3><div class="strip">${badge(g.rating)} <span class="pill gray">${g.valueExpression}</span></div><p>${g.description}</p></div>`).join('')}
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2 class="section-title">🔴 Vulnerability analysis</h2>
+      <p class="section-sub">Loss of form, material, and setting most strongly damages the values that depend on urban legibility and long sequence reading.</p>
+      <div class="table-wrap">
+        <table class="table matrix">
+          <thead><tr><th>Value</th><th>Form</th><th>Material</th><th>Use</th><th>Setting</th><th>Documentary</th></tr></thead>
+          <tbody>
+            ${DATA.vulnerability.map(r=>`<tr><td>${r.value}</td><td class="heat${r.form}">${r.form===3?'🔴':r.form===2?'🟡':'⚪'}</td><td class="heat${r.material}">${r.material===3?'🔴':r.material===2?'🟡':'⚪'}</td><td class="heat${r.use}">${r.use===3?'🔴':r.use===2?'🟡':'⚪'}</td><td class="heat${r.setting}">${r.setting===3?'🔴':r.setting===2?'🟡':'⚪'}</td><td class="heat${r.documentary}">${r.documentary===3?'🔴':r.documentary===2?'🟡':'⚪'}</td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>`;
+}
+
+function renderComparative(){
+  return `
+  <section class="panel active">
+    <div class="card"><h2 class="section-title">Comparison summary</h2><p>${DATA.comparative.summary}</p></div>
+    <div class="grid two" style="margin-top:16px">
+      ${DATA.comparative.comparators.map(c=>`<div class="comp-card card" id="${c.id}"><h3>${c.name}</h3><div class="small muted">${c.period}</div><p>${c.distinction}</p><div class="strip"><span class="pill gray">rarity: ${c.criteria.rarity}</span><span class="pill gray">documentation: ${c.criteria.documentation}</span><span class="pill gray">condition: ${c.criteria.condition}</span></div></div>`).join('')}
+    </div>
+  </section>`;
+}
+
+function renderSignificance(){
+  return `
+  <section class="panel active">
+    <div class="card">
+      <h2 class="section-title">Statement of cultural significance</h2>
+      <p class="quote">${DATA.significance.statement}</p>
+    </div>
+  </section>`;
+}
+
+function renderReport(){
+  return `
+  <section class="panel active">
+    <div class="card report">
+      <h2 class="section-title">Printable summary</h2>
+      <p><strong>Asset:</strong> ${DATA.asset.name}</p>
+      <p><strong>Why it matters:</strong> ${DATA.significance.statement}</p>
+      <p><strong>Strongest values:</strong> ${DATA.values.slice(0,4).map(v=>v.category).join(', ')}.</p>
+      <p><strong>Integrity pattern:</strong> ${DATA.authenticity.summary}</p>
+      <p><strong>Main comparison result:</strong> ${DATA.comparative.summary}</p>
+      <p><strong>Best next additions:</strong> ${DATA.processQuality.quickBoosts.join(' ')}</p>
+      <div class="hr"></div>
+      <button class="tab active" onclick="window.print()">Print / Save PDF</button>
+    </div>
+  </section>`;
+}
+
+function render(){
+  renderTabs();
+  const app = document.getElementById('app');
+  const views = {
+    overview: renderOverview(), map: renderMap(), timeline: renderTimeline(), cv: renderCV(), themes: renderThemes(), integrity: renderIntegrity(), comparative: renderComparative(), significance: renderSignificance(), report: renderReport()
+  };
+  app.innerHTML = views[state.tab];
+  bindInteractions();
+  if(state.tab==='timeline') drawTimeline();
+  if(state.tab==='map') initMap();
+  if(state.highlight) applyHighlight(state.highlight);
+}
+
+function drawTimeline(){
+  const svg = d3.select('#timelineSvg');
+  svg.selectAll('*').remove();
+  const w=1100,h=320,m={l:60,r:30,t:40,b:50};
+  const x = d3.scaleLinear().domain(d3.extent(DATA.timeline,d=>d.yearStart)).range([m.l,w-m.r]);
+  const y=170;
+  svg.append('line').attr('x1',m.l).attr('x2',w-m.r).attr('y1',y).attr('y2',y).attr('stroke','#94a3b8').attr('stroke-width',2);
+  const color = d => d.changeType==='structure' ? '#2563eb' : d.changeType==='use' ? '#7c3aed' : '#0f766e';
+  DATA.timeline.forEach((d,i)=>{
+    const cx=x(d.yearStart), cy = i%2===0 ? 110 : 230;
+    svg.append('line').attr('x1',cx).attr('x2',cx).attr('y1',y).attr('y2',cy).attr('stroke','#cbd5e1').attr('stroke-width',2);
+    svg.append('circle').attr('cx',cx).attr('cy',y).attr('r',7).attr('fill',color(d));
+    svg.append('text').attr('x',cx).attr('y',cy-(i%2===0?14:-18)).attr('text-anchor','middle').attr('font-size',12).attr('font-weight',700).text(d.year);
+    svg.append('text').attr('x',cx).attr('y',cy+(i%2===0?4:4)).attr('text-anchor','middle').attr('font-size',12).attr('fill','#334155').text(d.label.length>34 ? d.label.slice(0,34)+'…' : d.label);
+  });
+}
+
+function initMap(){
+  const mapEl = document.getElementById('map');
+  if(!mapEl || typeof L==='undefined') return;
+  if(state.map){ state.map.remove(); state.map=null; }
+  state.map = L.map('map');
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; OpenStreetMap'}).addTo(state.map);
+  const pts=[];
+  const a = DATA.asset.coordinates;
+  const assetMarker = L.circleMarker([a.lat,a.lng],{radius:10,fillColor:'#2563eb',color:'#fff',weight:2,fillOpacity:1}).addTo(state.map)
+    .bindPopup(`<strong>${DATA.asset.name}</strong><br>${DATA.asset.type}<br>${DATA.asset.period}<br>${DATA.asset.description}`);
+  pts.push([a.lat,a.lng]);
+  DATA.comparative.comparators.forEach(c=>{
+    if(c.coordinates?.lat==null) return;
+    const m = L.circleMarker([c.coordinates.lat,c.coordinates.lng],{radius:7,fillColor:'#94a3b8',color:'#fff',weight:2,fillOpacity:1}).addTo(state.map)
+      .bindPopup(`<strong>${c.name}</strong><br>${c.period}<br>${c.distinction}`);
+    m.on('click',()=>{state.tab='comparative';state.highlight=c.id;render();});
+    pts.push([c.coordinates.lat,c.coordinates.lng]);
+  });
+  if(pts.length>1) state.map.fitBounds(pts,{padding:[40,40]}); else state.map.setView([a.lat,a.lng],12);
+}
+
+function applyHighlight(id){
+  const target = document.getElementById(id);
+  document.querySelectorAll('.active-target').forEach(x=>x.classList.remove('active-target'));
+  document.querySelectorAll('.value-card.active,.ctx-card.active,.comp-card.active,.theme-card.active').forEach(x=>x.classList.remove('active'));
+  if(target){ target.classList.add('active'); target.scrollIntoView({behavior:'smooth',block:'center'}); }
+  state.highlight=null;
+}
+
+function bindInteractions(){
+  document.querySelectorAll('[data-value-name]').forEach(p=>p.onclick=()=>{
+    const name = p.getAttribute('data-value-name');
+    const found = DATA.values.find(v=>v.category===name || v.name===name || name.includes(v.category.split(' / ')[0]));
+    state.highlight = found ? found.id : null; state.tab='cv'; render();
+  });
+  document.querySelectorAll('[data-jump]').forEach(p=>p.onclick=()=>{ state.highlight = p.getAttribute('data-jump'); const id=state.highlight; state.tab = id.startsWith('ctx_')||id.startsWith('v_') ? 'cv' : 'themes'; render(); });
+}
+
+render();
+</script>
+</body>
+</html>
