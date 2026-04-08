@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test — Dashboard Runtime</title>
+  <link rel="stylesheet" href="../runtime/dashboard-runtime.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&family=Noto+Sans+Hebrew:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="dashboard-root"></div>
+
+  <script>
+  window.__DASHBOARD_DATA__ = {
+    asset: {
+      name: "מגדלא — מגדל נוניא",
+      location: "חוף מערבי של הכנרת, ישראל",
+      type: "אתר ארכאולוגי",
+      period: "הלניסטית מאוחרת — עות'מאנית",
+      description: "עיר יהודית עתיקה על חוף הכנרת, מוכרת כעיר מולדתה של מרים המגדלית. כוללת בית כנסת מהמאה ה-1, אגורה, מרחצאות ומבני ציבור."
+    },
+    dataQuality: {
+      sources: ["Magdala_IL.pdf"],
+      gaps: ["חסרים תכניות ארכיטקטוניות מפורטות", "אין מידע על תכנית שימור", "חסר תיעוד מצב פיזי עדכני"]
+    },
+    timeline: [
+      { year: "המאה ה-1 לפנה\"ס", ys: -100, label: "הקמת העיר היהודית", ct: "structure" },
+      { year: "שנת 67 לספירה", ys: 67, label: "כיבוש רומי — יוסף בן מתתיהו", ct: "use" },
+      { year: "המאות 2-4", ys: 200, label: "התיישבות רומית-ביזנטית", ct: "use" },
+      { year: "2009", ys: 2009, label: "תחילת חפירות ארכאולוגיות", ct: "infrastructure" }
+    ],
+    contexts: [
+      { id: "ctx_hist", type: "historical", label: "🏛 היסטורי — עיר יהודית מרכזית בגליל מתקופת בית שני עד הכיבוש הרומי", rv: ["Historical", "Archaeological"], ts: "המאה ה-1 לפנה\"ס — המאה ה-1 לספירה" },
+      { id: "ctx_soc", type: "social", label: "👥 חברתי — קהילה יהודית עירונית עם מוסדות ציבור ומרכז מסחרי", rv: ["Social", "Historical"], ts: "המאה ה-1 לפנה\"ס — 67 לספירה" },
+      { id: "ctx_rel", type: "spiritual", label: "🕊 רוחני — בית הכנסת העתיק ביותר בגליל עם אבן מגדלא המעוטרת", rv: ["Spiritual", "Symbolic"], ts: "המאה ה-1 לספירה" }
+    ],
+    values: [
+      { id: "v_hist", name: "היסטורי — עיר נמל יהודית מרכזית", cat: "Historical", ev: "sourced", summary: "אחת הערים היהודיות החשובות בגליל, תועדה ע\"י יוסף בן מתתיהו" },
+      { id: "v_arch", name: "ארכאולוגי — בית כנסת מהמאה ה-1", cat: "Archaeological", ev: "sourced", summary: "בית הכנסת ואבן מגדלא — ממצא ייחודי בארכאולוגיה של ארץ ישראל" },
+      { id: "v_spir", name: "רוחני — קשר למרים המגדלית", cat: "Spiritual", ev: "inferred", summary: "מסורת המזהה את המקום כעיר מולדתה של מרים המגדלית" }
+    ],
+    attrTable: [
+      { attr: "בית הכנסת", vals: ["Historical", "Archaeological"], sig: "ייחודי בגליל — מהמאה ה-1", impl: "פגיעה תפגע בערך ארכאולוגי בלתי הפיך" },
+      { attr: "אבן מגדלא", vals: ["Symbolic", "Archaeological"], sig: "ממצא יחיד מסוגו", impl: "אובדן = מחיקת עדות לפולחן בבית שני" },
+      { attr: "האגורה", vals: ["Social", "Historical"], sig: "עדות לחיי מסחר", impl: "הרס ייפגע בהבנת החיים העירוניים" }
+    ],
+    nara: [
+      { aspect: "צורה ועיצוב", desc: "תכנון עירוני רומי-יהודי קריא", ve: "Historical, Archaeological", rating: "high" },
+      { aspect: "חומר ומרקם", desc: "אבן מקומית, טיח, פסיפס — נחשפו ומשומרים", ve: "Archaeological", rating: "medium" },
+      { aspect: "שימוש ופונקציה", desc: "שימוש דתי ומסחרי הופסק — אתר ארכאולוגי", ve: "Spiritual, Social", rating: "low" },
+      { aspect: "תיעודי", desc: "חפירות מתועדות, ארכיון נגיש", ve: "Documentary", rating: "high" }
+    ],
+    naraSummary: "שלמות חומרית בינונית-גבוהה, שלמות שימוש נמוכה — האתר שומר על צורתו אך איבד את פונקציותיו המקוריות.",
+    comparative: {
+      summary: "מגדלא ייחודית בשילוב בית כנסת + אבן מעוטרת + עיר נמל יהודית שלמה. כפר נחום וגמלא מציעים השוואות חלקיות בלבד.",
+      sites: [
+        { name: "כפר נחום", period: "המאה ה-1", arch: "", dist: "בית כנסת מאוחר יותר, ללא אגורה", crit: { rarity: "moderate", documentation: "high", condition: "good" } },
+        { name: "גמלא", period: "המאה ה-1 לפנה\"ס", arch: "", dist: "בית כנסת דומה אך נהרס בכיבוש", crit: { rarity: "high", documentation: "moderate", condition: "low" } }
+      ]
+    },
+    significance: "מגדלא היא עיר יהודית ייחודית מתקופת בית שני על חוף הכנרת, המשלבת בית כנסת מהמאה הראשונה עם אבן מגדלא המעוטרת — ממצא בעל משמעות עולמית לחקר הפולחן היהודי הקדום. המערך העירוני השלם — בית כנסת, אגורה, מרחצאות ומבני מגורים — מספק תמונה נדירה של חיים עירוניים יהודיים ערב החורבן. הקשר המסורתי למרים המגדלית מוסיף שכבת משמעות רוחנית חוצת-דתות.",
+    vuln: [
+      { value: "Historical", form: 1, material: 2, use: 3, setting: 1 },
+      { value: "Archaeological", form: 1, material: 2, use: 2, setting: 1 },
+      { value: "Spiritual", form: 1, material: 1, use: 3, setting: 2 }
+    ],
+    pq: {
+      strengths: 3,
+      boosts: ["הוספת תכנית שימור מפורטת", "תיעוד פוטוגרמטרי של אבן מגדלא"],
+      next: ["השלמת ציר הזמן מהתקופה הביזנטית", "סקר מצב פיזי של המרחצאות"]
+    },
+    stages: [0, 1, 2, 3, 4, 5, 6],
+    coordinates: { lat: 32.8417, lng: 35.5142 },
+    comparatorCoords: [
+      { name: "כפר נחום", lat: 32.8814, lng: 35.5753 },
+      { name: "גמלא", lat: 32.8961, lng: 35.7514 }
+    ],
+    kg: null
+  };
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="../runtime/dashboard-runtime.js"></script>
+</body>
+</html>
