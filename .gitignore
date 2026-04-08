@@ -1,6 +1,9 @@
 # Excluded from repo — all OLD/ folders anywhere
 **/OLD/
 
+# === Workshop results (local only) ===
+workshop-results/
+
 # === Internal logistics ===
 management/
 content-dev/
@@ -35,6 +38,7 @@ InSites-Brain/Gemini/InSites-CAA-mono*.md
 
 # Temp files
 ~$*
+desktop.ini
 .tmp.driveupload/
 .tmp.drivedownload/
 .tmp.drive*/
@@ -92,6 +96,7 @@ InSites-Brain/Gemini/InSites-CAA-mono- GEM v5.1.md
 InSites-Brain/Gemini/InSites-CAA-mono- GEM v5.2.md
 
 # === Design: internal-only files ===
+InSites-Brain/design/knowledge-base.md
 InSites-Brain/design/less-is-more.md
 InSites-Brain/design/prompt-qa-principles.md
 InSites-Brain/design/claude code system/
