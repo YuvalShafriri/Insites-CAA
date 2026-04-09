@@ -290,6 +290,7 @@
 
     data.stages = d.stages || d.stagesCompleted || [];
     data.kg = d.kg || null;
+    data.tabs = d.tabs || [];
 
     // Coordinates
     data.coordinates = d.coordinates || (d.asset && d.asset.coordinates) || null;
@@ -991,6 +992,119 @@
   };
 
   /* ══════════════════════════════════════════════════════════════
+     GENERIC DYNAMIC TAB RENDERERS
+     ══════════════════════════════════════════════════════════════ */
+
+  function renderGenericTable(tabData) {
+    if (!tabData || !tabData.columns || !tabData.rows) return '';
+    var html = '<div class="db-card" style="overflow-x:auto"><table class="db-table">';
+    html += '<thead><tr>';
+    tabData.columns.forEach(function (col) {
+      html += '<th>' + escapeHtml(col) + '</th>';
+    });
+    html += '</tr></thead><tbody>';
+    tabData.rows.forEach(function (row) {
+      html += '<tr>';
+      (row || []).forEach(function (cell) {
+        html += '<td>' + escapeHtml(cell) + '</td>';
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+    return html;
+  }
+
+  function renderGenericCards(tabData) {
+    if (!tabData || !tabData.cards) return '';
+    var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">';
+    tabData.cards.forEach(function (card) {
+      var level = String(card.level || '').toLowerCase();
+      var borderColor = COLORS.accent;
+      if (level === 'well-grounded' || level === 'strong') borderColor = COLORS.green;
+      else if (level === 'supported' || level === 'moderate') borderColor = COLORS.amber;
+      else if (level === 'asserted' || level === 'weak') borderColor = COLORS.red;
+
+      html += '<div class="db-card" style="border-left:4px solid ' + borderColor + '">';
+      html += '<div style="font-weight:600;font-size:0.95rem;margin-bottom:4px">' + escapeHtml(card.title || '') + '</div>';
+      if (card.subtitle) {
+        html += '<div style="font-size:0.82rem;color:' + COLORS.textMuted + ';margin-bottom:6px">' + escapeHtml(card.subtitle) + '</div>';
+      }
+      if (card.body) {
+        html += '<div style="font-size:0.88rem;color:' + COLORS.textDim + '">' + escapeHtml(card.body) + '</div>';
+      }
+      if (card.badges && card.badges.length > 0) {
+        html += '<div style="margin-top:8px">';
+        card.badges.forEach(function (badge) {
+          html += '<span class="db-pill db-pill-accent">' + escapeHtml(badge) + '</span>';
+        });
+        html += '</div>';
+      }
+      html += '</div>';
+    });
+    html += '</div>';
+    return html;
+  }
+
+  function renderGenericMatrix(tabData) {
+    if (!tabData || !tabData.rowLabels || !tabData.colLabels || !tabData.cells) return '';
+    var cellColors = { 3: '#fecaca', 2: '#fef3c7', 1: '#f1f5f9', 0: '#f8fafc' };
+    var html = '<div class="db-card" style="overflow-x:auto"><table class="db-table db-vuln-table">';
+    html += '<thead><tr><th></th>';
+    tabData.colLabels.forEach(function (col) {
+      html += '<th>' + escapeHtml(col) + '</th>';
+    });
+    html += '</tr></thead><tbody>';
+    tabData.rowLabels.forEach(function (rowLabel, ri) {
+      html += '<tr><td style="font-weight:500;text-align:inherit">' + escapeHtml(rowLabel) + '</td>';
+      var row = tabData.cells[ri] || [];
+      row.forEach(function (val) {
+        var v = val != null ? val : 0;
+        var bg = cellColors[v] || cellColors[0];
+        html += '<td><span class="db-vuln-cell" style="background:' + bg + '">' + v + '</span></td>';
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+    return html;
+  }
+
+  function renderGenericProse(tabData) {
+    if (!tabData || !tabData.sections) return '';
+    var html = '';
+    tabData.sections.forEach(function (section) {
+      html += '<div class="db-card">';
+      if (section.title) {
+        html += '<h3 style="font-size:0.95rem;font-weight:600;margin-bottom:8px;color:' + COLORS.text + '">' + escapeHtml(section.title) + '</h3>';
+      }
+      if (section.body) {
+        // Parse markdown-style **bold** to <strong>
+        var escaped = escapeHtml(section.body);
+        var parsed = escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        html += '<p style="font-size:0.9rem;color:' + COLORS.textDim + ';line-height:1.7">' + parsed + '</p>';
+      }
+      html += '</div>';
+    });
+    return html;
+  }
+
+  function renderGenericCustom(tabData) {
+    return tabData && tabData.html ? tabData.html : '';
+  }
+
+  function renderDynamicTab(tab) {
+    var html = '<div class="db-section-label">' + escapeHtml(tab.label) + '</div>';
+    switch (tab.type) {
+      case 'table':  html += renderGenericTable(tab.data); break;
+      case 'cards':  html += renderGenericCards(tab.data); break;
+      case 'matrix': html += renderGenericMatrix(tab.data); break;
+      case 'prose':  html += renderGenericProse(tab.data); break;
+      case 'custom': html += renderGenericCustom(tab.data); break;
+      default: html += '<p>' + escapeHtml(JSON.stringify(tab.data)) + '</p>';
+    }
+    return html;
+  }
+
+  /* ══════════════════════════════════════════════════════════════
      MAIN RENDER
      ══════════════════════════════════════════════════════════════ */
   function render() {
@@ -1003,6 +1117,12 @@
       return true;
     });
 
+    // Add dynamic tabs from data.tabs
+    var dynamicTabs = (data.tabs || []).map(function (t) {
+      return { id: t.id, icon: t.icon || '\uD83D\uDCC4', label: t.label };
+    });
+    visibleTabs = visibleTabs.concat(dynamicTabs);
+
     // Ensure active tab is visible
     var activeValid = visibleTabs.some(function (t) { return t.id === state.activeTab; });
     if (!activeValid) state.activeTab = visibleTabs[0].id;
@@ -1012,7 +1132,7 @@
     sidebar += '<div class="db-sidebar-header">CBSA Dashboard</div>';
     visibleTabs.forEach(function (tab) {
       var active = tab.id === state.activeTab ? ' is-active' : '';
-      var label = ui[TAB_LABELS[tab.id]] || tab.id;
+      var label = TAB_LABELS[tab.id] ? (ui[TAB_LABELS[tab.id]] || tab.id) : (tab.label || tab.id);
       sidebar += '<button class="db-sidebar-tab' + active + '" data-tab="' + tab.id + '">';
       sidebar += '<span class="db-tab-indicator"></span>';
       sidebar += '<span class="db-tab-icon">' + tab.icon + '</span>';
@@ -1036,6 +1156,14 @@
     // Build content
     var renderer = TAB_RENDERERS[state.activeTab];
     var content = renderer ? renderer() : '';
+
+    // Check if activeTab is a dynamic tab
+    if (!renderer) {
+      var dynTab = (data.tabs || []).filter(function (t) { return t.id === state.activeTab; })[0];
+      if (dynTab) {
+        content = renderDynamicTab(dynTab);
+      }
+    }
 
     var html = '<div class="db-shell">';
     html += sidebar;
