@@ -43,7 +43,8 @@ Build per-site JSON from MA-RC Step 2 output.
   "collection": { "name", "source", "depth", "date", "itemCount" },
   "sites": [{
     "id", "name", "region", "lat", "lng", "depth", "type", "period",
-    "description", "significanceSummary", "highlight",
+    "description", "significanceSummary",
+    "highlight" (MANDATORY — one-sentence collection-level insight for this site),
     "values": { "historical": "e"|"i"|"a", /* ... */ },
     "integrity", "integrityNote", "threats": [],
     "comparativeBasis", "claimScope"
@@ -85,7 +86,9 @@ Always generate themes from MA-RC analysis. Minimum: group sites by overlapping 
 
 - Only extracted data — nothing fabricated
 - `themes[]` must be non-empty
+- `site.highlight` must be non-empty for every site — one sentence stating why this site matters in the collection context
 - All site names must have valid `id`
+- In `tabs[]` data, use exact `site.name` values when referencing sites — the runtime auto-links matching names to map markers
 - Coordinates: extract / infer / `null`
 - Values: use `"e"` / `"i"` / `"a"` consistently
 

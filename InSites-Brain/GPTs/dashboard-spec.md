@@ -156,6 +156,7 @@ Each tab entry: `id` (unique slug), `label` (tab display name), `type` (`"ma-ra-
 8. Coordinates: extract if explicit in source, infer from well-known place names, or set `null`. Set `coordinateSource` accordingly.
 9. `vulnerability` impact levels: 3 = loss severely damages this value; 2 = moderate; 1 = minor or indirect.
 10. `themes`: ≥2 members per theme; only populate if ≥3 values OR ≥3 contexts exist.
+11. In `tabs[]` data, use exact entity names (asset name, comparator names) when referencing them — the runtime auto-links matching names to map markers.
 
 ## 6. Post-Dashboard Offers
 

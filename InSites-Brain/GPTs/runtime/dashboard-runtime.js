@@ -29,7 +29,7 @@
     textMuted:   '#94a3b8',
     accent:      '#2563eb',
     accentLight: '#dbeafe',
-    green:       '#10b981',
+    green:       '#16a34a',
     greenLight:  '#d1fae5',
     amber:       '#f59e0b',
     amberLight:  '#fef3c7',
@@ -369,7 +369,7 @@
       /* KPI row */
       '.db-kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }',
       '.db-kpi { background: ' + COLORS.bgCard + '; border: 1px solid ' + COLORS.border + '; border-radius: 10px; padding: 16px; text-align: center; }',
-      '.db-kpi-value { font-size: 1.6rem; font-weight: 700; color: ' + COLORS.accent + '; }',
+      '.db-kpi-value { font-size: 1.6rem; font-weight: 700; color: ' + COLORS.accent + '; font-family: "JetBrains Mono", ui-monospace, monospace; }',
       '.db-kpi-label { font-size: 0.75rem; color: ' + COLORS.textMuted + '; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.04em; }',
 
       /* Pills / Badges */
@@ -447,7 +447,7 @@
       '.db-sig-block { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: #fff; border-radius: 12px; padding: 28px 24px; font-size: 1.05rem; line-height: 1.7; }',
 
       /* Map */
-      '.db-map-container { height: 440px; border-radius: 10px; border: 1px solid #e2e8f0; overflow: hidden; }',
+      '.db-map-container { height: min(440px, 60vh); border-radius: 10px; border: 1px solid #e2e8f0; overflow: hidden; }',
       '.db-map-placeholder { height: 440px; display: flex; align-items: center; justify-content: center; background: #f8fafc; border-radius: 10px; border: 1px dashed ' + COLORS.border + '; color: ' + COLORS.textMuted + '; font-size: 0.9rem; }',
       '.db-coord-note { font-size: 0.78rem; color: ' + COLORS.textMuted + '; margin-top: 8px; }',
 
@@ -535,8 +535,11 @@
       '<button class="db-highlight-clear" data-action="clear-highlight">' + escapeHtml(ui.clearHighlight) + '</button></div>';
   }
 
+  var VULN_SYMBOLS = { 3: '\u25CF', 2: '\u25D0', 1: '\u25CB', 0: '\u00B7' };
+
   function vulnCell(level) {
-    return '<span class="db-vuln-cell db-vuln-' + level + '">' + level + '</span>';
+    var sym = VULN_SYMBOLS[level] != null ? VULN_SYMBOLS[level] : '';
+    return '<span class="db-vuln-cell db-vuln-' + level + '">' + sym + ' ' + level + '</span>';
   }
 
   /* ══════════════════════════════════════════════════════════════
@@ -741,9 +744,12 @@
 
     html += '</div></div>';
 
-    // Legend
+    // Legend — only show change types present in the data
+    var presentTypes = {};
+    sorted.forEach(function (evt) { presentTypes[evt.changeType] = true; });
     html += '<div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;font-size:0.78rem;color:' + COLORS.textMuted + '">';
     Object.keys(CHANGE_COLORS).forEach(function (type) {
+      if (!presentTypes[type]) return;
       html += '<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + CHANGE_COLORS[type] + ';margin-right:4px;vertical-align:middle"></span>' + escapeHtml(type) + '</span>';
     });
     html += '</div>';
@@ -995,6 +1001,27 @@
      GENERIC DYNAMIC TAB RENDERERS
      ══════════════════════════════════════════════════════════════ */
 
+  /* ── Entity name map for auto-linking in dynamic tabs ── */
+  var entityNameMap = {};
+
+  function buildEntityNameMap() {
+    entityNameMap = {};
+    if (data.asset && data.asset.name) entityNameMap[data.asset.name] = '__asset__';
+    (data.comparative.sites || []).forEach(function (s) {
+      if (s.name) entityNameMap[s.name] = s.name;
+    });
+  }
+
+  function linkifyCell(cellText) {
+    var escaped = escapeHtml(cellText);
+    var match = entityNameMap[String(cellText)];
+    if (match == null) return escaped;
+    if (match === '__asset__') {
+      return '<button style="background:none;border:none;color:' + COLORS.accent + ';cursor:pointer;font:inherit;text-decoration:underline;padding:0" data-nav-entity="map">' + escaped + '</button>';
+    }
+    return '<button style="background:none;border:none;color:' + COLORS.accent + ';cursor:pointer;font:inherit;text-decoration:underline;padding:0" data-nav-entity="comparative" data-nav-entity-id="' + escapeHtml(match) + '">' + escaped + '</button>';
+  }
+
   function renderGenericTable(tabData) {
     if (!tabData || !tabData.columns || !tabData.rows) return '';
     var html = '<div class="db-card" style="overflow-x:auto"><table class="db-table">';
@@ -1006,7 +1033,7 @@
     tabData.rows.forEach(function (row) {
       html += '<tr>';
       (row || []).forEach(function (cell) {
-        html += '<td>' + escapeHtml(cell) + '</td>';
+        html += '<td>' + linkifyCell(cell) + '</td>';
       });
       html += '</tr>';
     });
@@ -1055,7 +1082,7 @@
     });
     html += '</tr></thead><tbody>';
     tabData.rowLabels.forEach(function (rowLabel, ri) {
-      html += '<tr><td style="font-weight:500;text-align:inherit">' + escapeHtml(rowLabel) + '</td>';
+      html += '<tr><td style="font-weight:500;text-align:inherit">' + linkifyCell(rowLabel) + '</td>';
       var row = tabData.cells[ri] || [];
       row.forEach(function (val) {
         var v = val != null ? val : 0;
@@ -1130,16 +1157,18 @@
     // Build sidebar
     var sidebar = '<div class="db-sidebar">';
     sidebar += '<div class="db-sidebar-header">CBSA Dashboard</div>';
+    sidebar += '<div role="tablist">';
     visibleTabs.forEach(function (tab) {
-      var active = tab.id === state.activeTab ? ' is-active' : '';
+      var isActive = tab.id === state.activeTab;
+      var active = isActive ? ' is-active' : '';
       var label = TAB_LABELS[tab.id] ? (ui[TAB_LABELS[tab.id]] || tab.id) : (tab.label || tab.id);
-      sidebar += '<button class="db-sidebar-tab' + active + '" data-tab="' + tab.id + '">';
+      sidebar += '<button class="db-sidebar-tab' + active + '" data-tab="' + tab.id + '" role="tab" aria-selected="' + isActive + '">';
       sidebar += '<span class="db-tab-indicator"></span>';
       sidebar += '<span class="db-tab-icon">' + tab.icon + '</span>';
       sidebar += '<span>' + escapeHtml(label) + '</span>';
       sidebar += '</button>';
     });
-    sidebar += '</div>';
+    sidebar += '</div></div>';
 
     // Build header
     var header = '<div class="db-header">';
@@ -1264,6 +1293,21 @@
       });
     }
 
+    // Entity name links in dynamic tables/matrices
+    var entityBtns = document.querySelectorAll('[data-nav-entity]');
+    for (var ent = 0; ent < entityBtns.length; ent++) {
+      entityBtns[ent].addEventListener('click', function (e) {
+        e.stopPropagation();
+        var targetTab = this.getAttribute('data-nav-entity');
+        var entityId = this.getAttribute('data-nav-entity-id');
+        if (targetTab === 'comparative' && entityId) {
+          navigateTo('comparative', { type: 'comparator', id: entityId });
+        } else {
+          navigateTo(targetTab, null);
+        }
+      });
+    }
+
     // Theme member pill click → navigate to home tab
     var memberPills = document.querySelectorAll('[data-nav-member]');
     for (var s = 0; s < memberPills.length; s++) {
@@ -1297,6 +1341,7 @@
   function init() {
     // Normalize data
     norm();
+    buildEntityNameMap();
 
     // RTL detection
     var testStr = (data.asset.name || '') + ' ' + (data.contexts.length > 0 ? data.contexts[0].label : '');
