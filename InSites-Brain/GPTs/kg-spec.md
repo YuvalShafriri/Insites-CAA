@@ -4,7 +4,7 @@
 
 Create CA-KG Knowledge Graph canvases with a minimal HTML shell and shared external runtime files hosted on `alephplace.com`.
 
-**Cross-platform reference**: Visual tokens follow `[CA-UX]`, entity colors follow `[CA-EC]`, AI Query follows `[CA-AIQ]` placeholder mode. See `artifact-ux-contract.md` for the cross-platform source of truth.
+Entity colors follow `[CA-EC]` in cbsa-appendices.md. AI Query uses placeholder mode.
 
 ## Hard Contract
 

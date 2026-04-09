@@ -14,7 +14,7 @@ HTML shell with inline data JSON. Runtime handles all rendering.
 
 ```html
 <!DOCTYPE html>
-<html lang="en">
+<html lang="__LANG__" dir="__DIR__">
 <head>
   <meta charset="UTF-8">
   <title>__COLLECTION_NAME__ — Collection Dashboard</title>
@@ -30,7 +30,7 @@ HTML shell with inline data JSON. Runtime handles all rendering.
 </html>
 ```
 
-Replace `__COLLECTION_NAME__` and `__DATA_JSON__` with actual values. Set `lang="he" dir="rtl"` for Hebrew collections.
+Replace `__COLLECTION_NAME__`, `__DATA_JSON__`, `__LANG__` (`en` or `he`), and `__DIR__` (`ltr` or `rtl`) with actual values per Language Policy.
 
 ## 3. Data Extraction
 

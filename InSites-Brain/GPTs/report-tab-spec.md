@@ -6,7 +6,7 @@
 
 A dashboard tab that renders a formatted one-page assessment report, designed for HTML export or PDF print. Pulls data from all other dashboard tabs into a concise, professional summary.
 
-**Cross-platform reference**: Visual tokens follow `[CA-UX]`, entity colors follow `[CA-EC]`. See `artifact-ux-contract.md` for the cross-platform source of truth.
+Entity colors follow `[CA-EC]` in cbsa-appendices.md.
 
 ## Position
 
