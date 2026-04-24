@@ -1,0 +1,1097 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, LineChart, Line 
+} from 'recharts';
+import { 
+  Clock, Award, Activity, MessageSquare, MapPin, Hammer, AlertTriangle, CheckCircle, Info, Download, Filter, Search, ThumbsUp, ThumbsDown, FileText, Share2, ZoomIn, ZoomOut, RefreshCw, MousePointer2, Sparkles, Send, X, Bot, Loader2, HelpCircle
+} from 'lucide-react';
+
+// --- API Configuration ---
+const apiKey = ""; // API key will be injected by the environment
+
+// --- Gemini API Helper ---
+const callGemini = async (prompt: string, retries = 5, delay = 1000): Promise<string> => {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+  
+  const payload = {
+    contents: [{ parts: [{ text: prompt }] }]
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      if (retries > 0) {
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return callGemini(prompt, retries - 1, delay * 2);
+      }
+      throw new Error(`API Error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || "לא התקבלה תשובה.";
+  } catch (error) {
+    if (retries > 0) {
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return callGemini(prompt, retries - 1, delay * 2);
+    }
+    console.error("Gemini API Error:", error);
+    return "שגיאה בתקשורת עם ה-AI. אנא נסה שוב מאוחר יותר.";
+  }
+};
+
+// --- Types & Interfaces ---
+
+type Tab = 'timeline' | 'values' | 'nara' | 'sentiment' | 'report' | 'kg';
+
+interface ChatMessage {
+  role: 'user' | 'model';
+  text: string;
+}
+
+// --- Data Constants (Based on Stages 1-5) ---
+
+const TIMELINE_DATA = [
+  { year: '1915-1921', title: 'שלב ההובלה הידנית', desc: 'הובלת מים בחביות ופחים מהוואדי; מחסור חמור במים.', type: 'context' },
+  { year: '1922', title: 'תכנון "הפרסה"', desc: 'תכנון גרעין היישוב בצורת פרסה; קביעת מיקום המגדל בראש הגבעה במרכז.', type: 'planning' },
+  { year: '1923', title: 'הקמת המגדל', desc: 'בנייה בבטון מזוין ע"י פלוגת "אחווה" בפיקוח מיכאל ארליך. נפח כ-25 מ"ק.', type: 'milestone' },
+  { year: '1936-1939', title: 'תקופת המאורעות', desc: 'שימוש כמגדל איתות; הריסת גמלונים וסגירת קירות מילואה תחתונים.', type: 'conflict' },
+  { year: '1940s', title: 'שינוי סביבתי', desc: 'בניית מאפייה צמודה; המגדל "נבלע" בבינוי ומאבד דומיננטיות נופית.', type: 'change' },
+  { year: '1960s', title: 'יציאה משימוש', desc: 'המגדל מפסיק לשמש כווסת לחץ בעקבות מודרניזציה של המערכת.', type: 'status' },
+  { year: '2018', title: 'שימור ושימוש מחדש', desc: 'פרויקט שימור פיזי; הסבת החלק התחתון לתנור מאפייה.', type: 'conservation' },
+];
+
+const VALUES_DATA = [
+  { 
+    id: 1, 
+    title: 'ערך חברתי (Social)', 
+    desc: 'אתוס עבודה שיתופית ("אחווה") וזהות קהילתית. הכתובת בחזית משמשת תעודת זהות למבצעים.', 
+    level: 'גבוה', 
+    icon: Hammer,
+    color: 'bg-blue-100 text-blue-700'
+  },
+  { 
+    id: 2, 
+    title: 'ערך טכנולוגי (Technological)', 
+    desc: 'שימוש מוקדם בבטון מזוין לתשתית מים; פתרון הנדסי לוויסות לחץ (25 מ"ק).', 
+    level: 'בינוני-גבוה', 
+    icon: Activity,
+    color: 'bg-green-100 text-green-700'
+  },
+  { 
+    id: 3, 
+    title: 'ערך נופי-אורבני (Landscape)', 
+    desc: 'נקודת ציון (Landmark) במרכז תכנית "הפרסה".', 
+    level: 'בינוני (נפגע)', 
+    icon: MapPin,
+    color: 'bg-amber-100 text-amber-700'
+  },
+  { 
+    id: 4, 
+    title: 'ערך היסטורי (Historical)', 
+    desc: 'עדות רציפה למאבק על המים, להתיישבות ולתקופות חירום (איתות).', 
+    level: 'גבוה', 
+    icon: Clock,
+    color: 'bg-purple-100 text-purple-700'
+  },
+];
+
+const STAGE_2_DETAILED_TABLE = [
+  { attr: 'מיקום מרכזי בתוך תכנית ה"פרסה"', vals: 'חברתי; סמלי; היסטורי', meaning: 'מרכז משותף סביב תשתית חיונית', conseq: 'מחזק קריאה כציון קהילתי מרכזי' },
+  { attr: 'בריכת בטון מזוין על ארבעה עמודים', vals: 'טכנולוגי; היסטורי', meaning: 'הנדסת אספקת מים מודרנית מוקדמת', conseq: 'תומך במשמעות כתשתית מורשת הנדסית' },
+  { attr: 'נפח בריכה כ-25 מ"ק', vals: 'פונקציונלי; טכנולוגי', meaning: '"כרית" קצרה בין שאיבה לצריכה', conseq: 'מבהיר תפקיד כווסת לחץ, לא כשפע' },
+  { attr: 'כתובת המציינת מבצעים/פיקוח', vals: 'חברתי; היסטורי; חינוכי', meaning: 'אתוס עבודה וייחוס גלוי', conseq: 'מוסיף משקל תיעודי ופרשני (Attribution)' },
+  { attr: 'מסגרות/גמלונים/הדגשת פינות', vals: 'אסתטי; סמלי', meaning: 'נראות מתוכננת מעבר לפונקציה', conseq: 'מחזק נוכחות כציון וקריאות צורנית' },
+  { attr: 'שימוש כמגדל איתות 1936–1939', vals: 'סמלי; היסטורי', meaning: 'תקשורת חירום וערנות מרחבית', conseq: 'מרחיב משמעות מעבר לאספקת מים' },
+  { attr: 'שינוי חומרי: הרס גמלונים; מילוי תחתון', vals: 'היסטורי; אסתטי', meaning: 'התאמות מאוחרות משנות פרופיל מקורי', conseq: 'מעלה שאלות של שלמות/אותנטיות בהמשך' },
+  { attr: 'שימור 2018 + שימוש מחדש (תנור)', vals: 'פונקציונלי; חינוכי; חברתי', meaning: 'מורשת חיה דרך התאמה לשימוש', conseq: 'משמר רלוונטיות ומעורבות ציבורית' },
+];
+
+const NARA_GRID_DATA = [
+  { aspect: 'צורה ותכנון', condition: 'בינונית', note: 'הצורה הכללית נשמרה (בריכה על עמודים), אך גמלונים דקורטיביים נהרסו בתקופת המאורעות ונוספו קירות מילואה בין העמודים.', status: 'warning' },
+  { aspect: 'חומר ומהות', condition: 'בינונית', note: 'הבטון המקורי קיים, אך חסר מידע הנדסי עדכני על סדקים, קורוזיה בזיון או תיקונים קודמים.', status: 'warning' },
+  { aspect: 'שימוש ותפקוד', condition: 'נמוכה/חדשה', note: 'תפקוד המים המקורי (ויסות לחץ) אבד בשנות ה-60. השימוש החדש (תנור מאפייה) משמר חיוניות אך משנה את המהות התעשייתית.', status: 'neutral' },
+  { aspect: 'מיקום וסביבה', condition: 'נמוכה-בינונית', note: 'המיקום בראש הגבעה נשמר, אך המגדל "נבלע" ויזואלית עקב בניית המאפייה ומבנים נוספים בצמוד אליו.', status: 'danger' },
+];
+
+const SENTIMENT_COLORS = {
+  'חיובי מאוד': '#10B981',
+  'חיובי-נוסטלגי': '#8B5CF6',
+  'נייטרלי-מעריך': '#94A3B8',
+  'שלילי-דואג': '#EF4444',
+};
+
+// Data Context for AI
+const FULL_CONTEXT_STRING = `
+Project: Ayelet HaShahar Water Tower Heritage Assessment.
+Timeline: ${JSON.stringify(TIMELINE_DATA)}
+Values: ${JSON.stringify(VALUES_DATA)}
+Integrity (Nara): ${JSON.stringify(NARA_GRID_DATA)}
+Detailed Attributes: ${JSON.stringify(STAGE_2_DETAILED_TABLE)}
+`;
+
+// --- Custom Knowledge Graph HTML ---
+const KG_HTML_CODE = `
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Knowledge Graph - Ayelet HaShahar Water Tower</title>
+  <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+  <style>
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f9f9f9; }
+    #mynetwork { width: 100%; height: 100%; }
+    #infowindow { position: absolute; top: 20px; right: 20px; width: 300px; max-height: 80vh; overflow-y: auto;
+      background: #fff; border: 1px solid #ddd; border-radius: 12px; padding: 16px; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15); direction: rtl; text-align: right; display: none; z-index: 1000; transition: opacity 0.3s; }
+    #infowindow.visible { display: block; opacity: 1; }
+    .title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 2px solid #eee; padding-bottom: 8px; }
+    .title-row h3 { margin: 0; font-size: 1.25rem; color: #333; }
+    #closeinfo { cursor: pointer; font-size: 1.4rem; color: #999; line-height: 1; }
+    #closeinfo:hover { color: #333; }
+    #info_meaning { margin-top: 10px; line-height: 1.6; color: #555; font-size: 0.95rem; }
+    .type-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; color: white; margin-bottom: 8px; }
+    .legend { position: absolute; bottom: 20px; left: 20px; background: rgba(255,255,255,0.9); padding: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-size: 0.8rem; direction: rtl; }
+    .legend-item { display: flex; align-items: center; margin-bottom: 5px; }
+    .legend-color { width: 12px; height: 12px; border-radius: 50%; margin-left: 8px; }
+    
+    /* AI Button Style */
+    .ai-btn {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-top: 16px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+      box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
+    }
+    .ai-btn:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+    }
+    .ai-btn:active {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div id="mynetwork"></div>
+  
+  <div class="legend">
+    <div class="legend-item"><div class="legend-color" style="background:#E53935"></div>נכס מרכזי</div>
+    <div class="legend-item"><div class="legend-color" style="background:#FFD700"></div>ערך תרבותי</div>
+    <div class="legend-item"><div class="legend-color" style="background:#1E88E5"></div>הקשר היסטורי</div>
+    <div class="legend-item"><div class="legend-color" style="background:#43A047"></div>דמות/קבוצה</div>
+    <div class="legend-item"><div class="legend-color" style="background:#F4511E"></div>היבט טכנולוגי</div>
+    <div class="legend-item"><div class="legend-color" style="background:#D81B60"></div>היבט אסתטי</div>
+  </div>
+
+  <div id="infowindow" aria-hidden="true">
+    <div class="title-row">
+      <h3 id="info_name"></h3>
+      <span id="closeinfo" aria-label="Close" role="button">✖</span>
+    </div>
+    <span id="info_type_badge" class="type-badge"></span>
+    <p id="info_meaning"></p>
+    
+    <button id="ai_btn" class="ai-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+      הרחב משמעות (AI)
+    </button>
+  </div>
+
+  <script>
+    // Data injection
+    window.__DATA_JSON__ = {
+      "nodes": [
+        { "id": "tower", "name": "מגדל המים אילת השחר", "type": "asset", "meaning": "מבנה תשתית מ-1923 המשלב בטון מזוין ועיטורים, סמל להתיישבות ולעבודה עברית.", "value_type": "Historical" },
+        
+        { "id": "ehrlich", "name": "מיכאל ארליך", "type": "person", "meaning": "המפקח והבנאי, אחראי לעיצוב הניאו-קלאסי הייחודי ולשימוש בטכנולוגיות בטון.", "value_type": "Aesthetic" },
+        
+        { "id": "gdud", "name": "גדוד העבודה (אחווה)", "type": "social_group", "meaning": "הקבוצה המבצעת; המגדל מנציח את פועלם ואת אידיאולוגיית 'כיבוש העבודה'.", "value_type": "Social" },
+        
+        { "id": "water_struggle", "name": "המאבק על המים", "type": "historical_context", "meaning": "הקשר קיומי של מחסור וסכסוכים שהוביל לצורך בתשתית עצמאית וחזקה.", "value_type": "Historical" },
+        
+        { "id": "concrete", "name": "בטון מזוין", "type": "technological_context", "meaning": "טכנולוגיה חדישה בארץ ב-1923, המגדל הוא מדגמיה הראשונים.", "value_type": "Technological" },
+        
+        { "id": "neoclassical", "name": "סגנון ניאו-קלאסי", "type": "artistic_context", "meaning": "עיטורים, גמלונים ופרופורציות שנועדו לפאר את מבנה התשתית.", "value_type": "Aesthetic" },
+        
+        { "id": "val_autonomy", "name": "עצמאות והישרדות", "type": "cultural_value", "meaning": "הערך המייצג את יכולת הקהילה לקיים את עצמה בתנאי ספר.", "value_type": "Social" },
+        
+        { "id": "val_labor", "name": "האדרת הפועל", "type": "cultural_value", "meaning": "הערך המעמיד במרכז את המבצע (הפועל) ולא את המממן.", "value_type": "Social" },
+        
+        { "id": "pica", "name": "יק\\"א", "type": "organization", "meaning": "הגוף המיישב והמממן, שנעדר באופן בולט ומופגן משלט ההנצחה.", "value_type": "Historical" },
+        
+        { "id": "bakery", "name": "שימוש כמאפייה (2018)", "type": "functional_context", "meaning": "שימוש אדפטיבי עכשווי המשמר את הרלוונטיות הציבורית של המבנה.", "value_type": "Functional" },
+        
+        { "id": "sign", "name": "שלט ההקדשה", "type": "architectural_element", "meaning": "ארטיפקט המנציח את הבונים ומבטא את המתח הפוליטי מול יק\\"א.", "value_type": "Historical" },
+        
+        { "id": "1936_events", "name": "מאורעות תרצ\\"ו-תרצ\\"ט", "type": "event", "meaning": "תקופה בה המגדל שימש לאיתות, מה שגרר שינוי פיזי (הסרת גמלונים).", "value_type": "Historical" }
+      ],
+      "edges": [
+        { "from": "tower", "to": "ehrlich", "label": "designed_by" },
+        { "from": "tower", "to": "gdud", "label": "built_by" },
+        { "from": "tower", "to": "concrete", "label": "constructed_of" },
+        { "from": "tower", "to": "neoclassical", "label": "designed_in" },
+        { "from": "tower", "to": "val_autonomy", "label": "symbolizes" },
+        { "from": "tower", "to": "bakery", "label": "adapted_to" },
+        { "from": "tower", "to": "sign", "label": "features" },
+        { "from": "water_struggle", "to": "tower", "label": "necessitated" },
+        { "from": "ehrlich", "to": "neoclassical", "label": "introduced" },
+        { "from": "gdud", "to": "val_labor", "label": "championed" },
+        { "from": "sign", "to": "val_labor", "label": "expresses" },
+        { "from": "sign", "to": "pica", "label": "omits" },
+        { "from": "1936_events", "to": "tower", "label": "modified" },
+        { "from": "concrete", "to": "val_autonomy", "label": "enabled" }
+      ]
+    };
+
+    const COLOR_BY_TYPE = {
+      asset: '#E53935', 
+      cultural_value: '#FFD700', 
+      historical_context: '#1E88E5',
+      social_group: '#43A047', 
+      person: '#43A047',
+      organization: '#43A047',
+      functional_context: '#FB8C00', 
+      technological_context: '#F4511E', 
+      artistic_context: '#D81B60',
+      architectural_element: '#8E24AA',
+      event: '#1E88E5'
+    };
+    
+    const TYPE_HE = {
+      asset: 'נכס מרכזי', 
+      cultural_value: 'ערך תרבותי', 
+      historical_context: 'הקשר היסטורי',
+      social_group: 'קבוצה חברתית', 
+      person: 'אישיות',
+      organization: 'ארגון',
+      functional_context: 'הקשר תפקודי', 
+      technological_context: 'הקשר טכנולוגי', 
+      artistic_context: 'הקשר אסתטי',
+      architectural_element: 'אלמנט אדריכלי',
+      event: 'אירוע היסטורי'
+    };
+
+    const raw = window.__DATA_JSON__;
+    
+    // Process Nodes
+    const nodes = new vis.DataSet((raw.nodes || []).map(n => ({
+      id: n.id, 
+      label: n.name || n.id,
+      color: { 
+        background: COLOR_BY_TYPE[n.type] || '#999', 
+        border: '#ffffff', 
+        highlight: { background: '#FDD835', border: '#333' } 
+      },
+      font: { color: '#333', size: 14, face: 'Segoe UI' },
+      shape: 'dot', 
+      size: n.type === 'asset' ? 30 : (n.type === 'cultural_value' ? 25 : 18),
+      borderWidth: 2,
+      shadow: true,
+      _raw: n
+    })));
+
+    // Process Edges
+    const edges = new vis.DataSet((raw.edges || []).map(e => ({
+      from: e.from, 
+      to: e.to, 
+      label: e.label || '',
+      arrows: 'to', 
+      font: { size: 10, align: 'middle', color: '#555', background: 'rgba(255,255,255,0.7)' }, 
+      color: { color: '#bbb', highlight: '#555' },
+      width: 1.5,
+      smooth: { type: 'continuous' }
+    })));
+
+    // Init Network
+    const container = document.getElementById('mynetwork');
+    const network = new vis.Network(container, { nodes, edges }, {
+      physics: { 
+        solver: 'forceAtlas2Based', 
+        forceAtlas2Based: { gravitationalConstant: -100, springLength: 120, springConstant: 0.09 },
+        stabilization: { iterations: 200 } 
+      },
+      interaction: { hover: true, tooltipDelay: 200, zoomView: true },
+      nodes: { 
+        font: { strokeWidth: 4, strokeColor: '#ffffff' }
+      }
+    });
+
+    // Interaction Logic
+    const infoEl = document.getElementById('infowindow');
+    const nameEl = document.getElementById('info_name');
+    const typeEl = document.getElementById('info_type_badge');
+    const meanEl = document.getElementById('info_meaning');
+    const aiBtn = document.getElementById('ai_btn');
+
+    network.on('click', p => {
+      if (p.nodes.length) {
+        const nId = p.nodes[0];
+        const n = nodes.get(nId);
+        
+        nameEl.textContent = n.label;
+        
+        const typeKey = n._raw.type;
+        typeEl.textContent = TYPE_HE[typeKey] || typeKey;
+        typeEl.style.backgroundColor = COLOR_BY_TYPE[typeKey] || '#999';
+        
+        meanEl.textContent = n._raw.meaning || '';
+        
+        infoEl.classList.add('visible'); 
+        infoEl.setAttribute('aria-hidden', 'false');
+      } else {
+        infoEl.classList.remove('visible');
+        infoEl.setAttribute('aria-hidden', 'true');
+      }
+    });
+
+    document.getElementById('closeinfo').onclick = () => { 
+      infoEl.classList.remove('visible'); 
+      infoEl.setAttribute('aria-hidden', 'true'); 
+    };
+
+    // Post message when AI button is clicked
+    aiBtn.onclick = () => {
+      const nName = nameEl.textContent;
+      const nMean = meanEl.textContent;
+      window.parent.postMessage({ type: 'ANALYZE_NODE', name: nName, meaning: nMean }, '*');
+    };
+  </script>
+</body>
+</html>
+`;
+
+// --- Components ---
+
+const Card = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+  <div className={`bg-white rounded-xl shadow-sm border border-slate-200 p-6 ${className}`}>
+    {children}
+  </div>
+);
+
+const SectionHeader = ({ title, icon: Icon }: any) => (
+  <div className="flex items-center gap-3 mb-6 border-b pb-2">
+    <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
+      <Icon size={24} />
+    </div>
+    <h2 className="text-2xl font-bold text-slate-800">{title}</h2>
+  </div>
+);
+
+// --- AI Chat Overlay Component (Updated for Trigger) ---
+
+const AIChatOverlay = ({ isOpen, onClose, pendingPrompt, onClearPending }: { isOpen: boolean; onClose: () => void; pendingPrompt: string | null; onClearPending: () => void }) => {
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    { role: 'model', text: 'שלום! אני האוצר הדיגיטלי של מגדל המים באילת השחר. אני מכיר את ההיסטוריה, הערכים והניתוח המלא של האתר. איך אוכל לעזור?' }
+  ]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to bottom
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages, isLoading]);
+
+  // Handle message sending (Text or Triggered)
+  const sendMessage = async (text: string) => {
+    setMessages(prev => [...prev, { role: 'user', text }]);
+    setIsLoading(true);
+
+    const prompt = `
+      You are a heritage expert and curator for the "Ayelet HaShahar Water Tower".
+      Here is the complete data about the site: ${FULL_CONTEXT_STRING}.
+      
+      User Question: "${text}"
+      
+      Instructions:
+      1. Answer in Hebrew.
+      2. Be professional but engaging.
+      3. Use the provided data to give accurate answers.
+      4. If asked about something not in the data, politely say you don't have that information.
+      5. Keep answers concise (max 3-4 sentences unless asked for details).
+    `;
+
+    const response = await callGemini(prompt);
+    setMessages(prev => [...prev, { role: 'model', text: response }]);
+    setIsLoading(false);
+  };
+
+  // Trigger from Prop
+  useEffect(() => {
+    if (isOpen && pendingPrompt) {
+      sendMessage(pendingPrompt);
+      onClearPending();
+    }
+  }, [isOpen, pendingPrompt]);
+
+  const handleUiSend = () => {
+    if (!input.trim() || isLoading) return;
+    sendMessage(input);
+    setInput('');
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed bottom-24 left-6 w-96 h-[500px] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col z-50 animate-in slide-in-from-bottom-5 duration-300">
+      <div className="bg-blue-600 p-4 rounded-t-2xl flex justify-between items-center text-white">
+        <div className="flex items-center gap-2">
+          <Bot size={20} />
+          <h3 className="font-bold">האוצר הדיגיטלי (AI)</h3>
+        </div>
+        <button onClick={onClose} className="hover:bg-blue-700 p-1 rounded transition">
+          <X size={18} />
+        </button>
+      </div>
+      
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50" ref={scrollRef}>
+        {messages.map((msg, idx) => (
+          <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-start' : 'justify-end'}`}>
+            <div className={`max-w-[80%] p-3 rounded-xl text-sm leading-relaxed ${
+              msg.role === 'user' 
+                ? 'bg-blue-100 text-blue-900 rounded-br-none' 
+                : 'bg-white text-slate-800 shadow-sm border border-slate-200 rounded-bl-none'
+            }`}>
+              {msg.text}
+            </div>
+          </div>
+        ))}
+        {isLoading && (
+          <div className="flex justify-end">
+            <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-200 rounded-bl-none flex items-center gap-2 text-sm text-slate-500">
+              <Loader2 size={14} className="animate-spin" />
+              מקליד...
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="p-3 border-t border-slate-200 bg-white rounded-b-2xl">
+        <div className="flex gap-2">
+          <button 
+            onClick={handleUiSend}
+            disabled={isLoading}
+            className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition"
+          >
+            <Send size={18} className={isLoading ? "opacity-0" : ""} />
+          </button>
+          <input 
+            type="text" 
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleUiSend()}
+            placeholder="שאל שאלה על האתר..."
+            className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-right"
+            dir="rtl"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- Tab Components ---
+
+const TimelineTab = () => (
+  <div className="space-y-6">
+    <div className="grid gap-6">
+      {TIMELINE_DATA.map((item, idx) => (
+        <div key={idx} className="flex gap-4 relative">
+          {idx !== TIMELINE_DATA.length - 1 && (
+            <div className="absolute top-10 right-[19px] bottom-[-24px] w-0.5 bg-slate-200"></div>
+          )}
+          <div className={`
+            w-10 h-10 rounded-full flex items-center justify-center shrink-0 z-10
+            ${item.type === 'milestone' ? 'bg-blue-600 text-white' : 
+              item.type === 'conservation' ? 'bg-green-500 text-white' : 
+              item.type === 'conflict' ? 'bg-red-500 text-white' : 'bg-slate-200 text-slate-600'}
+          `}>
+            {item.type === 'milestone' ? <Hammer size={18} /> : 
+             item.type === 'conservation' ? <CheckCircle size={18} /> :
+             item.type === 'conflict' ? <AlertTriangle size={18} /> : <Clock size={18} />}
+          </div>
+          <Card className="flex-1">
+            <div className="flex justify-between items-start mb-2">
+              <h3 className="font-bold text-lg text-slate-800">{item.title}</h3>
+              <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-sm font-medium">
+                {item.year}
+              </span>
+            </div>
+            <p className="text-slate-600 leading-relaxed">{item.desc}</p>
+          </Card>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+// --- Updated ValuesTab with Detailed Table and AI Trigger ---
+const ValuesTab = ({ onAnalyze }: { onAnalyze: (prompt: string) => void }) => (
+  <div className="space-y-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {VALUES_DATA.map((val) => (
+        <Card key={val.id} className="relative overflow-hidden group hover:shadow-md transition">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition">
+            <val.icon size={100} className="text-current" />
+          </div>
+          <div className="relative z-10">
+            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold mb-4 ${val.color}`}>
+              <val.icon size={16} />
+              {val.title}
+            </div>
+            <p className="text-slate-700 text-lg leading-relaxed mb-4">
+              {val.desc}
+            </p>
+            <div className="flex items-center gap-2 text-sm text-slate-500 border-t pt-3">
+              <span className="font-medium">רמת חשיבות:</span>
+              <span>{val.level}</span>
+            </div>
+          </div>
+        </Card>
+      ))}
+    </div>
+
+    {/* New Section: Detailed Attribute-Consequence Table */}
+    <Card className="border-t-4 border-t-blue-500">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+            <div>
+                <h3 className="font-bold text-xl text-slate-800 flex items-center gap-2">
+                    <Activity className="text-blue-500" size={20}/>
+                    ניתוח עומק: מאפיין ⟷ השפעה על המשמעות
+                </h3>
+                <p className="text-slate-500 text-sm mt-1">טבלה זו מדגימה כיצד כל מאפיין פיזי מתורגם להנחיית שימור או משמעות תרבותית.</p>
+            </div>
+            <button
+                onClick={() => onAnalyze("אנא נתח את עמודת 'השפעה על המשמעות' בטבלת הערכים המפורטת. הסבר כיצד המאפיינים הפיזיים (כגון מיקום, חומר, כתובת) מתורגמים למשמעות תרבותית רחבה יותר ולהנחיות שימור אופרטיביות.")}
+                className="flex items-center gap-2 text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 rounded-lg hover:shadow-lg transition transform hover:-translate-y-0.5"
+            >
+                <Sparkles size={16} />
+                נתח השפעות (AI)
+            </button>
+        </div>
+        <div className="overflow-x-auto rounded-lg border border-slate-200">
+            <table className="w-full text-sm text-right">
+              <thead className="bg-slate-100 text-slate-800 font-semibold">
+                <tr>
+                  <th className="p-4 border-b w-1/4">מאפיין (Attribute)</th>
+                  <th className="p-4 border-b w-1/5">ערכים משויכים</th>
+                  <th className="p-4 border-b w-1/4">משמעות ייחודית</th>
+                  <th className="p-4 border-b bg-blue-100 text-blue-900 font-bold border-blue-200 w-1/3">
+                    <div className="flex items-center gap-1">
+                      השפעה על המשמעות (Consequence)
+                      <HelpCircle size={14} title="אז מה? (So What?)" />
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {STAGE_2_DETAILED_TABLE.map((row, i) => (
+                  <tr key={i} className="hover:bg-slate-50 transition-colors">
+                    <td className="p-4 font-medium text-slate-900 align-top">{row.attr}</td>
+                    <td className="p-4 text-slate-600 align-top">{row.vals}</td>
+                    <td className="p-4 text-slate-700 align-top leading-relaxed">{row.meaning}</td>
+                    <td className="p-4 bg-blue-50/50 text-slate-900 font-medium align-top leading-relaxed border-l-4 border-blue-300">
+                        {row.conseq}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+        </div>
+    </Card>
+  </div>
+);
+
+const NaraTab = () => (
+  <Card className="overflow-hidden">
+    <table className="w-full text-right border-collapse">
+      <thead className="bg-slate-50 border-b border-slate-200">
+        <tr>
+          <th className="p-4 text-right font-semibold text-slate-700 w-1/4">היבט (Nara Grid)</th>
+          <th className="p-4 text-right font-semibold text-slate-700 w-1/4">מצב שלמות/אותנטיות</th>
+          <th className="p-4 text-right font-semibold text-slate-700">הערות וניתוח</th>
+          <th className="p-4 text-right font-semibold text-slate-700 w-1/6">סטטוס</th>
+        </tr>
+      </thead>
+      <tbody className="divide-y divide-slate-100">
+        {NARA_GRID_DATA.map((row, idx) => (
+          <tr key={idx} className="hover:bg-slate-50 transition">
+            <td className="p-4 text-slate-800 font-medium">{row.aspect}</td>
+            <td className="p-4 text-slate-600">{row.condition}</td>
+            <td className="p-4 text-slate-600 text-sm leading-relaxed">{row.note}</td>
+            <td className="p-4">
+              <span className={`
+                inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold
+                ${row.status === 'warning' ? 'bg-amber-100 text-amber-700' :
+                  row.status === 'danger' ? 'bg-red-100 text-red-700' :
+                  row.status === 'success' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'}
+              `}>
+                <span className={`w-2 h-2 rounded-full 
+                  ${row.status === 'warning' ? 'bg-amber-500' :
+                    row.status === 'danger' ? 'bg-red-500' :
+                    row.status === 'success' ? 'bg-green-500' : 'bg-slate-500'}
+                `}></span>
+                {row.status === 'warning' ? 'דורש תשומת לב' :
+                 row.status === 'danger' ? 'פגיעה משמעותית' :
+                 row.status === 'success' ? 'מצב תקין' : 'שינוי מהות'}
+              </span>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    <div className="p-4 bg-blue-50 border-t border-blue-100 flex items-start gap-3 text-sm text-blue-800">
+      <Info size={18} className="shrink-0 mt-0.5" />
+      <p>
+        <strong>סיכום שלמות:</strong> השינויים הפיזיים (גמלונים) והסביבתיים (בינוי צפוף) פגעו בנראות המקורית, 
+        אך המהות החברתית וההיסטורית נשמרה ואף חוזקה ע"י פרויקט השימור ב-2018.
+      </p>
+    </div>
+  </Card>
+);
+
+const SentimentTab = () => {
+  const sentimentData = [
+    { name: 'חיובי מאוד', value: 5 },
+    { name: 'חיובי-נוסטלגי', value: 2 },
+    { name: 'שלילי-דואג', value: 2 },
+    { name: 'נייטרלי', value: 1 },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="flex flex-col items-center justify-center p-6 bg-green-50 border-green-100">
+          <ThumbsUp size={32} className="text-green-600 mb-2" />
+          <div className="text-3xl font-bold text-green-700">70%</div>
+          <div className="text-sm text-green-600 font-medium">סנטימנט חיובי</div>
+        </Card>
+        <Card className="flex flex-col items-center justify-center p-6 bg-red-50 border-red-100">
+          <ThumbsDown size={32} className="text-red-600 mb-2" />
+          <div className="text-3xl font-bold text-red-700">20%</div>
+          <div className="text-sm text-red-600 font-medium">סנטימנט שלילי (דאגה)</div>
+        </Card>
+        <Card className="flex flex-col items-center justify-center p-6 bg-blue-50 border-blue-100">
+          <MessageSquare size={32} className="text-blue-600 mb-2" />
+          <div className="text-3xl font-bold text-blue-700">12</div>
+          <div className="text-sm text-blue-600 font-medium">מקורות שניתחו</div>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <h3 className="font-bold mb-4">התפלגות סנטימנט</h3>
+          <div className="h-64">
+             <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={sentimentData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {sentimentData.map((entry, index) => {
+                     let color = SENTIMENT_COLORS['נייטרלי-מעריך'];
+                     if (entry.name === 'חיובי מאוד') color = SENTIMENT_COLORS['חיובי מאוד'];
+                     if (entry.name === 'חיובי-נוסטלגי') color = SENTIMENT_COLORS['חיובי-נוסטלגי'];
+                     if (entry.name === 'שלילי-דואג') color = SENTIMENT_COLORS['שלילי-דואג'];
+                     return <Cell key={`cell-${index}`} fill={color} />;
+                  })}
+                </Pie>
+                <RechartsTooltip />
+                <Legend layout="vertical" verticalAlign="middle" align="right" />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+        <Card>
+           <h3 className="font-bold mb-4">תובנות מרכזיות מהרשת</h3>
+           <ul className="space-y-3">
+             <li className="flex gap-3 items-start">
+               <span className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2"></span>
+               <p className="text-sm text-slate-700"><strong>שיבה לחיים:</strong> טקס החנוכה ב-2018 נתפס כאירוע ניצחון קהילתי.</p>
+             </li>
+             <li className="flex gap-3 items-start">
+               <span className="w-1.5 h-1.5 rounded-full bg-purple-500 mt-2"></span>
+               <p className="text-sm text-slate-700"><strong>נוסטלגיה:</strong> המאפייה מחזקת זכרונות חברתיים "בצל המגדל".</p>
+             </li>
+             <li className="flex gap-3 items-start">
+               <span className="w-1.5 h-1.5 rounded-full bg-red-500 mt-2"></span>
+               <p className="text-sm text-slate-700"><strong>הזנחה כרקע:</strong> שיח על סדקים משמש בעיקר להצדקת השיקום.</p>
+             </li>
+           </ul>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+const KnowledgeGraphTab = () => {
+  return (
+    <div className="w-full h-[700px] bg-slate-50 rounded-xl overflow-hidden border border-slate-200 shadow-sm relative">
+       <iframe 
+         srcDoc={KG_HTML_CODE}
+         title="Knowledge Graph"
+         className="w-full h-full border-0"
+         sandbox="allow-scripts allow-same-origin allow-popups"
+       />
+    </div>
+  );
+};
+
+// --- Full Report Tab (with AI features) ---
+
+const FullReportTab = () => {
+  const [aiSummary, setAiSummary] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const handleGenerateSummary = async () => {
+    setIsGenerating(true);
+    const prompt = `
+      Create a professional "Executive Summary" (in Hebrew) for the heritage assessment of the Ayelet HaShahar Water Tower.
+      Base it on this data: ${FULL_CONTEXT_STRING}.
+      Focus on the synthesis of values and the integrity challenges.
+      Format it as a concise paragraph of about 100 words.
+    `;
+    const result = await callGemini(prompt);
+    setAiSummary(result);
+    setIsGenerating(false);
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-8 print:space-y-6">
+      <div className="bg-white p-10 rounded-xl shadow-md border border-slate-200">
+        <header className="border-b pb-6 mb-8 text-center md:text-right">
+          <div className="flex justify-between items-start">
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">דוח הערכת מורשת: מגדל המים, אילת השחר</h1>
+            <button 
+              onClick={handleGenerateSummary}
+              disabled={isGenerating}
+              className="hidden md:flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition disabled:opacity-50 text-sm font-medium shadow-sm"
+            >
+              {isGenerating ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+              צור סיכום מנהלים (AI)
+            </button>
+          </div>
+          <div className="text-slate-500 flex flex-col md:flex-row gap-4 justify-between items-center mt-4">
+             <span>נוצר ע"י מערכת Heritage AI</span>
+             <span>סטטוס: סופי (Final Assessment)</span>
+          </div>
+        </header>
+
+        {/* AI Generated Summary Section */}
+        {aiSummary && (
+          <div className="mb-10 bg-purple-50 p-6 rounded-xl border border-purple-100 animate-in fade-in slide-in-from-top-4">
+            <h2 className="text-purple-800 font-bold mb-3 flex items-center gap-2">
+              <Sparkles size={18} />
+              סיכום מנהלים (נוצר ע"י בינה מלאכותית)
+            </h2>
+            <p className="text-slate-700 leading-relaxed italic">
+              "{aiSummary}"
+            </p>
+          </div>
+        )}
+        
+        {/* 1.0 Contexts */}
+        <section className="mb-10">
+          <h2 className="text-xl font-bold text-slate-800 border-b-2 border-slate-100 pb-2 mb-4">1.0 הקשרים ותיאור הנכס</h2>
+          <div className="prose prose-slate max-w-none text-slate-700 leading-7">
+            <p className="mb-4">
+              אילת השחר נוסדה כיישוב עצמאי בשנת 1918 (תרע"ח), בלב עמק החולה, אזור שהתאפיין באתגרים סביבתיים קשים ובמצוקת מים כרונית. 
+              בשנים הראשונות, אספקת המים התבססה על הובלה ידנית בחביות על גבי עגלות וחמורים מנחל חצור (ואדי ווקאז) ומעיינות הסביבה. 
+              מצב זה הגביל את התפתחות המשק והיווה סיכון תברואתי מתמיד.
+            </p>
+            <p className="mb-4">
+              המגדל הוקם בשנת 1923 כחלק ממעבר היישוב לנקודת הקבע ("הפרסה"). תכנית היישוב, המבוססת על צורת פרסה ("כביש הפרסה"), 
+              מיקמה את המגדל בראש הגבעה במרכז הגרעין, כנקודת ציון (Landmark) השולטת על המרחב הציבורי והחקלאי כאחד.
+              המבנה נבנה בבטון מזוין על ידי פלוגת "אחווה" מגדוד העבודה, בפיקוחו של הטכנאי מיכאל ארליך – עובדה המעוגנת בלוח כתובת בחזית המבנה.
+            </p>
+            <p>
+              תפקידו המקורי היה ויסות לחץ המים בין השאיבה לצריכה, עם בריכה עליונה בנפח של כ-25 מ"ק. 
+              במהלך השנים הוא עבר שינויים תפקודיים, כולל שימוש כתחנת איתות ביטחונית בתקופת המאורעות (1936–1939), 
+              עד ליציאתו משימוש תשתיתי בשנות ה-60 ושימורו בשנת 2018.
+            </p>
+          </div>
+        </section>
+
+        {/* 2.0 Values Table */}
+        <section className="mb-10">
+          <h2 className="text-xl font-bold text-slate-800 border-b-2 border-slate-100 pb-2 mb-4">2.0 ניתוח ערכים ומשמעות (Values Analysis)</h2>
+          <p className="text-slate-600 mb-4 text-sm">
+            הטבלה להלן ממפה את המאפיינים הפיזיים וההיסטוריים (Attributes) אל מול הערכים התרבותיים שהם נושאים, ומתרגמת אותם להשלכות מעשיות על המשמעות (Consequence for Significance).
+          </p>
+          <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
+            <table className="w-full text-sm text-right">
+              <thead className="bg-slate-100 text-slate-800 font-semibold">
+                <tr>
+                  <th className="p-4 border-b w-1/4">מאפיין (Attribute)</th>
+                  <th className="p-4 border-b w-1/5">ערכים משויכים</th>
+                  <th className="p-4 border-b w-1/4">משמעות ייחודית לאתר</th>
+                  <th className="p-4 border-b bg-blue-50 text-blue-900 font-bold border-blue-100 w-1/3">השפעה על המשמעות (Consequence)</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {STAGE_2_DETAILED_TABLE.map((row, i) => (
+                  <tr key={i} className="hover:bg-slate-50 transition-colors">
+                    <td className="p-4 font-medium text-slate-900 align-top">{row.attr}</td>
+                    <td className="p-4 text-slate-600 align-top">{row.vals}</td>
+                    <td className="p-4 text-slate-700 align-top leading-relaxed">{row.meaning}</td>
+                    <td className="p-4 bg-blue-50/30 text-slate-800 font-medium align-top leading-relaxed border-l-4 border-blue-200">{row.conseq}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        {/* 3.0 Nara Grid */}
+        <section className="mb-10">
+          <h2 className="text-xl font-bold text-slate-800 border-b-2 border-slate-100 pb-2 mb-4">3.0 אותנטיות ושלמות (Integrity & Authenticity)</h2>
+          <p className="mb-4 text-slate-700">
+             ניתוח זה בוחן את מידת ההשתמרות של הנכס ואת אמינות המידע שהוא מעביר. הדילמה המרכזית באילת השחר היא המתח בין המהות ההיסטורית שנשמרה לבין השינויים הויזואליים הדרמטיים בסביבתו.
+          </p>
+          <div className="grid grid-cols-1 gap-4">
+            {NARA_GRID_DATA.map((item, idx) => (
+              <div key={idx} className={`border p-5 rounded-lg ${item.status === 'success' ? 'bg-green-50 border-green-200' : item.status === 'warning' ? 'bg-amber-50 border-amber-200' : item.status === 'danger' ? 'bg-red-50 border-red-200' : 'bg-slate-50 border-slate-200'}`}>
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="font-bold text-slate-800 text-lg">{item.aspect}</h3>
+                  <span className={`text-sm px-3 py-1 rounded-full font-medium ${item.status === 'success' ? 'bg-green-200 text-green-900' : item.status === 'warning' ? 'bg-amber-200 text-amber-900' : item.status === 'danger' ? 'bg-red-200 text-red-900' : 'bg-slate-200 text-slate-800'}`}>
+                    {item.condition}
+                  </span>
+                </div>
+                <p className="text-slate-700 leading-relaxed">{item.note}</p>
+                {item.aspect === 'שימוש ותפקוד' && (
+                   <p className="mt-2 text-sm text-slate-500 italic border-t pt-2 border-slate-200">
+                     * השינוי לשימוש כמאפייה (2018) מחזק את המעורבות הקהילתית ("ערך חברתי") אך מטשטש את חווית ה"מכונה ההידראולית" המקורית.
+                   </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* 4.0 Comparison */}
+        <section className="mb-10">
+          <h2 className="text-xl font-bold text-slate-800 border-b-2 border-slate-100 pb-2 mb-4">4.0 הערכה השוואתית (Comparative Analysis)</h2>
+          <div className="prose prose-slate max-w-none text-slate-700 leading-7">
+            <p className="mb-4">
+              מגדל המים באילת השחר (1923) מייצג שלב מפתח בהתפתחות מגדלי המים בארץ ישראל: המעבר משיטות מסורתיות לבטון מזוין ("תקופה ג'" - שנות ה-20).
+              בהשוואה למגדלי "הדור הראשון" (כמו בזיכרון יעקב - בסיס אבן ומיכל מתכת) או למגדלי הסיליקט העירוניים (כמו באחוזת בית), מגדל זה מציג חדשנות הנדסית של קונסטרוקציית שלד חשופה.
+            </p>
+            <p>
+              ייחודו של המגדל מול מקביליו בני התקופה (שרובם עוצבו כאלמנטים פונקציונליים-מינימליסטיים) הוא ב<strong>חריגה הסגנונית</strong> המודעת שלו:
+              שילוב של מסגרות בולטות, הדגשת פינות, וגמלונים (שנהרסו מאוחר יותר) מעיד על כוונה להפוך את התשתית למונומנט נראה. 
+              בנוסף, קיום לוח הכתובת המנציח את המבצעים ("אחווה") הוא אלמנט נדיר יחסית, המקשר את המבנה ישירות לאתוס "כיבוש העבודה".
+            </p>
+          </div>
+        </section>
+
+        {/* 5.0 Synthesis */}
+        <section className="bg-slate-900 text-white p-8 rounded-xl shadow-lg relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500 rounded-full blur-[60px] opacity-20"></div>
+          
+          <h2 className="text-2xl font-bold mb-6 text-blue-300 border-b border-slate-700 pb-2 relative z-10">5.0 סינתזה ומשמעות תרבותית (Final Significance)</h2>
+          
+          <div className="space-y-6 relative z-10 text-slate-100 leading-7 opacity-90">
+            <p>
+              המשמעות התרבותית של מגדל המים באילת השחר נוצרת במפגש הייחודי בין שלושה וקטורים: 
+              <strong> הקשר ההתיישבותי</strong> של מאבק על מקורות מים; 
+              <strong> הארגון המרחבי</strong> המתוכנן של צורת ה"פרסה" המציבה את התשתית במרכז; 
+              ו<strong>הביוגרפיה התפקודית</strong> המרובדת שלו.
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
+              <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                <h3 className="text-blue-200 font-bold mb-2">ערכי ליבה</h3>
+                <p className="text-sm">שילוב נדיר של עדות טכנולוגית לניהול משאב מוגבל, יחד עם ערך חברתי עמוק של "אתוס עבודה" וזהות קבוצתית המעוגנת בבטון (כתובת המבצעים).</p>
+              </div>
+              <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                <h3 className="text-amber-200 font-bold mb-2">אתגר השלמות</h3>
+                <p className="text-sm">השינויים בנראות (בליעה במאפייה) והשימוש מחדש מחייבים פרשנות אקטיבית כדי לגשר על הפער בין המבנה הקיים לתפקידו ההיסטורי כ"ציון דרך".</p>
+              </div>
+            </div>
+            
+            <div className="bg-blue-900/40 p-5 rounded-lg border border-blue-800/50">
+              <strong className="text-blue-300 block mb-2 text-lg">סינתזה מסכמת (Final Synthesis):</strong>
+              <p className="italic text-slate-200">
+                "מגדל המים באילת השחר משמעותי כנכס מורשת משום שהוא מרכז-תשתית נראה ומתועד, שמתרגם את המחסור במים ואת התכנון הקיבוצי לשפה חומרית ומרחבית אחת. 
+                ייחודו נעוץ בחריגה מהמינימליזם התשתיתי (פיתוח סגנוני וכתובת), והשלכת השלמות המרכזית היא שהשינויים בנראות ובשימוש מחייבים את שימור הסיפור ההיסטורי כרובד חי לצד השימוש העכשווי."
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+};
+
+// --- Main App ---
+
+export default function HeritageDashboard() {
+  const [activeTab, setActiveTab] = useState<Tab>('timeline');
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [pendingAiQuery, setPendingAiQuery] = useState<string | null>(null);
+
+  // Listen for messages from the KG iframe
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'ANALYZE_NODE') {
+        const { name, meaning } = event.data;
+        const prompt = `נתח את החשיבות של "${name}" (${meaning}) במכלול הערכת מגדל המים באילת השחר. התייחס להקשרים, לערכים ולמשמעות הכוללת.`;
+        setPendingAiQuery(prompt);
+        setIsChatOpen(true);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
+  const handleAiAnalysis = (prompt: string) => {
+    setPendingAiQuery(prompt);
+    setIsChatOpen(true);
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-800" dir="rtl">
+      
+      {/* Header */}
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-20">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">מגדל המים - אילת השחר</h1>
+            <p className="text-slate-500 text-sm">דשבורד הערכה מורשתית מלא (Heritage Assessment)</p>
+          </div>
+          <div className="flex gap-2 text-sm bg-slate-100 p-1 rounded-lg overflow-x-auto max-w-full">
+             <button
+              onClick={() => setActiveTab('timeline')}
+              className={`px-3 py-2 rounded-md transition-all whitespace-nowrap ${activeTab === 'timeline' ? 'bg-white shadow text-blue-600 font-bold' : 'text-slate-500 hover:text-slate-700'}`}
+             >
+               ציר זמן
+             </button>
+             <button
+              onClick={() => setActiveTab('values')}
+              className={`px-3 py-2 rounded-md transition-all whitespace-nowrap ${activeTab === 'values' ? 'bg-white shadow text-blue-600 font-bold' : 'text-slate-500 hover:text-slate-700'}`}
+             >
+               ערכים
+             </button>
+             <button
+              onClick={() => setActiveTab('nara')}
+              className={`px-3 py-2 rounded-md transition-all whitespace-nowrap ${activeTab === 'nara' ? 'bg-white shadow text-blue-600 font-bold' : 'text-slate-500 hover:text-slate-700'}`}
+             >
+               Nara Grid
+             </button>
+             <button
+              onClick={() => setActiveTab('sentiment')}
+              className={`px-3 py-2 rounded-md transition-all whitespace-nowrap ${activeTab === 'sentiment' ? 'bg-white shadow text-blue-600 font-bold' : 'text-slate-500 hover:text-slate-700'}`}
+             >
+               סנטימנט
+             </button>
+             <button
+              onClick={() => setActiveTab('kg')}
+              className={`px-3 py-2 rounded-md transition-all whitespace-nowrap flex items-center gap-1.5 ${activeTab === 'kg' ? 'bg-white shadow text-blue-600 font-bold' : 'text-slate-500 hover:text-slate-700'}`}
+             >
+               <Share2 size={16} />
+               גרף ידע (KG)
+             </button>
+             <button
+              onClick={() => setActiveTab('report')}
+              className={`px-3 py-2 rounded-md transition-all whitespace-nowrap flex items-center gap-1.5 ${activeTab === 'report' ? 'bg-blue-600 shadow text-white font-bold' : 'text-slate-700 hover:bg-slate-200 font-medium'}`}
+             >
+               <FileText size={16} />
+               דוח מלא
+             </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Content Area */}
+      <main className="max-w-5xl mx-auto px-6 py-8">
+        
+        {activeTab === 'timeline' && (
+          <div className="animate-in fade-in duration-300">
+            <SectionHeader title="התפתחות היסטורית ושלבים" icon={Clock} />
+            <TimelineTab />
+          </div>
+        )}
+
+        {activeTab === 'values' && (
+          <div className="animate-in fade-in duration-300">
+             <SectionHeader title="הצהרת ערכים (Significance)" icon={Award} />
+             <ValuesTab onAnalyze={handleAiAnalysis} />
+          </div>
+        )}
+
+        {activeTab === 'nara' && (
+          <div className="animate-in fade-in duration-300">
+             <SectionHeader title="אותנטיות ושלמות (Nara Grid)" icon={AlertTriangle} />
+             <NaraTab />
+          </div>
+        )}
+
+        {activeTab === 'sentiment' && (
+          <div className="animate-in fade-in duration-300">
+             <SectionHeader title="שיח ציבורי וסנטימנט" icon={MessageSquare} />
+             <SentimentTab />
+          </div>
+        )}
+
+        {activeTab === 'kg' && (
+          <div className="animate-in fade-in duration-300">
+            <SectionHeader title="גרף ידע תרבותי (CA-KG)" icon={Share2} />
+            <KnowledgeGraphTab />
+          </div>
+        )}
+
+        {activeTab === 'report' && (
+          <div className="animate-in fade-in duration-300">
+            <FullReportTab />
+          </div>
+        )}
+
+      </main>
+
+      {/* AI Assistant FAB */}
+      <button 
+        onClick={() => setIsChatOpen(!isChatOpen)}
+        className="fixed bottom-6 left-6 p-4 bg-blue-600 text-white rounded-full shadow-xl hover:bg-blue-700 transition-all z-50 flex items-center justify-center animate-bounce-slow"
+        aria-label="פתח עוזר מורשת"
+      >
+        {isChatOpen ? <X size={24} /> : <Sparkles size={24} />}
+      </button>
+
+      {/* AI Chat Overlay */}
+      <AIChatOverlay 
+        isOpen={isChatOpen} 
+        onClose={() => setIsChatOpen(false)}
+        pendingPrompt={pendingAiQuery}
+        onClearPending={() => setPendingAiQuery(null)}
+      />
+    </div>
+  );
+}

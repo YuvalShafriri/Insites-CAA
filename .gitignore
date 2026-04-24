@@ -1,5 +1,136 @@
-# VS Code workspace
+# Excluded from repo — all OLD/ folders anywhere
+**/OLD/
+
+# === Workshop results (local only) ===
+workshop-results/
+
+# === Internal logistics ===
+management/
+content-dev/
+promptsEngineering/
+sakem-li/
+/docs/
+
+# === Sites data — keep only caa26-workshop-sitesData tracked ===
+InSites-Brain/sites-data/misc-sites-data/
+InSites-Brain/sites-data/misc-sites-data/*.pdf
+# Workshop site PDFs at root of sites-data are tracked (the shared files for participants)
+InSites-Brain/sites-data/*.txt
+InSites-Brain/sites-data/*.js
+InSites-Brain/sites-data/*.json
+InSites-Brain/sites-data/EAC/
+InSites-Brain/sites-data/Samples*/
+InSites-Brain/sites-data/TabghaSample/
+InSites-Brain/sites-data/dolmens-tuba/
+InSites-Brain/sites-data/wokshop-shared-assessments/
+InSites-Brain/sites-data/mills-*
+InSites-Brain/sites-data/chaco-*
+InSites Budget.md
+.vscode/
 *.code-workspace
 
-# GitHub instructions (internal)
-.github/
+# === Developer tooling ===
+.claude/
+CLAUDE.md
+InSites-Brain/CLAUDE.md
+InSites-Brain/Claude/InSites-CAA-mono*.md
+InSites-Brain/Gemini/InSites-CAA-mono*.md
+
+# Temp files
+~$*
+desktop.ini
+.tmp.driveupload/
+.tmp.drivedownload/
+.tmp.drive*/
+
+# Environment / API keys
+.env*
+!.env.example
+
+# Dependencies & build output
+node_modules/
+workshop-site/dist/
+workshop-site/.vite/
+
+# Local tooling config
+.playwright-mcp/
+
+# Binary content (presentations, design exports)
+*.pptx
+InSites-Design-Principles*.pdf
+InSites-Brain/MANIFEST.md
+
+# Verification screenshots (temporary, root-level)
+/*.png
+
+# === Paper content (gitignore for now) ===
+InSites-Brain/Heritage4.0/
+
+# === Claude: keep only mono prompt + setup guide ===
+InSites-Brain/Claude/not-used/
+InSites-Brain/Claude/plans/
+InSites-Brain/Claude/tests/
+InSites-Brain/Claude/KG-Skill-en/
+InSites-Brain/Claude/KG-artifacts/
+InSites-Brain/Claude/global-claude-ai-skills/
+InSites-Brain/Claude/claude skills/
+InSites-Brain/Claude/InSites-CAA-mono-v2.2.md
+InSites-Brain/Claude/InSites-CAA-mono v5.3*
+InSites-Brain/Claude/InSites-CAA-main.md
+InSites-Brain/Claude/InSites-CAA.md
+InSites-Brain/Claude/WORKSHOP-README.md
+InSites-Brain/Claude/agent-for-agents.md
+InSites-Brain/Claude/claude-ai-project*/
+InSites-Brain/Claude/skills/
+InSites-Brain/Claude/*.png
+InSites-Brain/Claude/*.jpg
+
+# === GPTs: keep only root files + runtime + tests ===
+InSites-Brain/GPTs -original dash en/
+InSites-Brain/GPTs/CAA/
+InSites-Brain/GPTs/CAA-GTPs (Claude.ai-Spilts)/
+InSites-Brain/GPTs/CAA-GTPs-InSites v4_current_files_package/
+
+# === Gemini: keep only current version ===
+InSites-Brain/Gemini/MISC-CHECK/
+InSites-Brain/Gemini/InSites-CAA-mono- GEM v5.1.md
+InSites-Brain/Gemini/InSites-CAA-mono- GEM v5.2.md
+
+# === Design: internal-only files ===
+InSites-Brain/design/knowledge-base.md
+InSites-Brain/design/less-is-more.md
+InSites-Brain/design/prompt-qa-principles.md
+InSites-Brain/design/claude code system/
+InSites-Brain/design/InSites-CAA bot brain Upgrades*
+InSites-Brain/design/dev-tracking-notion.md
+InSites-Brain/design/Scout-prompt.md
+InSites-Brain/design/agent4agents/
+
+# === Agent-for-agents: keep only v6_5 + Hebrew ===
+InSites-Brain/agent-for-agents/agent-for-agents-en.md
+
+# === Sites data: keep only what's needed ===
+# EAC — keep only the two guidance PDFs
+InSites-Brain/sites-data/EAC/EAC-DASH/
+InSites-Brain/sites-data/EAC/EAC11_sites/
+InSites-Brain/sites-data/EAC/result/
+InSites-Brain/sites-data/EAC/small-dataset-4-benchmark/
+
+# Mills — keep only mills-2021-v2.json (has coordinates)
+InSites-Brain/sites-data/mills-2021-v1.json
+InSites-Brain/sites-data/mills-2021-en.json
+InSites-Brain/sites-data/mills-kg-data.json
+InSites-Brain/sites-data/mills-dashboard.html.*
+InSites-Brain/sites-data/mills-analysis.js
+InSites-Brain/sites-data/translate-mills.js
+InSites-Brain/sites-data/apply-translations.js
+InSites-Brain/sites-data/fix-remaining-hebrew.js
+
+# Kinneret old results
+InSites-Brain/sites-data/Samples and Sites Descriptions/Sites-Descriptions/Kinneret-Sites/result/
+
+# Large files
+InSites-Brain/sites-data/Samples and Sites Descriptions/Sites-Descriptions/huqoq/hoquq.docx
+
+# Dev screenshots
+*.jpeg

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test — Collection Dashboard (English)</title>
+  <link rel="stylesheet" href="../runtime/dashboard-runtime.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="dashboard-root"></div>
+
+  <script>
+  window.__COLLECTION_DATA__ = {
+    collection: {
+      name: "Roman Aqueducts of the Levant",
+      source: "IAA Regional Infrastructure Survey 2024",
+      depth: "Rich",
+      date: "2024-06-10",
+      itemCount: 4
+    },
+    sites: [
+      { id: "aq-01", name: "Caesarea High-Level Aqueduct", region: "Sharon Coast", lat: 32.5056, lng: 34.8903, depth: "rich", type: "Aqueduct", typeCategory: "single", period: "Roman, 1st–2nd century CE", periodCategory: "ancient", description: "Monumental raised aqueduct stretching 9 km from springs at the foot of Mt Carmel to the city of Caesarea Maritima. Dual-channel construction with well-preserved arcaded sections standing up to 8 m high. Extensive Latin inscriptions from legionary repair campaigns.", significanceSummary: "Best-preserved Roman aqueduct in the Eastern Mediterranean — a landmark of imperial hydraulic engineering and the primary water supply for the provincial capital.", highlight: "Best-preserved Roman aqueduct in the Eastern Mediterranean", values: { historical: "e", technological: "e", landscape: "e", archaeological: "e", social: "i" }, integrity: "good", integrityNote: "Arcade sections structurally stable; channel lining intact in most segments", threats: ["Coastal erosion", "Tourism wear"], comparativeBasis: "Raised aqueducts of the Roman East (Aspendos, Carthage)", claimScope: "international" },
+      { id: "aq-02", name: "Caesarea Low-Level Aqueduct", region: "Sharon Coast", lat: 32.4950, lng: 34.8870, depth: "medium", type: "Aqueduct", typeCategory: "single", period: "Roman, 2nd century CE", periodCategory: "ancient", description: "Ground-level aqueduct channel running parallel to the coastline, partially buried under sand dunes. Built to augment the High-Level Aqueduct as Caesarea's population grew. Sections exposed by intermittent excavation.", significanceSummary: "Reveals the second phase of Caesarea's water supply expansion and the engineering adaptations required for a low-gradient coastal route.", highlight: "Reveals second phase of Caesarea's water supply", values: { historical: "i", technological: "e", archaeological: "i" }, integrity: "variable", integrityNote: "Exposed sections fair; buried sections unassessed", threats: ["Sand encroachment"], comparativeBasis: "Low-level aqueducts of Roman port cities", claimScope: "national" },
+      { id: "aq-03", name: "Ein Tzur Spring System", region: "Ramat Hanadiv", lat: 32.5502, lng: 34.9478, depth: "thin", type: "Spring capture + channel", typeCategory: "single", period: "Roman–Byzantine", periodCategory: "ancient", description: "Spring capture installation with a short feeder channel, likely connecting to the main Caesarea aqueduct system. Minimal excavation; known primarily from surface survey.", significanceSummary: "Part of the broader regional water supply network feeding Caesarea.", highlight: null, values: { historical: "i", technological: "i" }, integrity: "unknown", integrityNote: null, threats: ["Agricultural development"], comparativeBasis: null, claimScope: "local" },
+      { id: "aq-04", name: "Bet She'arim Tunnel Aqueduct", region: "Jezreel Valley", lat: 32.7025, lng: 35.1278, depth: "rich", type: "Tunnel aqueduct", typeCategory: "single", period: "Roman, 2nd century CE", periodCategory: "ancient", description: "A 400 m underground tunnel cut through limestone bedrock to convey spring water to the town of Bet She'arim. Features vertical access shafts every 30 m used during construction. Unusually well-documented through epigraphic and archaeological evidence.", significanceSummary: "Only known underground aqueduct tunnel in the region — a unique example of Roman subterranean hydraulic engineering in basalt-limestone geology.", highlight: "Only known underground aqueduct tunnel in the region", values: { historical: "e", technological: "e", scientific: "e", landscape: "i" }, integrity: "good", integrityNote: "Tunnel structurally sound; access shafts partially collapsed", threats: ["Groundwater changes"], comparativeBasis: "Roman qanat-style tunnels (Bologna, Gadara)", claimScope: "international" }
+    ],
+    themes: [
+      { id: "engineering", label: "Roman Engineering Innovation", description: "Diverse engineering solutions — raised arcades, ground-level channels, and underground tunnels — adapted to local topography and geology", sites: ["aq-01", "aq-02", "aq-04"], evidence: { "aq-01": "Monumental dual-channel arcade with legionary inscription evidence of repair campaigns", "aq-02": "Low-gradient coastal channel engineering for supplementary supply", "aq-04": "400 m rock-cut tunnel with systematic vertical access shafts" } },
+      { id: "water-network", label: "Water Supply Networks", description: "Interconnected water infrastructure serving the regional capital Caesarea Maritima from multiple source points", sites: ["aq-01", "aq-02", "aq-03"], evidence: { "aq-01": "Primary supply line from Mt Carmel springs — 9 km raised channel", "aq-02": "Secondary supply line added when population outgrew first aqueduct", "aq-03": "Feeder spring capture connecting to the main aqueduct system" } }
+    ],
+    tabs: [
+      {
+        id: "arguments",
+        label: "Significance Arguments",
+        icon: "📊",
+        type: "table",
+        data: {
+          columns: ["Site", "Argument Type", "Strength", "Evidence Basis", "Scope"],
+          rows: [
+            ["Caesarea High-Level Aqueduct", "Uniqueness", "Strong", "Best-preserved raised aqueduct in the Eastern Mediterranean with legionary inscriptions", "International"],
+            ["Bet She'arim Tunnel Aqueduct", "Uniqueness", "Strong", "Only underground aqueduct tunnel known in the region", "International"],
+            ["Caesarea Low-Level Aqueduct", "Contextual", "Medium", "Documents second phase of urban water supply expansion", "National"],
+            ["Ein Tzur Spring System", "Network component", "Weak", "Surface survey evidence only; connection to main system inferred", "Local"]
+          ]
+        }
+      },
+      {
+        id: "conservation",
+        label: "Conservation Priorities",
+        icon: "🛡️",
+        type: "cards",
+        data: {
+          cards: [
+            { title: "Caesarea High-Level Aqueduct", level: "high", body: "Immediate stabilization of seaward arcade piers exposed to salt spray. Visitor management plan needed — current foot traffic erodes channel lining. Consider protective sheltering for inscription panels." },
+            { title: "Bet She'arim Tunnel Aqueduct", level: "high", body: "Monitor groundwater table changes threatening tunnel stability. Secure collapsed access shafts against unauthorized entry. Document epigraphic evidence before further deterioration." },
+            { title: "Caesarea Low-Level Aqueduct", level: "medium", body: "Systematic survey of buried sections before further sand quarrying. Consolidate exposed channel walls. Mark alignment to prevent future construction damage." },
+            { title: "Ein Tzur Spring System", level: "low", body: "Conduct baseline archaeological survey before planned agricultural expansion. GPS-document visible surface features. No immediate structural intervention required." }
+          ]
+        }
+      }
+    ]
+  };
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="../runtime/collection-dashboard-runtime.js"></script>
+</body>
+</html>

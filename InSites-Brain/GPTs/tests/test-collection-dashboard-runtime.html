@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test — Collection Dashboard Runtime</title>
+  <link rel="stylesheet" href="../runtime/dashboard-runtime.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&family=Noto+Sans+Hebrew:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="dashboard-root"></div>
+
+  <script>
+  window.__COLLECTION_DATA__ = {
+    collection: {
+      name: "טחנות מים — נחל תנינים",
+      source: "סקר מורשת תעשייתית 2024",
+      depth: "Rich",
+      date: "2024-03-15",
+      itemCount: 5
+    },
+    sites: [
+      { id: "mill-01", name: "טחנת דוק", region: "עמק חפר", lat: 32.52, lng: 34.92, depth: "rich", type: "טחנת מים", typeCategory: "single", period: "עות'מאנית", periodCategory: "modern", description: "טחנת קמח מהמאה ה-19 על נחל תנינים. מבנה אבן דו-קומתי עם מנגנון הנעה הידראולי שלם.", significanceSummary: "עדות נדירה לטכנולוגיה הידראולית כפרית בשלהי התקופה העות'מאנית.", highlight: "מנגנון הנעה שלם — יחיד באזור", values: { historical: "e", technological: "e", landscape: "i", social: "i", archaeological: "a" }, integrity: "good", integrityNote: "מבנה יציב, מנגנון פנימי שמור", threats: ["הזנחה", "צמחייה פולשנית"], comparativeBasis: "טחנות מים אזוריות", claimScope: "regional" },
+      { id: "mill-02", name: "טחנת הנזירים", region: "עמק חפר", lat: 32.54, lng: 34.93, depth: "rich", type: "טחנת מים", typeCategory: "single", period: "צלבנית — עות'מאנית", periodCategory: "medieval", description: "טחנה צלבנית שהומשכה בתקופה העות'מאנית. קשתות גותיות ותעלת מים ארוכה.", significanceSummary: "רצף שימוש של 700 שנה — מהטחנות העתיקות באזור.", highlight: "קשתות צלבניות מקוריות", values: { historical: "e", technological: "e", landscape: "e", social: "i", archaeological: "i" }, integrity: "variable", integrityNote: "קשתות שלמות, גג קרס חלקית", threats: ["קריסת גג", "שיטפונות"], comparativeBasis: "טחנות צלבניות", claimScope: "national" },
+      { id: "mill-03", name: "טחנת עין צור", region: "רמת הנדיב", lat: 32.55, lng: 34.95, depth: "medium", type: "טחנת מים", typeCategory: "single", period: "עות'מאנית מאוחרת", periodCategory: "modern", description: "טחנה קטנה ליד מעיין צור. נבנתה במאה ה-19.", significanceSummary: "חלק ממערכת טחנות אזורית.", highlight: null, values: { historical: "i", technological: "i", landscape: "a", social: "a", archaeological: "a" }, integrity: "unknown", integrityNote: null, threats: ["פיתוח"], comparativeBasis: null, claimScope: "local" },
+      { id: "mill-04", name: "טחנת ג'סר א-זרקא", region: "חוף הכרמל", lat: 32.53, lng: 34.89, depth: "thin", type: "שרידי טחנה", typeCategory: "single", period: "עות'מאנית", periodCategory: "modern", description: "שרידי יסודות של טחנת מים.", significanceSummary: null, highlight: null, values: { historical: "i", technological: "a", landscape: "a", social: "a", archaeological: "i" }, integrity: "low", integrityNote: "יסודות בלבד", threats: ["שחיקה", "בנייה"], comparativeBasis: null, claimScope: "local" },
+      { id: "mill-05", name: "טחנת התנינים", region: "נחל תנינים", lat: 32.51, lng: 34.91, depth: "rich", type: "טחנת מים", typeCategory: "ensemble", period: "ממלוכית — עות'מאנית", periodCategory: "medieval", description: "קומפלקס טחנה גדול עם שלושה אבני ריחיים, סכר ותעלות. האתר המרכזי במערכת.", significanceSummary: "מרכז ייצור אזורי — עדות למפעל תעשייתי מורכב מהתקופה הממלוכית.", highlight: "קומפלקס תעשייתי שלם עם סכר", values: { historical: "e", technological: "e", landscape: "e", social: "e", archaeological: "e" }, integrity: "good", integrityNote: "שוחזר חלקית ע\"י רשות הטבע", threats: ["תיירות בלתי מבוקרת"], comparativeBasis: "מפעלי טחינה ממלוכיים", claimScope: "international" }
+    ],
+    themes: [
+      { id: "water-tech", label: "טכנולוגיה הידראולית", description: "כל הטחנות חולקות מערכת הנעה מבוססת מים — מהפשוטה לקומפלקסית", sites: ["mill-01", "mill-02", "mill-05"], evidence: { "mill-01": "מנגנון הנעה שלם", "mill-02": "תעלת מים ארוכה צלבנית", "mill-05": "סכר ושלוש אבני ריחיים" } },
+      { id: "continuity", label: "רצף שימוש", description: "אתרים עם עדות לשימוש רב-תקופתי מהמאות ה-12 עד ה-20", sites: ["mill-02", "mill-05"], evidence: { "mill-02": "700 שנות שימוש רצוף", "mill-05": "ממלוכית עד עות'מאנית" } },
+      { id: "landscape", label: "נוף תעשייתי", description: "הטחנות יוצרות רשת נופית לאורך נחל תנינים", sites: ["mill-01", "mill-02", "mill-05", "mill-03"], evidence: { "mill-01": "על הנחל", "mill-02": "תעלה מחברת לנחל", "mill-05": "סכר על הנחל", "mill-03": "ליד מעיין" } }
+    ],
+    tabs: [
+      {
+        id: "arguments",
+        label: "טיעוני משמעות",
+        icon: "📊",
+        type: "table",
+        data: {
+          columns: ["אתר", "סוג טיעון", "חוזק", "בסיס ראייתי", "היקף"],
+          rows: [
+            ["טחנת התנינים", "ייחודיות", "חזק", "קומפלקס שלם עם סכר", "בינלאומי"],
+            ["טחנת הנזירים", "רצף", "חזק", "700 שנות שימוש", "לאומי"],
+            ["טחנת דוק", "מנגנון", "בינוני", "מנגנון הנעה שלם", "אזורי"],
+            ["טחנת עין צור", "חלק ממערכת", "חלש", "מיקום בלבד", "מקומי"],
+            ["טחנת ג'סר א-זרקא", "ארכאולוגי", "חלש", "יסודות בלבד", "מקומי"]
+          ]
+        }
+      },
+      {
+        id: "gaps",
+        label: "פערי מידע",
+        icon: "🔍",
+        type: "matrix",
+        data: {
+          rowLabels: ["טחנת דוק", "טחנת הנזירים", "טחנת עין צור", "טחנת ג'סר א-זרקא", "טחנת התנינים"],
+          colLabels: ["תיאור", "משמעות", "ערכים", "שלמות", "איומים", "השוואות"],
+          cells: [
+            [3, 3, 2, 3, 2, 2],
+            [3, 3, 2, 2, 2, 2],
+            [2, 2, 1, 0, 1, 0],
+            [1, 0, 1, 1, 1, 0],
+            [3, 3, 3, 3, 2, 3]
+          ]
+        }
+      }
+    ]
+  };
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="../runtime/collection-dashboard-runtime.js"></script>
+</body>
+</html>

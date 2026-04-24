@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test — Dashboard (English)</title>
+  <link rel="stylesheet" href="../runtime/dashboard-runtime.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="dashboard-root"></div>
+
+  <script>
+  window.__DASHBOARD_DATA__ = {
+    asset: {
+      name: "Ayelet HaShachar Water Tower",
+      location: "Upper Galilee, Israel",
+      type: "Industrial Heritage",
+      period: "British Mandate (1934)",
+      description: "A 1934 reinforced-concrete water tower in Kibbutz Ayelet HaShachar, Upper Galilee. Bauhaus-influenced industrial design, one of few surviving mandate-era water towers in Israel. Served the kibbutz agricultural system for three decades before decommissioning."
+    },
+    dataQuality: {
+      sources: ["AyeletHaShachar_Survey.pdf"],
+      gaps: ["No structural engineer report", "Missing original blueprints"]
+    },
+    timeline: [
+      { year: "1934", ys: 1934, label: "Tower constructed by British Mandate Public Works", ct: "structure" },
+      { year: "1948", ys: 1948, label: "Israeli independence — tower serves expanding kibbutz", ct: "use" },
+      { year: "1952", ys: 1952, label: "Agricultural expansion — peak operational period", ct: "use" },
+      { year: "1965", ys: 1965, label: "Decommissioned — replaced by regional water network", ct: "infrastructure" },
+      { year: "2020", ys: 2020, label: "Conservation survey and heritage assessment", ct: "infrastructure" }
+    ],
+    contexts: [
+      { id: "ctx_hist", type: "historical", label: "Historical — British Mandate infrastructure program for rural Jewish settlements in the Galilee", rv: ["Historical", "Technological"], ts: "1920s–1948" },
+      { id: "ctx_tech", type: "technological", label: "Technological — Early reinforced-concrete construction in Palestine, reflecting European engineering transfer", rv: ["Technological", "Historical"], ts: "1930s" },
+      { id: "ctx_soc", type: "social", label: "Social — Kibbutz collective identity; the tower as shared infrastructure symbolising communal self-sufficiency", rv: ["Social", "Historical"], ts: "1934–1965" },
+      { id: "ctx_land", type: "landscape", label: "Landscape — Vertical landmark in the flat Hula Valley agricultural plain, visible from surrounding settlements", rv: ["Landscape", "Social"], ts: "1934–present" }
+    ],
+    values: [
+      { id: "v_hist", name: "Historical — Mandate-era rural infrastructure", cat: "Historical", ev: "sourced", summary: "Tangible evidence of the British Mandate public-works programme that shaped the Galilee's settlement landscape" },
+      { id: "v_tech", name: "Technological — Early reinforced concrete", cat: "Technological", ev: "sourced", summary: "Demonstrates 1930s European concrete technology adapted to local conditions; Bauhaus-influenced proportions" },
+      { id: "v_soc", name: "Social — Kibbutz collective memory", cat: "Social", ev: "inferred", summary: "Oral histories link the tower to communal identity; it anchored the kibbutz's self-image as a productive settlement" },
+      { id: "v_land", name: "Landscape — Hula Valley landmark", cat: "Landscape", ev: "sourced", summary: "One of the tallest pre-state structures in the upper Jordan valley; an orientation point in the flat terrain" }
+    ],
+    themes: {
+      valueThemes: [
+        {
+          label: "Settlement Infrastructure",
+          description: "Values linked to the tower's role in the material systems that sustained early Jewish settlement in the Galilee",
+          color: "#8b6914",
+          valueIds: ["v_hist", "v_tech"]
+        },
+        {
+          label: "Place & Identity",
+          description: "Values rooted in the tower's symbolic and spatial significance for the community and the landscape",
+          color: "#4a7c59",
+          valueIds: ["v_soc", "v_land"]
+        }
+      ]
+    },
+    attrTable: [
+      { attr: "Concrete shell & foundations", vals: ["Historical", "Technological"], sig: "Original 1934 fabric; rare surviving mandate concrete", impl: "Loss would eliminate primary material evidence of mandate-era engineering" },
+      { attr: "Cylindrical form & proportions", vals: ["Technological", "Landscape"], sig: "Bauhaus-influenced industrial geometry, local landmark", impl: "Alteration would compromise both technological and landscape significance" },
+      { attr: "Internal pipe fittings", vals: ["Technological", "Social"], sig: "Evidence of original water-distribution system", impl: "Removal would sever link to kibbutz agricultural function" },
+      { attr: "Kibbutz siting & orientation", vals: ["Social", "Landscape"], sig: "Central placement reflects communal planning logic", impl: "Surrounding development could erode spatial relationship" }
+    ],
+    nara: [
+      { aspect: "Form & Design", desc: "Cylindrical Bauhaus-influenced form intact; proportions legible", ve: "Technological, Landscape", rating: "high" },
+      { aspect: "Materials & Substance", desc: "Concrete shell sound but surface weathering and rebar exposure at upper courses", ve: "Historical, Technological", rating: "medium" },
+      { aspect: "Use & Function", desc: "Original water-supply function ceased 1965; currently unused", ve: "Social, Technological", rating: "low" },
+      { aspect: "Spirit & Feeling", desc: "Still recognised by kibbutz members as a communal symbol; setting partly altered", ve: "Social, Landscape", rating: "medium" }
+    ],
+    naraSummary: "High form integrity but low functional integrity — the tower retains its original shape and material presence while its water-supply role has been entirely lost.",
+    comparative: {
+      summary: "Ayelet HaShachar is one of very few mandate-era concrete water towers surviving in the upper Galilee. Nahalal and Degania offer partial parallels but differ in design lineage and condition.",
+      sites: [
+        { name: "Nahalal Water Tower", period: "1930s", arch: "", dist: "Similar mandate period but moshava context; extensively restored", crit: { rarity: "moderate", documentation: "high", condition: "good" } },
+        { name: "Degania Water Tower", period: "1937", arch: "", dist: "Kibbutz context like Ayelet; damaged in 1948 battle, partially rebuilt", crit: { rarity: "high", documentation: "moderate", condition: "fair" } }
+      ]
+    },
+    significance: "The Ayelet HaShachar Water Tower is a rare surviving example of British Mandate-era reinforced-concrete infrastructure in the upper Galilee, combining Bauhaus-influenced industrial design with the communal planning logic of early kibbutz settlement. Its intact cylindrical form, prominent landscape position in the Hula Valley, and association with collective agricultural self-sufficiency make it a significant marker of the region's 20th-century settlement history.",
+    vuln: [
+      { value: "Historical", form: 1, material: 2, use: 3, setting: 1 },
+      { value: "Technological", form: 1, material: 2, use: 3, setting: 1 },
+      { value: "Landscape", form: 1, material: 1, use: 2, setting: 2 }
+    ],
+    pq: {
+      strengths: 4,
+      boosts: ["Commission structural engineer survey", "Photograph and 3D-scan the interior pipe fittings before further corrosion"],
+      next: ["Obtain original mandate-era blueprints from CZA or ISA archives", "Interview long-term kibbutz members for oral-history record", "Assess rebar-exposure extent for conservation prioritisation"]
+    },
+    stages: [0, 1, 2, 3, 4, 5, 6],
+    coordinates: { lat: 33.0142, lng: 35.5689 },
+    comparatorCoords: [
+      { name: "Nahalal Water Tower", lat: 32.6997, lng: 35.2103 },
+      { name: "Degania Water Tower", lat: 32.7089, lng: 35.5711 }
+    ],
+    kg: null,
+    tabs: [
+      {
+        id: "evidence_weight",
+        icon: "\u2696\uFE0F",
+        label: "Evidence Weight",
+        type: "cards",
+        data: {
+          cards: [
+            {
+              title: "Mandate-era construction date (1934)",
+              subtitle: "Well-Grounded",
+              level: "well-grounded",
+              body: "Confirmed by dated inscription on tower base and British Mandate Public Works Department records cited in AyeletHaShachar_Survey.pdf, pp. 3–4.",
+              badges: ["Historical", "Technological"]
+            },
+            {
+              title: "Bauhaus design influence",
+              subtitle: "Supported",
+              level: "supported",
+              body: "Formal analysis in survey report identifies proportional system consistent with European modernist water-tower typology; no direct architect attribution found.",
+              badges: ["Technological"]
+            },
+            {
+              title: "Kibbutz collective-memory significance",
+              subtitle: "Supported",
+              level: "supported",
+              body: "Referenced in kibbutz 50th-anniversary publication and two informal oral accounts; no systematic oral-history study conducted.",
+              badges: ["Social"]
+            },
+            {
+              title: "Hula Valley visual landmark status",
+              subtitle: "Asserted",
+              level: "asserted",
+              body: "Claimed in the survey report based on site visit observation. No viewshed analysis or photographic documentation from surrounding vantage points provided.",
+              badges: ["Landscape"]
+            }
+          ]
+        }
+      }
+    ]
+  };
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="../runtime/dashboard-runtime.js"></script>
+</body>
+</html>
